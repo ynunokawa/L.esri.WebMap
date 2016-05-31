@@ -91,7 +91,7 @@ L.esri.WebMap = L.Class.extend({
 			console.log('create HeatmapLayer');
 			var gradient = {};
 			layer.layerDefinition.drawingInfo.renderer.colorStops.map(function(stop) {
-				gradient[stop.ratio] = 'rgb(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ',' + (stop.color[3]/255) + ')';
+				gradient[stop.ratio] = 'rgba(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ',' + (stop.color[3]/255) + ')';
 			});
 			console.log(gradient);
 
