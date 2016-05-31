@@ -91,14 +91,15 @@ L.esri.WebMap = L.Class.extend({
 			console.log('create HeatmapLayer');
 			var gradient = {};
 			layer.layerDefinition.drawingInfo.renderer.colorStops.map(function(stop) {
-				gradient[stop.ratio] = 'rgba(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ',' + (stop.color[3]/255) + ')';
+				//gradient[stop.ratio] = 'rgba(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ',' + (stop.color[3]/255) + ')';
+				gradient[Math.round(stop.ratio*100)/100] = 'rgb(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ')';
 			});
 			console.log(gradient);
 
 			var layer = L.esri.Heat.heatmapFeatureLayer({
 				url: layer.url,
-				blur: layer.layerDefinition.drawingInfo.renderer.blurRadius,
-				max: layer.layerDefinition.drawingInfo.renderer.maxPixelIntensity,
+				//blur: layer.layerDefinition.drawingInfo.renderer.blurRadius,
+				//max: layer.layerDefinition.drawingInfo.renderer.maxPixelIntensity,
 				gradient: gradient
 			});
 			return layer;
