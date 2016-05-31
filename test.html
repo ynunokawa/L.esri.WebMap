@@ -1,0 +1,50 @@
+<html>
+<head>
+  <meta charset=utf-8 />
+  <title>Esri Leaflet Quickstart</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+  <!-- Load Leaflet from CDN-->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet-src.js"></script>
+
+  <!-- Load Esri Leaflet from CDN -->
+  <script src="https://cdn.jsdelivr.net/leaflet.esri/2.0.0/esri-leaflet.js"></script>
+
+	<!-- Load Leaflet Heat from CDN -->
+	<script src="https://rawgit.com/Leaflet/Leaflet.heat/gh-pages/dist/leaflet-heat.js"></script>
+
+	<!-- Load Heatmap Feature Layer from CDN -->
+	<script src="https://cdn.jsdelivr.net/leaflet.esri.heatmap-feature-layer/2.0.0-beta.1/esri-leaflet-heatmap-feature-layer.js"></script>
+
+
+	<!-- Load L.esri.WebMap -->
+	<script src="src/L.esri.WebMap.js"></script>
+
+  <style>
+    body { margin:0; padding:0; }
+    #map { position: absolute; top:0; bottom:0; right:0; left:0; }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script>
+  var map = L.map("map").setView([37.75, -122.23], 10);
+
+	//L.esri.basemapLayer("Gray").addTo(map);
+	//L.esri.basemapLayer("GrayLabels").addTo(map);
+
+	var webmapId = '22c504d229f14c789c5b49ebff38b941'; //my goal
+
+	//var webmapId = 'f2e9b762544945f390ca4ac3671cfa72'; //ArcGISFeatureLayer
+	//var webmapId = '0e189846df1146b9873266bc12b81a45'; //ArcGISImageServiceLayer
+	//var webmapId = 'de2482217dd643bca3e97df3e785c6e1'; //ArcGISMapServiceLayer
+	//var webmapId = 'ccee269e69c1404486172aa7ccc80f0a'; //ArcGISTiledMapServiceLayer
+
+	var webmap = new L.esri.WebMap(webmapId, { map: map });
+</script>
+
+</body>
+</html>
