@@ -1,7 +1,7 @@
 /*
  * L.esri.WebMap
- *
- *
+ * 
+ * 
  */
 
 L.esri.WebMap = L.Class.extend({
@@ -25,6 +25,7 @@ L.esri.WebMap = L.Class.extend({
 	},
 
 	_loadWebMapMetaData: function(id) {
+        console.log(this);
 		var map = this._map;
 		var leafletLatlng = this.leafletLatlng;
 		var webmapMetaDataRequestUrl = 'https://www.arcgis.com/sharing/rest/content/items/' + id;
@@ -42,7 +43,7 @@ L.esri.WebMap = L.Class.extend({
 
 	_loadWebMap: function(id) {
 		var map = this._map;
-		var generateEsriLayer = this.generateEsriLayer;
+		var generateEsriLayer = this._generateEsriLayer;
 		//var basemapKey = this.getBasemapKey;
 		var webmapRequestUrl = 'https://www.arcgis.com/sharing/rest/content/items/' + id + '/data?f=json';
 		L.esri.request(webmapRequestUrl, {}, function(error, response){
@@ -64,14 +65,7 @@ L.esri.WebMap = L.Class.extend({
 
 				// Add Operational Layers
 				response.operationalLayers.map(function(layer) {
-					console.log('operational layer: ', layer);
-					if(layer.featureCollection === undefined) {
-						console.log('It is not a feature collection');
-						generateEsriLayer(layer).addTo(map);
-					}
-					else {
-						//generateFeatureCollection();
-					}
+                    generateEsriLayer(layer).addTo(map);
 				});
 		  }
 		});
@@ -81,13 +75,104 @@ L.esri.WebMap = L.Class.extend({
 		var changedLatlng = [latlng[1], latlng[0]];
 		return changedLatlng;
 	},
+    
+    _pointSymbol: function(symbol) {
+        var icon;
+        if(symbol.type === 'esriPMS') {
+            icon = L.icon({
+                iconUrl: symbol.url,
+                shadowUrl: '',
+                iconSize:     [symbol.height, symbol.width],
+                shadowSize:   [0, 0],
+                iconAnchor:   [symbol.height-16, symbol.width-1],
+                shadowAnchor: [0, 0],
+                popupAnchor:  [-3, -76]
+            });
+        }
+        if(symbol.type === 'esriSMS') {
+            if(symbol.style === 'esriSMSCircle') {
+                icon = L.vectorIcon({
+                    //className: 'my-vector-icon',
+                    svgHeight: (symbol.size + symbol.outline.width) * 2,
+                    svgWidth: (symbol.size + symbol.outline.width) * 2,
+                    type: 'circle',
+                    shape: {
+                        r: symbol.size + '',
+                        cx: symbol.size + symbol.outline.width,
+                        cy: symbol.size + symbol.outline.width
+                    },
+                    style: {
+                        fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
+                        stroke: 'rgba(' + symbol.outline.color[0] + ',' + symbol.outline.color[1] + ',' + symbol.outline.color[2] + ',' + symbol.outline.color[3]/255 + ')',
+                        strokeWidth: symbol.outline.width
+                    }
+                });
+            }
+            if(symbol.style === '') {
+                
+            }
+            if(symbol.style === '') {
+                
+            }
+        }
+        return icon;
+    },
+    
+    _generateIcon: function(renderer, properties) {
+        console.log(renderer);
+        var icon;
+        if(renderer.type === 'simple') {
+            icon = this._pointSymbol(renderer.symbol);
+        }
+        if(renderer.type === 'uniqueValue') {
+            renderer.uniqueValueInfos.map(function(info) {
+                if(info.value === properties[renderer.field1]) { // field2, field3は後で考えよう
+                    icon = this.webmap._pointSymbol(info.symbol);
+                }
+            });
+        }
+        if(renderer.type === 'classBreaks') {
+            renderer.classBreakInfos.map(function(info) {
+                if(info.classMinValue !== undefined) {
+                    if(info.classMinValue <= properties[renderer.field] && info.classMaxValue > properties[renderer.field]) {
+                        icon = this.webmap._pointSymbol(info.symbol);
+                    }
+                }
+                else {
+                    if(info.classMaxValue > properties[renderer.field]) {
+                        icon = this.webmap._pointSymbol(info.symbol);
+                    }
+                }
+            });
+        }
+        return icon;
+    },
 
-	generateEsriLayer: function(layer) {
-		var colorStopsToGradient = this.colorStopsToGradient;
+	_generateEsriLayer: function(layer) {
 		console.log('generateEsriLayer: ', layer);
-		console.log(this.colorStopsToGradient);
+        
+		console.log(this.webmap);
 
-		if(layer.layerType === 'ArcGISFeatureLayer' && layer.layerDefinition.drawingInfo.renderer.type === 'heatmap') {
+		if(layer.featureCollection !== undefined) {
+            // Supporting only point geometry
+            console.log('create FeatureCollection');
+            var renderer = layer.featureCollection.layers[0].layerDefinition.drawingInfo.renderer;
+            console.log(renderer);
+            var features = [];
+            layer.featureCollection.layers[0].featureSet.features.map(function(feature) {
+                console.log(feature.attributes);
+                
+                var icon = this.webmap._generateIcon(renderer, feature.attributes);
+                console.log(icon);
+                
+                var mercatorToLatlng = L.Projection.Mercator.unproject(L.point(feature.geometry.x, feature.geometry.y));
+                features.push(L.marker(mercatorToLatlng, { icon: icon }));
+            });
+            
+            var layer = L.featureGroup(features);
+            return layer;
+        }
+        if(layer.layerType === 'ArcGISFeatureLayer' && layer.layerDefinition.drawingInfo.renderer.type === 'heatmap') {
 			console.log('create HeatmapLayer');
 			var gradient = {};
 			layer.layerDefinition.drawingInfo.renderer.colorStops.map(function(stop) {
@@ -106,9 +191,20 @@ L.esri.WebMap = L.Class.extend({
 		}
 		if(layer.layerType === 'ArcGISFeatureLayer') {
 			console.log('create ArcGISFeatureLayer');
+            var renderer = layer.layerDefinition.drawingInfo.renderer;
+            //if()
 			var layer = L.esri.featureLayer({
-		    url: layer.url
-		  });
+                url: layer.url,
+                pointToLayer: function (geojson, latlng) {
+                    console.log(geojson.properties);
+                    
+                    var icon = this.webmap._generateIcon(renderer, geojson.properties);
+                        
+                    return L.marker(latlng, {
+                        icon: icon
+                    });
+                }
+            });
 			return layer;
 		}
 		if(layer.layerType === 'ArcGISImageServiceLayer') {
