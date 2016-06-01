@@ -77,7 +77,7 @@ L.esri.WebMap = L.Class.extend({
 	},
     
     _createPopupContent: function(popupInfo, properties) {
-        console.log(popupInfo, properties);
+        //console.log(popupInfo, properties);
         var content = '<h4>' + popupInfo.title + '</h4><br>';
         if(popupInfo.fieldInfos.length > 0) {
             popupInfo.fieldInfos.map(function(info) {
@@ -199,7 +199,7 @@ L.esri.WebMap = L.Class.extend({
                 var icon = this.webmap._generateIcon(renderer, feature.attributes);
                 
                 var mercatorToLatlng = L.Projection.Mercator.unproject(L.point(feature.geometry.x, feature.geometry.y));
-                features.push(L.marker(mercatorToLatlng, { icon: icon }).bindPopup(popupContent));
+                features.push(L.marker(mercatorToLatlng, { icon: icon, opacity: layer.opacity }).bindPopup(popupContent));
             });
             
             var lyr = L.featureGroup(features);
@@ -234,7 +234,8 @@ L.esri.WebMap = L.Class.extend({
                     var icon = this.webmap._generateIcon(renderer, geojson.properties);
                         
                     return L.marker(latlng, {
-                        icon: icon
+                        icon: icon,
+                        opacity: layer.opacity
                     }).bindPopup(popupContent);
                 }
             });
