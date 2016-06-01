@@ -198,7 +198,7 @@ L.esri.WebMap = L.Class.extend({
                 var popupContent = this.webmap._createPopupContent(layer.featureCollection.layers[0].popupInfo, feature.attributes);
                 var icon = this.webmap._generateIcon(renderer, feature.attributes);
                 
-                var mercatorToLatlng = L.Projection.Mercator.unproject(L.point(feature.geometry.x, feature.geometry.y));
+                var mercatorToLatlng = L.Projection.SphericalMercator.unproject(L.point(feature.geometry.x, feature.geometry.y));
                 features.push(L.marker(mercatorToLatlng, { icon: icon, opacity: layer.opacity }).bindPopup(popupContent));
             });
             
