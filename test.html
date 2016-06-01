@@ -47,13 +47,11 @@
             webmapId = param[1]
         }
     }
-    
-    var map = L.map("map").setView([37.75, -122.23], 10);
 
 	//L.esri.basemapLayer("Gray").addTo(map);
 	//L.esri.basemapLayer("GrayLabels").addTo(map);
 
-	var webmap = L.esri.webMap(webmapId, { map: map });
+	var webmap = L.esri.webMap(webmapId, { map: L.map("map") });
 </script>
 
 </body>
