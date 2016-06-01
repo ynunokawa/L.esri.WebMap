@@ -1,6 +1,6 @@
 # L.esri.WebMap
 
-A plugin fpr display [ArcGIS Web Map](http://doc.arcgis.com/en/arcgis-online/reference/what-is-web-map.htm) on Leaflet maps.
+A plugin for display [ArcGIS Web Map](http://doc.arcgis.com/en/arcgis-online/reference/what-is-web-map.htm) on Leaflet maps.
 
 You can see it with just 2 lines code.
 
