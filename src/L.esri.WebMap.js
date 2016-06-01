@@ -84,6 +84,9 @@ L.esri.WebMap = L.Class.extend({
                 content += info.label + ': ' + properties[info.fieldName] + '<br>';
             });
         }
+        if(popupInfo.mediaInfos.length > 0) {
+            
+        }
         return content;
     },
     
@@ -299,6 +302,6 @@ L.esri.WebMap = L.Class.extend({
 
 });
 
-/*L.esri.WebMap = function (options) {
-	return new L.esri.WebMap(options);
-};*/
+L.esri.webMap = function (webmapId, options) {
+	return new L.esri.WebMap(webmapId, options);
+};
