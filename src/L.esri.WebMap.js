@@ -136,7 +136,6 @@ L.esri.WebMap = L.Class.extend({
                     });
                 }
                 else {
-                    console.log(symbol.size);
                     icon = L.vectorIcon({
                         //className: 'my-vector-icon',
                         svgHeight: (symbol.size/2 + symbol.outline.width) * 2,
@@ -273,6 +272,23 @@ L.esri.WebMap = L.Class.extend({
         return style;
     },
     
+    _calVisualVariables: function(symbol, visualVariables, properties) {
+        var vvSymbol = symbol;
+        var value = properties[visualVariables[0].field];
+        if(visualVariables[0].type === 'sizeInfo') {
+            var rate = (value - visualVariables[0].minDataValue)/(visualVariables[0].maxDataValue - visualVariables[0].minDataValue);
+            vvSymbol.size = (rate * (visualVariables[0].maxSize - visualVariables[0].minSize)) + visualVariables[0].minSize;
+            if(value === null) {
+                vvSymbol.size = 6;
+            }
+        }
+        else if(visualVariables[0].type === 'colorInfo') {
+            console.log(visualVariables);
+            // Color Ramp
+        }
+        return vvSymbol;
+    },
+    
     _generatePathStyle: function(renderer, properties) {
         //console.log(renderer);
         var style = {};
@@ -282,7 +298,11 @@ L.esri.WebMap = L.Class.extend({
         if(renderer.type === 'uniqueValue') {
             renderer.uniqueValueInfos.map(function(info) {
                 if(info.value === properties[renderer.field1]) { // field2, field3は後で考えよう
-                    style = this.webmap._pathSymbol(info.symbol);
+                    var symbol;
+                    if(renderer.visualVariables !== undefined) {
+                        symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
+                    }
+                    style = this.webmap._pathSymbol(symbol);
                 }
             });
         }
@@ -298,11 +318,17 @@ L.esri.WebMap = L.Class.extend({
                 //console.log(info.classMaxValue, properties[renderer.field], prevInfo);
                 if(renderer.classBreakInfos.length === (i+1)) {
                     if(info.classMaxValue >= properties[renderer.field] && prevInfo <= properties[renderer.field]) {
+                        if(renderer.visualVariables !== undefined) {
+                            symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
+                        }
                         style = this.webmap._pathSymbol(info.symbol);
                     }
                 }
                 else {
                     if(info.classMaxValue > properties[renderer.field] && prevInfo <= properties[renderer.field]) {
+                        if(renderer.visualVariables !== undefined) {
+                            symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
+                        }
                         style = this.webmap._pathSymbol(info.symbol);
                     }
                 }
@@ -320,13 +346,17 @@ L.esri.WebMap = L.Class.extend({
         if(renderer.type === 'uniqueValue') {
             renderer.uniqueValueInfos.map(function(info) {
                 if(info.value === properties[renderer.field1]) { // field2, field3は後で考えよう
-                    icon = this.webmap._pointSymbol(info.symbol);
+                    var symbol;
+                    if(renderer.visualVariables !== undefined) {
+                        symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
+                    }
+                    icon = this.webmap._pointSymbol(symbol);
                 }
             });
         }
         if(renderer.type === 'classBreaks') {
             renderer.classBreakInfos.map(function(info, i) {
-                var prevInfo;
+                var prevInfo, symbol;
                 if(i === 0) {
                     prevInfo = renderer.minValue;
                 }
@@ -336,11 +366,17 @@ L.esri.WebMap = L.Class.extend({
                 //console.log(info.classMaxValue, properties[renderer.field], prevInfo);
                 if(renderer.classBreakInfos.length === (i+1)) {
                     if(info.classMaxValue >= properties[renderer.field] && prevInfo <= properties[renderer.field]) {
-                        icon = this.webmap._pointSymbol(info.symbol);
+                        if(renderer.visualVariables !== undefined) {
+                            symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
+                        }
+                        icon = this.webmap._pointSymbol(symbol);
                     }
                 }
                 else {
                     if(info.classMaxValue > properties[renderer.field] && prevInfo <= properties[renderer.field]) {
+                        if(renderer.visualVariables !== undefined) {
+                            symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
+                        }
                         icon = this.webmap._pointSymbol(info.symbol);
                     }
                 }
