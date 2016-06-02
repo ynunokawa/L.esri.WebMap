@@ -120,13 +120,13 @@ L.esri.WebMap = L.Class.extend({
                 if(symbol.outline.style === 'esriSLSNull') {
                     icon = L.vectorIcon({
                         //className: 'my-vector-icon',
-                        svgHeight: (symbol.size + symbol.outline.width) * 2,
-                        svgWidth: (symbol.size + symbol.outline.width) * 2,
+                        svgHeight: (symbol.size/2 + symbol.outline.width) * 2,
+                        svgWidth: (symbol.size/2 + symbol.outline.width) * 2,
                         type: 'circle',
                         shape: {
-                            r: symbol.size + '',
-                            cx: symbol.size + symbol.outline.width,
-                            cy: symbol.size + symbol.outline.width
+                            r: symbol.size/2 + '',
+                            cx: symbol.size/2 + symbol.outline.width,
+                            cy: symbol.size/2 + symbol.outline.width
                         },
                         style: {
                             fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
@@ -136,15 +136,16 @@ L.esri.WebMap = L.Class.extend({
                     });
                 }
                 else {
+                    console.log(symbol.size);
                     icon = L.vectorIcon({
                         //className: 'my-vector-icon',
-                        svgHeight: (symbol.size + symbol.outline.width) * 2,
-                        svgWidth: (symbol.size + symbol.outline.width) * 2,
+                        svgHeight: (symbol.size/2 + symbol.outline.width) * 2,
+                        svgWidth: (symbol.size/2 + symbol.outline.width) * 2,
                         type: 'circle',
                         shape: {
-                            r: symbol.size + '',
-                            cx: symbol.size + symbol.outline.width,
-                            cy: symbol.size + symbol.outline.width
+                            r: symbol.size/2 + '',
+                            cx: symbol.size/2 + symbol.outline.width,
+                            cy: symbol.size/2 + symbol.outline.width
                         },
                         style: {
                             fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
