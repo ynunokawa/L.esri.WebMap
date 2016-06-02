@@ -268,7 +268,7 @@ L.esri.WebMap = L.Class.extend({
     },
     
     _generatePathStyle: function(renderer, properties) {
-        console.log(renderer);
+        //console.log(renderer);
         var style = {};
         if(renderer.type === 'simple') {
             style = this._pathSymbol(renderer.symbol);
@@ -281,14 +281,22 @@ L.esri.WebMap = L.Class.extend({
             });
         }
         if(renderer.type === 'classBreaks') {
-            renderer.classBreakInfos.map(function(info) {
-                if(info.classMinValue !== undefined) {
-                    if(info.classMinValue <= properties[renderer.field] && info.classMaxValue > properties[renderer.field]) {
+            renderer.classBreakInfos.map(function(info, i) {
+                var prevInfo;
+                if(i === 0) {
+                    prevInfo = renderer.minValue;
+                }
+                else {
+                    prevInfo = renderer.classBreakInfos[i-1].classMaxValue;
+                }
+                //console.log(info.classMaxValue, properties[renderer.field], prevInfo);
+                if(renderer.classBreakInfos.length === (i+1)) {
+                    if(info.classMaxValue >= properties[renderer.field] && prevInfo <= properties[renderer.field]) {
                         style = this.webmap._pathSymbol(info.symbol);
                     }
                 }
                 else {
-                    if(info.classMaxValue > properties[renderer.field]) {
+                    if(info.classMaxValue > properties[renderer.field] && prevInfo <= properties[renderer.field]) {
                         style = this.webmap._pathSymbol(info.symbol);
                     }
                 }
@@ -311,14 +319,22 @@ L.esri.WebMap = L.Class.extend({
             });
         }
         if(renderer.type === 'classBreaks') {
-            renderer.classBreakInfos.map(function(info) {
-                if(info.classMinValue !== undefined) {
-                    if(info.classMinValue <= properties[renderer.field] && info.classMaxValue > properties[renderer.field]) {
+            renderer.classBreakInfos.map(function(info, i) {
+                var prevInfo;
+                if(i === 0) {
+                    prevInfo = renderer.minValue;
+                }
+                else {
+                    prevInfo = renderer.classBreakInfos[i-1].classMaxValue;
+                }
+                //console.log(info.classMaxValue, properties[renderer.field], prevInfo);
+                if(renderer.classBreakInfos.length === (i+1)) {
+                    if(info.classMaxValue >= properties[renderer.field] && prevInfo <= properties[renderer.field]) {
                         icon = this.webmap._pointSymbol(info.symbol);
                     }
                 }
                 else {
-                    if(info.classMaxValue > properties[renderer.field]) {
+                    if(info.classMaxValue > properties[renderer.field] && prevInfo <= properties[renderer.field]) {
                         icon = this.webmap._pointSymbol(info.symbol);
                     }
                 }
@@ -427,23 +443,6 @@ L.esri.WebMap = L.Class.extend({
                             return pathOptions;
                         },
                         onEachFeature: function (geojson, l) {
-                            //console.log(geojson, l);
-                            var f;
-                            
-                            if(geojson.geometry.type === 'Point') {
-                                var icon = window.webmap._generateIcon(renderer, geojson.properties);
-                                f = L.marker(geojson.geometry.coordinates);
-                            }
-                            else if(geojson.geometry.type === 'LineString' || geojson.geometry.type === 'MultiLineString') {
-                                f = L.polyline(geojson.geometry.coordinates);
-                            }
-                            else if(geojson.geometry.type === 'Polygon' || geojson.geometry.type === 'MultiPolygon') {
-                                f = L.polygon(geojson.geometry.coordinates);
-                            }
-                            else {
-                                console.log(geojson);
-                            }
-                            
                             if(layer.popupInfo !== undefined) {
                                 var popupContent = window.webmap._createPopupContent(layer.popupInfo, geojson.properties);
                                 l.bindPopup(popupContent);
@@ -469,17 +468,17 @@ L.esri.WebMap = L.Class.extend({
                 var lyr = L.esri.featureLayer({
                     url: layer.url,
                     where: where,
-                    pointToLayer: function (geojson, latlng) {
-                    
-                        var popupContent = this.webmap._createPopupContent(layer.popupInfo, geojson.properties);
-                        //var icon = this.webmap._generateIcon(renderer, geojson.properties);
-                        
-                        var f = L.marker(latlng, {
-                            //icon: icon,
-                            opacity: layer.opacity
-                        }).bindPopup(popupContent);
-                            
-                        return f;
+                    onEachFeature: function (geojson, l) {
+                        if(layer.popupInfo !== undefined) {
+                            var popupContent = window.webmap._createPopupContent(layer.popupInfo, geojson.properties);
+                            l.bindPopup(popupContent);
+                        }
+                        if(layer.layerDefinition.drawingInfo.labelingInfo !== undefined) {
+                            var labelingInfo = layer.layerDefinition.drawingInfo.labelingInfo;
+                            var labelText = window.webmap._generateLabel(geojson.properties, labelingInfo);
+                            console.log(labelText);
+                            //l.bindLabel(labelText, { noHide: true }).showLabel();
+                        }
                     }
                 });
                 return lyr;
