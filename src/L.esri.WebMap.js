@@ -181,9 +181,22 @@ L.esri.WebMap = L.Class.extend({
         }
         return icon;
     },
+    
+    _generateLabel: function(properties, labelingInfo) {
+        //console.log('generateLabels: ', properties, labelingInfo);
+        var r = /\[([^\]]*)\]/g;
+        var labelText = labelingInfo[0].labelExpression;
+        labelText = labelText.replace(r, function(s) {
+            var m = r.exec(s);
+            //console.log(m[1]);
+            //console.log(properties[m[1]]);
+            return properties[m[1]];
+        });
+        return labelText;
+    },
 
 	_generateEsriLayer: function(layer) {
-		console.log('generateEsriLayer: ', layer);
+		console.log('generateEsriLayer: ', layer.title, layer);
         
 		console.log(this.webmap);
 
@@ -197,9 +210,17 @@ L.esri.WebMap = L.Class.extend({
                 
                 var popupContent = this.webmap._createPopupContent(layer.featureCollection.layers[0].popupInfo, feature.attributes);
                 var icon = this.webmap._generateIcon(renderer, feature.attributes);
-                
                 var mercatorToLatlng = L.Projection.SphericalMercator.unproject(L.point(feature.geometry.x, feature.geometry.y));
-                features.push(L.marker(mercatorToLatlng, { icon: icon, opacity: layer.opacity }).bindPopup(popupContent));
+
+                var f = L.marker(mercatorToLatlng, { icon: icon, opacity: layer.opacity }).bindPopup(popupContent);
+                
+                if(layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo !== undefined) {
+                    var labelingInfo = layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo;
+                    var labelText = this.webmap._generateLabel(feature.attributes, labelingInfo);
+                    //f.bindLabel(labelText, { noHide: true }).showLabel();
+                }
+                
+                features.push(f);
             });
             
             var lyr = L.featureGroup(features);
@@ -212,31 +233,40 @@ L.esri.WebMap = L.Class.extend({
 				//gradient[stop.ratio] = 'rgba(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ',' + (stop.color[3]/255) + ')';
 				gradient[Math.round(stop.ratio*100)/100] = 'rgb(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ')';
 			});
-			console.log(gradient);
+			//console.log(gradient);
 
-			var lyr = L.esri.Heat.heatmapFeatureLayer({
+			var lyr = L.esri.Heat.heatmapFeatureLayer({ // Esri Leaflet 2.0
+            //var lyr = L.esri.heatmapFeatureLayer({ // Esri Leaflet 1.0
 				url: layer.url,
 				//blur: layer.layerDefinition.drawingInfo.renderer.blurRadius,
 				//max: layer.layerDefinition.drawingInfo.renderer.maxPixelIntensity,
 				gradient: gradient
-			});
+			})
 			return lyr;
 		}
 		if(layer.layerType === 'ArcGISFeatureLayer') {
 			console.log('create ArcGISFeatureLayer');
             var renderer = layer.layerDefinition.drawingInfo.renderer;
-            //if()
+
 			var lyr = L.esri.featureLayer({
                 url: layer.url,
                 pointToLayer: function (geojson, latlng) {
                 
                     var popupContent = this.webmap._createPopupContent(layer.popupInfo, geojson.properties);
                     var icon = this.webmap._generateIcon(renderer, geojson.properties);
-                        
-                    return L.marker(latlng, {
+                    
+                    var f = L.marker(latlng, {
                         icon: icon,
                         opacity: layer.opacity
                     }).bindPopup(popupContent);
+                    
+                    if(layer.layerDefinition.drawingInfo.labelingInfo !== undefined) {
+                        var labelingInfo = layer.layerDefinition.drawingInfo.labelingInfo;
+                        var labelText = this.webmap._generateLabel(geojson.properties, labelingInfo);
+                        //f.bindLabel(labelText, { noHide: true }).showLabel();
+                    }
+                        
+                    return f;
                 }
             });
 			return lyr;
