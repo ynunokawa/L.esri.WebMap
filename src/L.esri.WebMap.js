@@ -21,6 +21,7 @@ L.esri.WebMap = L.Class.extend({
 		this._layoutOptions = {};
         
         this.layers = [];
+        this.title = '';
 
 		this._loadWebMapMetaData(webmapId);
 		this._loadWebMap(webmapId);
@@ -37,7 +38,7 @@ L.esri.WebMap = L.Class.extend({
 		  } else {
 		    console.log(response);
 				console.log('extent: ', response.extent);
-
+                this.webmap.title = response.title;
 				map.fitBounds([leafletLatlng(response.extent[0]), leafletLatlng(response.extent[1])]);
 		  }
 		});
