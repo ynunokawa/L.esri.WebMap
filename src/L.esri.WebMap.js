@@ -85,10 +85,15 @@ L.esri.WebMap = L.Class.extend({
             return properties[m[1]];
         });
         
-        var content = '<h4>' + titleText + '</h4>';
+        var content = '<div class="leaflet-popup-content-title"><h4>' + titleText + '</h4></div><div class="leaflet-popup-content-description">';
         if(popupInfo.fieldInfos.length > 0) {
             popupInfo.fieldInfos.map(function(info) {
-                content += '<div style="font-weight:bold;color:#999;margin-top:5px;">' + info.label + '</div> ' + properties[info.fieldName] + '<br>';
+                if(popupInfo.fieldInfos.length === i+1) {
+                    content += '<div style="font-weight:bold;color:#999;margin-top:5px;">' + info.label + '</div> ' + properties[info.fieldName] + '</div>';
+                }
+                else {
+                    content += '<div style="font-weight:bold;color:#999;margin-top:5px;">' + info.label + '</div> ' + properties[info.fieldName] + '<br>';
+                }
             });
         }
         if(popupInfo.mediaInfos.length > 0) {
