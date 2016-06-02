@@ -438,15 +438,18 @@ L.esri.WebMap = L.Class.extend({
                     var gradient = {};
                     layer.layerDefinition.drawingInfo.renderer.colorStops.map(function(stop) {
                         //gradient[stop.ratio] = 'rgba(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ',' + (stop.color[3]/255) + ')';
-                        gradient[Math.round(stop.ratio*100)/100] = 'rgb(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ')';
+                        //gradient[Math.round(stop.ratio*100)/100] = 'rgb(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ')';
+                        gradient[(Math.round(stop.ratio*100)/100+6)/7] = 'rgb(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ')';
                     });
-                    //console.log(gradient);
+                    console.log(layer.layerDefinition.drawingInfo.renderer);
 
                     var lyr = L.esri.Heat.heatmapFeatureLayer({ // Esri Leaflet 2.0
                     //var lyr = L.esri.heatmapFeatureLayer({ // Esri Leaflet 1.0
                         url: layer.url,
-                        //blur: layer.layerDefinition.drawingInfo.renderer.blurRadius,
-                        //max: layer.layerDefinition.drawingInfo.renderer.maxPixelIntensity,
+                        minOpacity: 0.5,
+                        max: layer.layerDefinition.drawingInfo.renderer.maxPixelIntensity,
+                        blur: layer.layerDefinition.drawingInfo.renderer.blurRadius,
+                        radius: 4,
                         gradient: gradient
                     })
                     return lyr;
