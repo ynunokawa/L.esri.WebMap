@@ -120,13 +120,13 @@ L.esri.WebMap = L.Class.extend({
                 if(symbol.outline.style === 'esriSLSNull') {
                     icon = L.vectorIcon({
                         //className: 'my-vector-icon',
-                        svgHeight: (symbol.size + symbol.outline.width) * 2,
-                        svgWidth: (symbol.size + symbol.outline.width) * 2,
+                        svgHeight: (symbol.size/2 + symbol.outline.width) * 2,
+                        svgWidth: (symbol.size/2 + symbol.outline.width) * 2,
                         type: 'circle',
                         shape: {
-                            r: symbol.size + '',
-                            cx: symbol.size + symbol.outline.width,
-                            cy: symbol.size + symbol.outline.width
+                            r: symbol.size/2 + '',
+                            cx: symbol.size/2 + symbol.outline.width,
+                            cy: symbol.size/2 + symbol.outline.width
                         },
                         style: {
                             fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
@@ -138,13 +138,13 @@ L.esri.WebMap = L.Class.extend({
                 else {
                     icon = L.vectorIcon({
                         //className: 'my-vector-icon',
-                        svgHeight: (symbol.size + symbol.outline.width) * 2,
-                        svgWidth: (symbol.size + symbol.outline.width) * 2,
+                        svgHeight: (symbol.size/2 + symbol.outline.width) * 2,
+                        svgWidth: (symbol.size/2 + symbol.outline.width) * 2,
                         type: 'circle',
                         shape: {
-                            r: symbol.size + '',
-                            cx: symbol.size + symbol.outline.width,
-                            cy: symbol.size + symbol.outline.width
+                            r: symbol.size/2 + '',
+                            cx: symbol.size/2 + symbol.outline.width,
+                            cy: symbol.size/2 + symbol.outline.width
                         },
                         style: {
                             fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
@@ -272,6 +272,23 @@ L.esri.WebMap = L.Class.extend({
         return style;
     },
     
+    _calVisualVariables: function(symbol, visualVariables, properties) {
+        var vvSymbol = symbol;
+        var value = properties[visualVariables[0].field];
+        if(visualVariables[0].type === 'sizeInfo') {
+            var rate = (value - visualVariables[0].minDataValue)/(visualVariables[0].maxDataValue - visualVariables[0].minDataValue);
+            vvSymbol.size = (rate * (visualVariables[0].maxSize - visualVariables[0].minSize)) + visualVariables[0].minSize;
+            if(value === null) {
+                vvSymbol.size = 6;
+            }
+        }
+        else if(visualVariables[0].type === 'colorInfo') {
+            //console.log(visualVariables);
+            // Color Ramp
+        }
+        return vvSymbol;
+    },
+    
     _generatePathStyle: function(renderer, properties) {
         //console.log(renderer);
         var style = {};
@@ -281,13 +298,18 @@ L.esri.WebMap = L.Class.extend({
         if(renderer.type === 'uniqueValue') {
             renderer.uniqueValueInfos.map(function(info) {
                 if(info.value === properties[renderer.field1]) { // field2, field3は後で考えよう
-                    style = this.webmap._pathSymbol(info.symbol);
+                    var symbol = info.symbol;
+                    if(renderer.visualVariables !== undefined) {
+                        symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
+                    }
+                    style = this.webmap._pathSymbol(symbol);
                 }
             });
         }
         if(renderer.type === 'classBreaks') {
             renderer.classBreakInfos.map(function(info, i) {
                 var prevInfo;
+                var symbol = info.symbol;
                 if(i === 0) {
                     prevInfo = renderer.minValue;
                 }
@@ -297,11 +319,17 @@ L.esri.WebMap = L.Class.extend({
                 //console.log(info.classMaxValue, properties[renderer.field], prevInfo);
                 if(renderer.classBreakInfos.length === (i+1)) {
                     if(info.classMaxValue >= properties[renderer.field] && prevInfo <= properties[renderer.field]) {
+                        if(renderer.visualVariables !== undefined) {
+                            symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
+                        }
                         style = this.webmap._pathSymbol(info.symbol);
                     }
                 }
                 else {
                     if(info.classMaxValue > properties[renderer.field] && prevInfo <= properties[renderer.field]) {
+                        if(renderer.visualVariables !== undefined) {
+                            symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
+                        }
                         style = this.webmap._pathSymbol(info.symbol);
                     }
                 }
@@ -319,13 +347,18 @@ L.esri.WebMap = L.Class.extend({
         if(renderer.type === 'uniqueValue') {
             renderer.uniqueValueInfos.map(function(info) {
                 if(info.value === properties[renderer.field1]) { // field2, field3は後で考えよう
-                    icon = this.webmap._pointSymbol(info.symbol);
+                    var symbol = info.symbol;
+                    if(renderer.visualVariables !== undefined) {
+                        symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
+                    }
+                    icon = this.webmap._pointSymbol(symbol);
                 }
             });
         }
         if(renderer.type === 'classBreaks') {
             renderer.classBreakInfos.map(function(info, i) {
                 var prevInfo;
+                var symbol = info.symbol;
                 if(i === 0) {
                     prevInfo = renderer.minValue;
                 }
@@ -335,11 +368,17 @@ L.esri.WebMap = L.Class.extend({
                 //console.log(info.classMaxValue, properties[renderer.field], prevInfo);
                 if(renderer.classBreakInfos.length === (i+1)) {
                     if(info.classMaxValue >= properties[renderer.field] && prevInfo <= properties[renderer.field]) {
-                        icon = this.webmap._pointSymbol(info.symbol);
+                        if(renderer.visualVariables !== undefined) {
+                            symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
+                        }
+                        icon = this.webmap._pointSymbol(symbol);
                     }
                 }
                 else {
                     if(info.classMaxValue > properties[renderer.field] && prevInfo <= properties[renderer.field]) {
+                        if(renderer.visualVariables !== undefined) {
+                            symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
+                        }
                         icon = this.webmap._pointSymbol(info.symbol);
                     }
                 }
@@ -399,15 +438,18 @@ L.esri.WebMap = L.Class.extend({
                     var gradient = {};
                     layer.layerDefinition.drawingInfo.renderer.colorStops.map(function(stop) {
                         //gradient[stop.ratio] = 'rgba(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ',' + (stop.color[3]/255) + ')';
-                        gradient[Math.round(stop.ratio*100)/100] = 'rgb(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ')';
+                        //gradient[Math.round(stop.ratio*100)/100] = 'rgb(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ')';
+                        gradient[(Math.round(stop.ratio*100)/100+6)/7] = 'rgb(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ')';
                     });
-                    //console.log(gradient);
+                    console.log(layer.layerDefinition.drawingInfo.renderer);
 
                     var lyr = L.esri.Heat.heatmapFeatureLayer({ // Esri Leaflet 2.0
                     //var lyr = L.esri.heatmapFeatureLayer({ // Esri Leaflet 1.0
                         url: layer.url,
-                        //blur: layer.layerDefinition.drawingInfo.renderer.blurRadius,
-                        //max: layer.layerDefinition.drawingInfo.renderer.maxPixelIntensity,
+                        minOpacity: 0.5,
+                        max: layer.layerDefinition.drawingInfo.renderer.maxPixelIntensity,
+                        blur: layer.layerDefinition.drawingInfo.renderer.blurRadius,
+                        radius: 4,
                         gradient: gradient
                     })
                     return lyr;
