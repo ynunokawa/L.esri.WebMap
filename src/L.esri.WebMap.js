@@ -47,7 +47,7 @@ L.esri.WebMap = L.Class.extend({
 		var map = this._map;
 		var generateEsriLayer = this._generateEsriLayer;
 		//var basemapKey = this.getBasemapKey;
-		var webmapRequestUrl = 'https://www.arcgis.com/sharing/rest/content/items/' + id + '/data?f=json';
+		var webmapRequestUrl = 'https://www.arcgis.com/sharing/rest/content/items/' + id + '/data';
 		L.esri.request(webmapRequestUrl, {}, function(error, response){
 		  if(error){
 		    console.log(error);
@@ -226,7 +226,7 @@ L.esri.WebMap = L.Class.extend({
             var lyr = L.featureGroup(features);
             return lyr;
         }
-        if(layer.layerType === 'ArcGISFeatureLayer' && layer.layerDefinition !== undefined) {
+        if(layer.layerType === 'ArcGISFeatureLayer' && layer.layerDefinition.drawingInfo !== undefined) {
             if(layer.layerDefinition.drawingInfo.renderer.type === 'heatmap'){
                 console.log('create HeatmapLayer');
                 var gradient = {};
@@ -248,11 +248,16 @@ L.esri.WebMap = L.Class.extend({
 		}
 		if(layer.layerType === 'ArcGISFeatureLayer' && layer.layerDefinition !== undefined) {
             if(layer.layerDefinition.drawingInfo !== undefined){
-                console.log('create ArcGISFeatureLayer (with layerDefinition)');
+                console.log('create ArcGISFeatureLayer (with layerDefinition.drawingInfo)');
                 var renderer = layer.layerDefinition.drawingInfo.renderer;
+                var where = '1=1';
+                if(layer.layerDefinition.definitionExpression !== undefined) {
+                    where = layer.layerDefinition.definitionExpression;
+                }
 
                 var lyr = L.esri.featureLayer({
                     url: layer.url,
+                    where: where,
                     pointToLayer: function (geojson, latlng) {
                     
                         var popupContent = this.webmap._createPopupContent(layer.popupInfo, geojson.properties);
@@ -268,6 +273,31 @@ L.esri.WebMap = L.Class.extend({
                             var labelText = this.webmap._generateLabel(geojson.properties, labelingInfo);
                             //f.bindLabel(labelText, { noHide: true }).showLabel();
                         }
+                            
+                        return f;
+                    }
+                });
+                return lyr;
+            }
+            else {
+                console.log('create ArcGISFeatureLayer (without layerDefinition.drawingInfo)');
+                var where = '1=1';
+                if(layer.layerDefinition.definitionExpression !== undefined) {
+                    where = layer.layerDefinition.definitionExpression;
+                }
+                
+                var lyr = L.esri.featureLayer({
+                    url: layer.url,
+                    where: where,
+                    pointToLayer: function (geojson, latlng) {
+                    
+                        var popupContent = this.webmap._createPopupContent(layer.popupInfo, geojson.properties);
+                        //var icon = this.webmap._generateIcon(renderer, geojson.properties);
+                        
+                        var f = L.marker(latlng, {
+                            //icon: icon,
+                            opacity: layer.opacity
+                        }).bindPopup(popupContent);
                             
                         return f;
                     }
