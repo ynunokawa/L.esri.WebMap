@@ -60,10 +60,6 @@ L.esri.WebMap = L.Class.extend({
 				response.baseMap.baseMapLayers.map(function(baseMapLayer) {
 					generateEsriLayer(baseMapLayer).addTo(map);
 				});
-				/*L.esri.basemapLayer(basemapKey(response.baseMap.title)).addTo(map);
-				if(response.baseMap.baseMapLayers.length == 2) {
-					L.esri.basemapLayer(basemapKey(response.baseMap.title) + 'Labels').addTo(map);
-				}*/
 
 				// Add Operational Layers
 				response.operationalLayers.map(function(layer) {
@@ -324,39 +320,6 @@ L.esri.WebMap = L.Class.extend({
 			return false;
 		}
 	}
-
-	/*getBasemapKey: function(title) {
-		if(title === '') {
-			return 'Streets';
-		}
-		if(title === 'Topographic') {
-			return 'Topographic';
-		}
-		if(title === '') {
-			return 'NationalGeographic';
-		}
-		if(title === '') {
-			return 'Oceans';
-		}
-		if(title === 'Light Gray Canvas') {
-			return 'Gray';
-		}
-		if(title === '') {
-			return 'DarkGray';
-		}
-		if(title === '') {
-			return 'Imagery';
-		}
-		if(title === '') {
-			return 'ShadedRelief';
-		}
-		if(title === 'Terrain with Labels') {
-			return 'Terrain';
-		}
-		if(title === '') {
-			return 'USATopo';
-		}
-	}*/
 
 });
 
