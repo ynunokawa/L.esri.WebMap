@@ -85,7 +85,7 @@ L.esri.WebMap = L.Class.extend({
         var content = '<h4>' + popupInfo.title + '</h4>';
         if(popupInfo.fieldInfos.length > 0) {
             popupInfo.fieldInfos.map(function(info) {
-                content += info.label + ': ' + properties[info.fieldName] + '<br>';
+                content += '<div style="font-weight:bold;color:#999;margin-top:5px;">' + info.label + '</div> ' + properties[info.fieldName] + '<br>';
             });
         }
         if(popupInfo.mediaInfos.length > 0) {
