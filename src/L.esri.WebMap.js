@@ -449,7 +449,7 @@ L.esri.WebMap = L.Class.extend({
                         minOpacity: 0.5,
                         max: layer.layerDefinition.drawingInfo.renderer.maxPixelIntensity,
                         blur: layer.layerDefinition.drawingInfo.renderer.blurRadius,
-                        radius: 4,
+                        radius: layer.layerDefinition.drawingInfo.renderer.blurRadius * 1.3,
                         gradient: gradient
                     })
                     return lyr;
