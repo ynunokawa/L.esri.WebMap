@@ -4,12 +4,15 @@
   <title>Esri Leaflet Quickstart</title>
   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
-  <!-- Load Leaflet from CDN-->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet.css" />
-  <script src="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet-src.js"></script>
+    <!-- Load Leaflet from CDN-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet-src.js"></script>
+    
+    <!-- Load Leaflet Label from GitHub -->
+    <script src="https://leaflet.github.io/Leaflet.label/leaflet.label.js"></script>
 
-  <!-- Load Esri Leaflet from CDN -->
-  <script src="https://cdn.jsdelivr.net/leaflet.esri/2.0.0/esri-leaflet.js"></script>
+    <!-- Load Esri Leaflet from CDN -->
+    <script src="https://cdn.jsdelivr.net/leaflet.esri/2.0.0/esri-leaflet.js"></script>
 
 	<!-- Load Leaflet Heat from CDN -->
 	<script src="https://rawgit.com/Leaflet/Leaflet.heat/gh-pages/dist/leaflet-heat.js"></script>
@@ -26,6 +29,8 @@
   <style>
     body { margin:0; padding:0; }
     #map { position: absolute; top:0; bottom:0; right:0; left:0; }
+    .leaflet-popup-content { height: 250px; }
+    .leaflet-popup-content-description { height: 200px; overflow: auto; }
   </style>
 </head>
 <body>
@@ -50,8 +55,11 @@
 
 	//L.esri.basemapLayer("Gray").addTo(map);
 	//L.esri.basemapLayer("GrayLabels").addTo(map);
+    //var map = L.map("map");
 
 	var webmap = L.esri.webMap(webmapId, { map: L.map("map") });
+    
+    //L.marker([35, 139]).bindLabel('Look revealing label!').addTo(map);
 </script>
 
 </body>

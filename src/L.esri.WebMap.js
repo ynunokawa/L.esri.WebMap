@@ -19,6 +19,8 @@ L.esri.WebMap = L.Class.extend({
 		this._operationalLayers = {};
 		this._exportOptions = {};
 		this._layoutOptions = {};
+        
+        this.layers = [];
 
 		this._loadWebMapMetaData(webmapId);
 		this._loadWebMap(webmapId);
@@ -45,7 +47,7 @@ L.esri.WebMap = L.Class.extend({
 		var map = this._map;
 		var generateEsriLayer = this._generateEsriLayer;
 		//var basemapKey = this.getBasemapKey;
-		var webmapRequestUrl = 'https://www.arcgis.com/sharing/rest/content/items/' + id + '/data?f=json';
+		var webmapRequestUrl = 'https://www.arcgis.com/sharing/rest/content/items/' + id + '/data';
 		L.esri.request(webmapRequestUrl, {}, function(error, response){
 		  if(error){
 		    console.log(error);
@@ -58,14 +60,12 @@ L.esri.WebMap = L.Class.extend({
 				response.baseMap.baseMapLayers.map(function(baseMapLayer) {
 					generateEsriLayer(baseMapLayer).addTo(map);
 				});
-				/*L.esri.basemapLayer(basemapKey(response.baseMap.title)).addTo(map);
-				if(response.baseMap.baseMapLayers.length == 2) {
-					L.esri.basemapLayer(basemapKey(response.baseMap.title) + 'Labels').addTo(map);
-				}*/
 
 				// Add Operational Layers
 				response.operationalLayers.map(function(layer) {
-                    generateEsriLayer(layer).addTo(map);
+                    var lyr = generateEsriLayer(layer);
+                    this.webmap.layers.push(lyr);
+                    lyr.addTo(map);
 				});
 		  }
 		});
@@ -78,10 +78,22 @@ L.esri.WebMap = L.Class.extend({
     
     _createPopupContent: function(popupInfo, properties) {
         //console.log(popupInfo, properties);
-        var content = '<h4>' + popupInfo.title + '</h4>';
+        var r = /\{([^\]]*)\}/g;
+        var titleText = popupInfo.title;
+        titleText = titleText.replace(r, function(s) {
+            var m = r.exec(s);
+            return properties[m[1]];
+        });
+        
+        var content = '<div class="leaflet-popup-content-title"><h4>' + titleText + '</h4></div><div class="leaflet-popup-content-description">';
         if(popupInfo.fieldInfos.length > 0) {
             popupInfo.fieldInfos.map(function(info) {
-                content += info.label + ': ' + properties[info.fieldName] + '<br>';
+                if(popupInfo.fieldInfos.length === i+1) {
+                    content += '<div style="font-weight:bold;color:#999;margin-top:5px;">' + info.label + '</div> ' + properties[info.fieldName] + '</div>';
+                }
+                else {
+                    content += '<div style="font-weight:bold;color:#999;margin-top:5px;">' + info.label + '</div> ' + properties[info.fieldName] + '<br>';
+                }
             });
         }
         if(popupInfo.mediaInfos.length > 0) {
@@ -142,14 +154,160 @@ L.esri.WebMap = L.Class.extend({
                     });
                 }
             }
-            if(symbol.style === '') {
-                
+            else if(symbol.style === 'esriSMSSquare') {
+                if(symbol.outline.style === 'esriSLSNull') {
+                    icon = L.vectorIcon({
+                        //className: 'my-vector-icon',
+                        svgHeight: symbol.size + symbol.outline.width * 2 + 2,
+                        svgWidth: symbol.size + symbol.outline.width * 2 + 2,
+                        type: 'rect',
+                        shape: {
+                            x: '1',
+                            y: '1',
+                            width: symbol.size + '',
+                            height: symbol.size + ''
+                        },
+                        style: {
+                            fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
+                            //stroke: '',
+                            strokeWidth: 0
+                        }
+                    });
+                }
+                else {
+                    icon = L.vectorIcon({
+                        //className: 'my-vector-icon',
+                        svgHeight: symbol.size + symbol.outline.width * 2 + 2,
+                        svgWidth: symbol.size + symbol.outline.width * 2 + 2,
+                        type: 'rect',
+                        shape: {
+                            x: '1',
+                            y: '1',
+                            width: symbol.size + '',
+                            height: symbol.size + ''
+                        },
+                        style: {
+                            fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
+                            stroke: 'rgba(' + symbol.outline.color[0] + ',' + symbol.outline.color[1] + ',' + symbol.outline.color[2] + ',' + symbol.outline.color[3]/255 + ')',
+                            strokeWidth: symbol.outline.width
+                        }
+                    });
+                }
             }
-            if(symbol.style === '') {
-                
+            /*else if(symbol.style === 'esriSMSDiamond') {
+                if(symbol.outline.style === 'esriSLSNull') {
+                    
+                }
+                else {
+                    
+                }
+            }*/
+            else if(symbol.style === '') {
+                if(symbol.outline.style === 'esriSLSNull') {
+                    
+                }
+                else {
+                    
+                }
+            }
+            // Other SMSs -> Circle
+            else {
+                if(symbol.outline.style === 'esriSLSNull') {
+                    icon = L.vectorIcon({
+                        //className: 'my-vector-icon',
+                        svgHeight: (symbol.size + symbol.outline.width) * 2,
+                        svgWidth: (symbol.size + symbol.outline.width) * 2,
+                        type: 'circle',
+                        shape: {
+                            r: symbol.size + '',
+                            cx: symbol.size + symbol.outline.width,
+                            cy: symbol.size + symbol.outline.width
+                        },
+                        style: {
+                            fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
+                            //stroke: '',
+                            strokeWidth: 0
+                        }
+                    });
+                }
+                else {
+                    icon = L.vectorIcon({
+                        //className: 'my-vector-icon',
+                        svgHeight: (symbol.size + symbol.outline.width) * 2,
+                        svgWidth: (symbol.size + symbol.outline.width) * 2,
+                        type: 'circle',
+                        shape: {
+                            r: symbol.size + '',
+                            cx: symbol.size + symbol.outline.width,
+                            cy: symbol.size + symbol.outline.width
+                        },
+                        style: {
+                            fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
+                            stroke: 'rgba(' + symbol.outline.color[0] + ',' + symbol.outline.color[1] + ',' + symbol.outline.color[2] + ',' + symbol.outline.color[3]/255 + ')',
+                            strokeWidth: symbol.outline.width
+                        }
+                    });
+                }
             }
         }
         return icon;
+    },
+    
+    _pathSymbol: function(symbol) {
+        var style;
+        if(symbol.style === 'esriSLSSolid') {
+            style = {
+                color: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
+                weight: symbol.width
+            }
+        }
+        if(symbol.style === 'esriSFSSolid') {
+            style = {
+                fillColor: 'rgb(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ')',
+                fillOpacity: symbol.color[3]/255,
+                color: 'rgba(' + symbol.outline.color[0] + ',' + symbol.outline.color[1] + ',' + symbol.outline.color[2] + ',' + symbol.outline.color[3]/255 + ')',
+                weight: symbol.outline.width
+            }
+        }
+        return style;
+    },
+    
+    _generatePathStyle: function(renderer, properties) {
+        //console.log(renderer);
+        var style = {};
+        if(renderer.type === 'simple') {
+            style = this._pathSymbol(renderer.symbol);
+        }
+        if(renderer.type === 'uniqueValue') {
+            renderer.uniqueValueInfos.map(function(info) {
+                if(info.value === properties[renderer.field1]) { // field2, field3は後で考えよう
+                    style = this.webmap._pathSymbol(info.symbol);
+                }
+            });
+        }
+        if(renderer.type === 'classBreaks') {
+            renderer.classBreakInfos.map(function(info, i) {
+                var prevInfo;
+                if(i === 0) {
+                    prevInfo = renderer.minValue;
+                }
+                else {
+                    prevInfo = renderer.classBreakInfos[i-1].classMaxValue;
+                }
+                //console.log(info.classMaxValue, properties[renderer.field], prevInfo);
+                if(renderer.classBreakInfos.length === (i+1)) {
+                    if(info.classMaxValue >= properties[renderer.field] && prevInfo <= properties[renderer.field]) {
+                        style = this.webmap._pathSymbol(info.symbol);
+                    }
+                }
+                else {
+                    if(info.classMaxValue > properties[renderer.field] && prevInfo <= properties[renderer.field]) {
+                        style = this.webmap._pathSymbol(info.symbol);
+                    }
+                }
+            });
+        }
+        return style;
     },
     
     _generateIcon: function(renderer, properties) {
@@ -166,14 +324,22 @@ L.esri.WebMap = L.Class.extend({
             });
         }
         if(renderer.type === 'classBreaks') {
-            renderer.classBreakInfos.map(function(info) {
-                if(info.classMinValue !== undefined) {
-                    if(info.classMinValue <= properties[renderer.field] && info.classMaxValue > properties[renderer.field]) {
+            renderer.classBreakInfos.map(function(info, i) {
+                var prevInfo;
+                if(i === 0) {
+                    prevInfo = renderer.minValue;
+                }
+                else {
+                    prevInfo = renderer.classBreakInfos[i-1].classMaxValue;
+                }
+                //console.log(info.classMaxValue, properties[renderer.field], prevInfo);
+                if(renderer.classBreakInfos.length === (i+1)) {
+                    if(info.classMaxValue >= properties[renderer.field] && prevInfo <= properties[renderer.field]) {
                         icon = this.webmap._pointSymbol(info.symbol);
                     }
                 }
                 else {
-                    if(info.classMaxValue > properties[renderer.field]) {
+                    if(info.classMaxValue > properties[renderer.field] && prevInfo <= properties[renderer.field]) {
                         icon = this.webmap._pointSymbol(info.symbol);
                     }
                 }
@@ -181,9 +347,22 @@ L.esri.WebMap = L.Class.extend({
         }
         return icon;
     },
+    
+    _generateLabel: function(properties, labelingInfo) {
+        //console.log('generateLabels: ', properties, labelingInfo);
+        var r = /\[([^\]]*)\]/g;
+        var labelText = labelingInfo[0].labelExpression;
+        labelText = labelText.replace(r, function(s) {
+            var m = r.exec(s);
+            //console.log(m[1]);
+            //console.log(properties[m[1]]);
+            return properties[m[1]];
+        });
+        return labelText;
+    },
 
 	_generateEsriLayer: function(layer) {
-		console.log('generateEsriLayer: ', layer);
+		console.log('generateEsriLayer: ', layer.title, layer);
         
 		console.log(this.webmap);
 
@@ -197,46 +376,134 @@ L.esri.WebMap = L.Class.extend({
                 
                 var popupContent = this.webmap._createPopupContent(layer.featureCollection.layers[0].popupInfo, feature.attributes);
                 var icon = this.webmap._generateIcon(renderer, feature.attributes);
-                
                 var mercatorToLatlng = L.Projection.SphericalMercator.unproject(L.point(feature.geometry.x, feature.geometry.y));
-                features.push(L.marker(mercatorToLatlng, { icon: icon, opacity: layer.opacity }).bindPopup(popupContent));
+
+                var f = L.marker(mercatorToLatlng, { icon: icon, opacity: layer.opacity }).bindPopup(popupContent);
+                
+                if(layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo !== undefined) {
+                    var labelingInfo = layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo;
+                    var labelText = this.webmap._generateLabel(feature.attributes, labelingInfo);
+                    //f.bindLabel(labelText, { noHide: true }).showLabel();
+                }
+                
+                features.push(f);
             });
             
             var lyr = L.featureGroup(features);
             return lyr;
         }
-        if(layer.layerType === 'ArcGISFeatureLayer' && layer.layerDefinition.drawingInfo.renderer.type === 'heatmap') {
-			console.log('create HeatmapLayer');
-			var gradient = {};
-			layer.layerDefinition.drawingInfo.renderer.colorStops.map(function(stop) {
-				//gradient[stop.ratio] = 'rgba(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ',' + (stop.color[3]/255) + ')';
-				gradient[Math.round(stop.ratio*100)/100] = 'rgb(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ')';
-			});
-			console.log(gradient);
+		if(layer.layerType === 'ArcGISFeatureLayer' && layer.layerDefinition !== undefined) {
+            if(layer.layerDefinition.drawingInfo !== undefined){
+                if(layer.layerDefinition.drawingInfo.renderer.type === 'heatmap'){
+                    console.log('create HeatmapLayer');
+                    var gradient = {};
+                    layer.layerDefinition.drawingInfo.renderer.colorStops.map(function(stop) {
+                        //gradient[stop.ratio] = 'rgba(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ',' + (stop.color[3]/255) + ')';
+                        gradient[Math.round(stop.ratio*100)/100] = 'rgb(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ')';
+                    });
+                    //console.log(gradient);
 
-			var lyr = L.esri.Heat.heatmapFeatureLayer({
-				url: layer.url,
-				//blur: layer.layerDefinition.drawingInfo.renderer.blurRadius,
-				//max: layer.layerDefinition.drawingInfo.renderer.maxPixelIntensity,
-				gradient: gradient
-			});
-			return lyr;
+                    var lyr = L.esri.Heat.heatmapFeatureLayer({ // Esri Leaflet 2.0
+                    //var lyr = L.esri.heatmapFeatureLayer({ // Esri Leaflet 1.0
+                        url: layer.url,
+                        //blur: layer.layerDefinition.drawingInfo.renderer.blurRadius,
+                        //max: layer.layerDefinition.drawingInfo.renderer.maxPixelIntensity,
+                        gradient: gradient
+                    })
+                    return lyr;
+                }
+                else {
+                    console.log('create ArcGISFeatureLayer (with layerDefinition.drawingInfo)');
+                    var renderer = layer.layerDefinition.drawingInfo.renderer;
+                    var where = '1=1';
+                    if(layer.layerDefinition.definitionExpression !== undefined) {
+                        where = layer.layerDefinition.definitionExpression;
+                    }
+
+                    var lyr = L.esri.featureLayer({
+                        url: layer.url,
+                        where: where,
+                        pointToLayer: function (geojson, latlng) {
+                            //console.log(geojson);
+                            var popupContent = this.webmap._createPopupContent(layer.popupInfo, geojson.properties);
+                            var icon = this.webmap._generateIcon(renderer, geojson.properties);
+                            
+                            var f = L.marker(latlng, {
+                                icon: icon,
+                                opacity: layer.opacity
+                            });
+                                
+                            return f;
+                        },
+                        style: function (geojson) {
+                            var pathOptions;
+                            //console.log(geojson);
+                            if(geojson.geometry.type === 'LineString' || geojson.geometry.type === 'MultiLineString' || geojson.geometry.type === 'Polygon' || geojson.geometry.type === 'MultiPolygon') {
+                                pathOptions = this.webmap._generatePathStyle(renderer, geojson.properties);
+                            }
+                            else {
+                                //console.log(geojson);
+                            }
+                            
+                            return pathOptions;
+                        },
+                        onEachFeature: function (geojson, l) {
+                            if(layer.popupInfo !== undefined) {
+                                var popupContent = window.webmap._createPopupContent(layer.popupInfo, geojson.properties);
+                                l.bindPopup(popupContent);
+                            }
+                            if(layer.layerDefinition.drawingInfo.labelingInfo !== undefined) {
+                                var labelingInfo = layer.layerDefinition.drawingInfo.labelingInfo;
+                                var labelText = window.webmap._generateLabel(geojson.properties, labelingInfo);
+                                console.log(labelText);
+                                //l.bindLabel(labelText, { noHide: true }).showLabel();
+                            }
+                        }
+                    });
+                    return lyr;
+                }
+            }
+            else {
+                console.log('create ArcGISFeatureLayer (without layerDefinition.drawingInfo)');
+                var where = '1=1';
+                if(layer.layerDefinition.definitionExpression !== undefined) {
+                    where = layer.layerDefinition.definitionExpression;
+                }
+                
+                var lyr = L.esri.featureLayer({
+                    url: layer.url,
+                    where: where,
+                    onEachFeature: function (geojson, l) {
+                        if(layer.popupInfo !== undefined) {
+                            var popupContent = window.webmap._createPopupContent(layer.popupInfo, geojson.properties);
+                            l.bindPopup(popupContent);
+                        }
+                        if(layer.layerDefinition.drawingInfo.labelingInfo !== undefined) {
+                            var labelingInfo = layer.layerDefinition.drawingInfo.labelingInfo;
+                            var labelText = window.webmap._generateLabel(geojson.properties, labelingInfo);
+                            console.log(labelText);
+                            //l.bindLabel(labelText, { noHide: true }).showLabel();
+                        }
+                    }
+                });
+                return lyr;
+            }
 		}
 		if(layer.layerType === 'ArcGISFeatureLayer') {
 			console.log('create ArcGISFeatureLayer');
-            var renderer = layer.layerDefinition.drawingInfo.renderer;
-            //if()
-			var lyr = L.esri.featureLayer({
+            var lyr = L.esri.featureLayer({
                 url: layer.url,
                 pointToLayer: function (geojson, latlng) {
                 
                     var popupContent = this.webmap._createPopupContent(layer.popupInfo, geojson.properties);
-                    var icon = this.webmap._generateIcon(renderer, geojson.properties);
-                        
-                    return L.marker(latlng, {
-                        icon: icon,
+                    //var icon = this.webmap._generateIcon(renderer, geojson.properties);
+                    
+                    var f = L.marker(latlng, {
+                        //icon: icon,
                         opacity: layer.opacity
                     }).bindPopup(popupContent);
+                        
+                    return f;
                 }
             });
 			return lyr;
@@ -267,39 +534,6 @@ L.esri.WebMap = L.Class.extend({
 			return false;
 		}
 	}
-
-	/*getBasemapKey: function(title) {
-		if(title === '') {
-			return 'Streets';
-		}
-		if(title === 'Topographic') {
-			return 'Topographic';
-		}
-		if(title === '') {
-			return 'NationalGeographic';
-		}
-		if(title === '') {
-			return 'Oceans';
-		}
-		if(title === 'Light Gray Canvas') {
-			return 'Gray';
-		}
-		if(title === '') {
-			return 'DarkGray';
-		}
-		if(title === '') {
-			return 'Imagery';
-		}
-		if(title === '') {
-			return 'ShadedRelief';
-		}
-		if(title === 'Terrain with Labels') {
-			return 'Terrain';
-		}
-		if(title === '') {
-			return 'USATopo';
-		}
-	}*/
 
 });
 
