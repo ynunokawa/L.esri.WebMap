@@ -283,7 +283,7 @@ L.esri.WebMap = L.Class.extend({
             }
         }
         else if(visualVariables[0].type === 'colorInfo') {
-            console.log(visualVariables);
+            //console.log(visualVariables);
             // Color Ramp
         }
         return vvSymbol;
@@ -298,7 +298,7 @@ L.esri.WebMap = L.Class.extend({
         if(renderer.type === 'uniqueValue') {
             renderer.uniqueValueInfos.map(function(info) {
                 if(info.value === properties[renderer.field1]) { // field2, field3は後で考えよう
-                    var symbol;
+                    var symbol = info.symbol;
                     if(renderer.visualVariables !== undefined) {
                         symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
                     }
@@ -309,6 +309,7 @@ L.esri.WebMap = L.Class.extend({
         if(renderer.type === 'classBreaks') {
             renderer.classBreakInfos.map(function(info, i) {
                 var prevInfo;
+                var symbol = info.symbol;
                 if(i === 0) {
                     prevInfo = renderer.minValue;
                 }
@@ -346,7 +347,7 @@ L.esri.WebMap = L.Class.extend({
         if(renderer.type === 'uniqueValue') {
             renderer.uniqueValueInfos.map(function(info) {
                 if(info.value === properties[renderer.field1]) { // field2, field3は後で考えよう
-                    var symbol;
+                    var symbol = info.symbol;
                     if(renderer.visualVariables !== undefined) {
                         symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
                     }
@@ -356,7 +357,8 @@ L.esri.WebMap = L.Class.extend({
         }
         if(renderer.type === 'classBreaks') {
             renderer.classBreakInfos.map(function(info, i) {
-                var prevInfo, symbol;
+                var prevInfo;
+                var symbol = info.symbol;
                 if(i === 0) {
                     prevInfo = renderer.minValue;
                 }
