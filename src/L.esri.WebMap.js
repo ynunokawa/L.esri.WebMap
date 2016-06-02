@@ -142,14 +142,152 @@ L.esri.WebMap = L.Class.extend({
                     });
                 }
             }
-            if(symbol.style === '') {
-                
+            else if(symbol.style === 'esriSMSSquare') {
+                if(symbol.outline.style === 'esriSLSNull') {
+                    icon = L.vectorIcon({
+                        //className: 'my-vector-icon',
+                        svgHeight: symbol.size + symbol.outline.width * 2 + 2,
+                        svgWidth: symbol.size + symbol.outline.width * 2 + 2,
+                        type: 'rect',
+                        shape: {
+                            x: '1',
+                            y: '1',
+                            width: symbol.size + '',
+                            height: symbol.size + ''
+                        },
+                        style: {
+                            fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
+                            //stroke: '',
+                            strokeWidth: 0
+                        }
+                    });
+                }
+                else {
+                    icon = L.vectorIcon({
+                        //className: 'my-vector-icon',
+                        svgHeight: symbol.size + symbol.outline.width * 2 + 2,
+                        svgWidth: symbol.size + symbol.outline.width * 2 + 2,
+                        type: 'rect',
+                        shape: {
+                            x: '1',
+                            y: '1',
+                            width: symbol.size + '',
+                            height: symbol.size + ''
+                        },
+                        style: {
+                            fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
+                            stroke: 'rgba(' + symbol.outline.color[0] + ',' + symbol.outline.color[1] + ',' + symbol.outline.color[2] + ',' + symbol.outline.color[3]/255 + ')',
+                            strokeWidth: symbol.outline.width
+                        }
+                    });
+                }
             }
-            if(symbol.style === '') {
-                
+            /*else if(symbol.style === 'esriSMSDiamond') {
+                if(symbol.outline.style === 'esriSLSNull') {
+                    
+                }
+                else {
+                    
+                }
+            }*/
+            else if(symbol.style === '') {
+                if(symbol.outline.style === 'esriSLSNull') {
+                    
+                }
+                else {
+                    
+                }
+            }
+            // Other SMSs -> Circle
+            else {
+                if(symbol.outline.style === 'esriSLSNull') {
+                    icon = L.vectorIcon({
+                        //className: 'my-vector-icon',
+                        svgHeight: (symbol.size + symbol.outline.width) * 2,
+                        svgWidth: (symbol.size + symbol.outline.width) * 2,
+                        type: 'circle',
+                        shape: {
+                            r: symbol.size + '',
+                            cx: symbol.size + symbol.outline.width,
+                            cy: symbol.size + symbol.outline.width
+                        },
+                        style: {
+                            fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
+                            //stroke: '',
+                            strokeWidth: 0
+                        }
+                    });
+                }
+                else {
+                    icon = L.vectorIcon({
+                        //className: 'my-vector-icon',
+                        svgHeight: (symbol.size + symbol.outline.width) * 2,
+                        svgWidth: (symbol.size + symbol.outline.width) * 2,
+                        type: 'circle',
+                        shape: {
+                            r: symbol.size + '',
+                            cx: symbol.size + symbol.outline.width,
+                            cy: symbol.size + symbol.outline.width
+                        },
+                        style: {
+                            fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
+                            stroke: 'rgba(' + symbol.outline.color[0] + ',' + symbol.outline.color[1] + ',' + symbol.outline.color[2] + ',' + symbol.outline.color[3]/255 + ')',
+                            strokeWidth: symbol.outline.width
+                        }
+                    });
+                }
             }
         }
         return icon;
+    },
+    
+    _pathSymbol: function(symbol) {
+        var style;
+        if(symbol.style === 'esriSLSSolid') {
+            style = {
+                color: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
+                weight: symbol.width
+            }
+        }
+        if(symbol.style === 'esriSFSSolid') {
+            style = {
+                fillColor: 'rgb(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ')',
+                fillOpacity: symbol.color[3]/255,
+                color: 'rgba(' + symbol.outline.color[0] + ',' + symbol.outline.color[1] + ',' + symbol.outline.color[2] + ',' + symbol.outline.color[3]/255 + ')',
+                weight: symbol.outline.width
+            }
+        }
+        return style;
+    },
+    
+    _generatePathStyle: function(renderer, properties) {
+        console.log(renderer);
+        var style = {};
+        if(renderer.type === 'simple') {
+            style = this._pathSymbol(renderer.symbol);
+        }
+        if(renderer.type === 'uniqueValue') {
+            renderer.uniqueValueInfos.map(function(info) {
+                if(info.value === properties[renderer.field1]) { // field2, field3は後で考えよう
+                    style = this.webmap._pathSymbol(info.symbol);
+                }
+            });
+        }
+        if(renderer.type === 'classBreaks') {
+            renderer.classBreakInfos.map(function(info) {
+                if(info.classMinValue !== undefined) {
+                    if(info.classMinValue <= properties[renderer.field] && info.classMaxValue > properties[renderer.field]) {
+                        style = this.webmap._pathSymbol(info.symbol);
+                    }
+                }
+                else {
+                    if(info.classMaxValue > properties[renderer.field]) {
+                        style = this.webmap._pathSymbol(info.symbol);
+                    }
+                }
+            });
+        }
+        return style;
     },
     
     _generateIcon: function(renderer, properties) {
@@ -226,58 +364,93 @@ L.esri.WebMap = L.Class.extend({
             var lyr = L.featureGroup(features);
             return lyr;
         }
-        if(layer.layerType === 'ArcGISFeatureLayer' && layer.layerDefinition.drawingInfo !== undefined) {
-            if(layer.layerDefinition.drawingInfo.renderer.type === 'heatmap'){
-                console.log('create HeatmapLayer');
-                var gradient = {};
-                layer.layerDefinition.drawingInfo.renderer.colorStops.map(function(stop) {
-                    //gradient[stop.ratio] = 'rgba(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ',' + (stop.color[3]/255) + ')';
-                    gradient[Math.round(stop.ratio*100)/100] = 'rgb(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ')';
-                });
-                //console.log(gradient);
-
-                var lyr = L.esri.Heat.heatmapFeatureLayer({ // Esri Leaflet 2.0
-                //var lyr = L.esri.heatmapFeatureLayer({ // Esri Leaflet 1.0
-                    url: layer.url,
-                    //blur: layer.layerDefinition.drawingInfo.renderer.blurRadius,
-                    //max: layer.layerDefinition.drawingInfo.renderer.maxPixelIntensity,
-                    gradient: gradient
-                })
-                return lyr;
-            }
-		}
 		if(layer.layerType === 'ArcGISFeatureLayer' && layer.layerDefinition !== undefined) {
             if(layer.layerDefinition.drawingInfo !== undefined){
-                console.log('create ArcGISFeatureLayer (with layerDefinition.drawingInfo)');
-                var renderer = layer.layerDefinition.drawingInfo.renderer;
-                var where = '1=1';
-                if(layer.layerDefinition.definitionExpression !== undefined) {
-                    where = layer.layerDefinition.definitionExpression;
-                }
+                if(layer.layerDefinition.drawingInfo.renderer.type === 'heatmap'){
+                    console.log('create HeatmapLayer');
+                    var gradient = {};
+                    layer.layerDefinition.drawingInfo.renderer.colorStops.map(function(stop) {
+                        //gradient[stop.ratio] = 'rgba(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ',' + (stop.color[3]/255) + ')';
+                        gradient[Math.round(stop.ratio*100)/100] = 'rgb(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ')';
+                    });
+                    //console.log(gradient);
 
-                var lyr = L.esri.featureLayer({
-                    url: layer.url,
-                    where: where,
-                    pointToLayer: function (geojson, latlng) {
-                    
-                        var popupContent = this.webmap._createPopupContent(layer.popupInfo, geojson.properties);
-                        var icon = this.webmap._generateIcon(renderer, geojson.properties);
-                        
-                        var f = L.marker(latlng, {
-                            icon: icon,
-                            opacity: layer.opacity
-                        }).bindPopup(popupContent);
-                        
-                        if(layer.layerDefinition.drawingInfo.labelingInfo !== undefined) {
-                            var labelingInfo = layer.layerDefinition.drawingInfo.labelingInfo;
-                            var labelText = this.webmap._generateLabel(geojson.properties, labelingInfo);
-                            //f.bindLabel(labelText, { noHide: true }).showLabel();
-                        }
-                            
-                        return f;
+                    var lyr = L.esri.Heat.heatmapFeatureLayer({ // Esri Leaflet 2.0
+                    //var lyr = L.esri.heatmapFeatureLayer({ // Esri Leaflet 1.0
+                        url: layer.url,
+                        //blur: layer.layerDefinition.drawingInfo.renderer.blurRadius,
+                        //max: layer.layerDefinition.drawingInfo.renderer.maxPixelIntensity,
+                        gradient: gradient
+                    })
+                    return lyr;
+                }
+                else {
+                    console.log('create ArcGISFeatureLayer (with layerDefinition.drawingInfo)');
+                    var renderer = layer.layerDefinition.drawingInfo.renderer;
+                    var where = '1=1';
+                    if(layer.layerDefinition.definitionExpression !== undefined) {
+                        where = layer.layerDefinition.definitionExpression;
                     }
-                });
-                return lyr;
+
+                    var lyr = L.esri.featureLayer({
+                        url: layer.url,
+                        where: where,
+                        pointToLayer: function (geojson, latlng) {
+                            //console.log(geojson);
+                            var popupContent = this.webmap._createPopupContent(layer.popupInfo, geojson.properties);
+                            var icon = this.webmap._generateIcon(renderer, geojson.properties);
+                            
+                            var f = L.marker(latlng, {
+                                icon: icon,
+                                opacity: layer.opacity
+                            });
+                                
+                            return f;
+                        },
+                        style: function (geojson) {
+                            var pathOptions;
+                            //console.log(geojson);
+                            if(geojson.geometry.type === 'LineString' || geojson.geometry.type === 'MultiLineString' || geojson.geometry.type === 'Polygon' || geojson.geometry.type === 'MultiPolygon') {
+                                pathOptions = this.webmap._generatePathStyle(renderer, geojson.properties);
+                            }
+                            else {
+                                //console.log(geojson);
+                            }
+                            
+                            return pathOptions;
+                        },
+                        onEachFeature: function (geojson, l) {
+                            //console.log(geojson, l);
+                            var f;
+                            
+                            if(geojson.geometry.type === 'Point') {
+                                var icon = window.webmap._generateIcon(renderer, geojson.properties);
+                                f = L.marker(geojson.geometry.coordinates);
+                            }
+                            else if(geojson.geometry.type === 'LineString' || geojson.geometry.type === 'MultiLineString') {
+                                f = L.polyline(geojson.geometry.coordinates);
+                            }
+                            else if(geojson.geometry.type === 'Polygon' || geojson.geometry.type === 'MultiPolygon') {
+                                f = L.polygon(geojson.geometry.coordinates);
+                            }
+                            else {
+                                console.log(geojson);
+                            }
+                            
+                            if(layer.popupInfo !== undefined) {
+                                var popupContent = window.webmap._createPopupContent(layer.popupInfo, geojson.properties);
+                                l.bindPopup(popupContent);
+                            }
+                            if(layer.layerDefinition.drawingInfo.labelingInfo !== undefined) {
+                                var labelingInfo = layer.layerDefinition.drawingInfo.labelingInfo;
+                                var labelText = window.webmap._generateLabel(geojson.properties, labelingInfo);
+                                console.log(labelText);
+                                //l.bindLabel(labelText, { noHide: true }).showLabel();
+                            }
+                        }
+                    });
+                    return lyr;
+                }
             }
             else {
                 console.log('create ArcGISFeatureLayer (without layerDefinition.drawingInfo)');
