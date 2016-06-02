@@ -64,8 +64,10 @@ L.esri.WebMap = L.Class.extend({
 				// Add Operational Layers
 				response.operationalLayers.map(function(layer) {
                     var lyr = generateEsriLayer(layer);
-                    this.webmap.layers.push(lyr);
-                    lyr.addTo(map);
+                    if(lyr !== undefined) {
+                        this.webmap.layers.push(lyr);
+                        lyr.addTo(map);
+                    }
 				});
 		  }
 		});
