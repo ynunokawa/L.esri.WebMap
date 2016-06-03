@@ -82,7 +82,10 @@ L.esri.WebMap = L.Class.extend({
     _createPopupContent: function(popupInfo, properties) {
         //console.log(popupInfo, properties);
         var r = /\{([^\]]*)\}/g;
-        var titleText = popupInfo.title;
+        var titleText = '';
+        if(popupInfo.title !== undefined) {
+            titleText = popupInfo.title;
+        }
         titleText = titleText.replace(r, function(s) {
             var m = r.exec(s);
             return properties[m[1]];
