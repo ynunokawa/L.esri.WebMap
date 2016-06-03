@@ -277,8 +277,53 @@ L.esri.WebMap = L.Class.extend({
     
     _calVisualVariables: function(symbol, visualVariables, properties) {
         var vvSymbol = symbol;
-        var value = properties[visualVariables[0].field];
-        if(visualVariables[0].type === 'sizeInfo') {
+        //var value = properties[visualVariables[0].field];
+        visualVariables.map(function (vv) {
+            var value = properties[vv.field];
+            if(vv.type === 'sizeInfo') {
+                var rate = (value - vv.minDataValue)/(vv.maxDataValue - vv.minDataValue);
+                var submitSize = (rate * (vv.maxSize - vv.minSize)) + vv.minSize;
+                vvSymbol.size = submitSize;
+                if(value === null) {
+                    vvSymbol.size = 6;
+                }
+            }
+            else if(vv.type === 'colorInfo') {
+                // Color Ramp
+                //console.log(symbol.color);
+                var stops = vv.stops;
+                console.log(vv.stops);
+                stops.map(function(stop, i) {
+                    //console.log('base color: ', stop.color);
+                    if(i === 0) {
+                        if(stop.value > value) {
+                            var submitColor = stop.color;
+                            vvSymbol.color = submitColor;
+                            //console.log('min: ', vvSymbol.color);
+                        }
+                    }
+                    else if(i === stops.length-1) {
+                        if(stop.value <= value) {
+                            var submitColor = stop.color;
+                            vvSymbol.color = submitColor;
+                            //console.log('max: ', vvSymbol.color);
+                        }
+                    }
+                    else {
+                        if(stop.value > value && stops[i-1].value <= value) {
+                            var submitColor = [];
+                            var rate = (value - stops[i-1].value)/(stop.value - stops[i-1].value);
+                            vvSymbol.color.map(function(color, j) {
+                                submitColor[j] = Math.round((rate * (stop.color[j] - stops[i-1].color[j])) + stops[i-1].color[j]);
+                            });
+                            vvSymbol.color = submitColor;
+                            //console.log(vvSymbol.color);
+                        }
+                    }
+                });
+            }
+        });
+        /*if(visualVariables[0].type === 'sizeInfo') {
             var rate = (value - visualVariables[0].minDataValue)/(visualVariables[0].maxDataValue - visualVariables[0].minDataValue);
             vvSymbol.size = (rate * (visualVariables[0].maxSize - visualVariables[0].minSize)) + visualVariables[0].minSize;
             if(value === null) {
@@ -306,7 +351,7 @@ L.esri.WebMap = L.Class.extend({
                     }
                 }
             });
-        }
+        }*/
         return vvSymbol;
     },
     
