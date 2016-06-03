@@ -21,13 +21,14 @@ L.esri.WebMap = L.Class.extend({
 		this._layoutOptions = {};
         
         this.layers = [];
+        this.title = '';
 
 		this._loadWebMapMetaData(webmapId);
 		this._loadWebMap(webmapId);
 	},
 
 	_loadWebMapMetaData: function(id) {
-        console.log(this);
+        //console.log(this);
 		var map = this._map;
 		var leafletLatlng = this.leafletLatlng;
 		var webmapMetaDataRequestUrl = 'https://www.arcgis.com/sharing/rest/content/items/' + id;
@@ -35,9 +36,9 @@ L.esri.WebMap = L.Class.extend({
 		  if(error){
 		    console.log(error);
 		  } else {
-		    console.log(response);
-				console.log('extent: ', response.extent);
-
+		    console.log('WebMap MetaData: ', response);
+				//console.log('extent: ', response.extent);
+                this.webmap.title = response.title;
 				map.fitBounds([leafletLatlng(response.extent[0]), leafletLatlng(response.extent[1])]);
 		  }
 		});
@@ -52,9 +53,9 @@ L.esri.WebMap = L.Class.extend({
 		  if(error){
 		    console.log(error);
 		  } else {
-		    console.log(response);
-				console.log('baseMap: ', response.baseMap);
-				console.log('operationalLayers: ', response.operationalLayers);
+		    console.log('WebMap: ', response);
+				//console.log('baseMap: ', response.baseMap);
+				//console.log('operationalLayers: ', response.operationalLayers);
 
 				// Add Basemap
 				response.baseMap.baseMapLayers.map(function(baseMapLayer) {
@@ -260,7 +261,7 @@ L.esri.WebMap = L.Class.extend({
         if(symbol.style === 'esriSLSSolid') {
             style = {
                 color: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
-                weight: symbol.width
+                weight: symbol.size
             }
         }
         if(symbol.style === 'esriSFSSolid') {
@@ -276,8 +277,53 @@ L.esri.WebMap = L.Class.extend({
     
     _calVisualVariables: function(symbol, visualVariables, properties) {
         var vvSymbol = symbol;
-        var value = properties[visualVariables[0].field];
-        if(visualVariables[0].type === 'sizeInfo') {
+        //var value = properties[visualVariables[0].field];
+        visualVariables.map(function (vv) {
+            var value = properties[vv.field];
+            if(vv.type === 'sizeInfo') {
+                var rate = (value - vv.minDataValue)/(vv.maxDataValue - vv.minDataValue);
+                var submitSize = (rate * (vv.maxSize - vv.minSize)) + vv.minSize;
+                vvSymbol.size = submitSize;
+                if(value === null) {
+                    vvSymbol.size = 6;
+                }
+            }
+            else if(vv.type === 'colorInfo') {
+                // Color Ramp
+                //console.log(symbol.color);
+                var stops = vv.stops;
+                //console.log(vv.stops);
+                stops.map(function(stop, i) {
+                    //console.log('base color: ', stop.color);
+                    if(i === 0) {
+                        if(stop.value > value) {
+                            var submitColor = stop.color;
+                            vvSymbol.color = submitColor;
+                            //console.log('min: ', vvSymbol.color);
+                        }
+                    }
+                    else if(i === stops.length-1) {
+                        if(stop.value <= value) {
+                            var submitColor = stop.color;
+                            vvSymbol.color = submitColor;
+                            //console.log('max: ', vvSymbol.color);
+                        }
+                    }
+                    else {
+                        if(stop.value > value && stops[i-1].value <= value) {
+                            var submitColor = [];
+                            var rate = (value - stops[i-1].value)/(stop.value - stops[i-1].value);
+                            vvSymbol.color.map(function(color, j) {
+                                submitColor[j] = Math.round((rate * (stop.color[j] - stops[i-1].color[j])) + stops[i-1].color[j]);
+                            });
+                            vvSymbol.color = submitColor;
+                            //console.log(vvSymbol.color);
+                        }
+                    }
+                });
+            }
+        });
+        /*if(visualVariables[0].type === 'sizeInfo') {
             var rate = (value - visualVariables[0].minDataValue)/(visualVariables[0].maxDataValue - visualVariables[0].minDataValue);
             vvSymbol.size = (rate * (visualVariables[0].maxSize - visualVariables[0].minSize)) + visualVariables[0].minSize;
             if(value === null) {
@@ -285,14 +331,31 @@ L.esri.WebMap = L.Class.extend({
             }
         }
         else if(visualVariables[0].type === 'colorInfo') {
-            //console.log(visualVariables);
             // Color Ramp
-        }
+            //console.log(symbol.color);
+            var stops = visualVariables[0].stops;
+            stops.map(function(stop, i) {
+                if(i === 0) {
+                    if(stop.value > value) {
+                        vvSymbol.color = stop.color;
+                        console.log(vvSymbol.color);
+                    }
+                }
+                else {
+                    if(stop.value > value && stops[i-1].value <= value) {
+                        var rate = (value - stops[i-1].value)/(stop.value - stops[i-1].value);
+                        vvSymbol.color.map(function(color, j) {
+                            vvSymbol.color[j] = Math.round((rate * (stop.color[j] - stops[i-1].color[j])) + stops[i-1].color[j]);
+                        });
+                        //console.log(vvSymbol.color);
+                    }
+                }
+            });
+        }*/
         return vvSymbol;
     },
     
     _generatePathStyle: function(renderer, properties) {
-        //console.log(renderer);
         var style = {};
         if(renderer.type === 'simple') {
             style = this._pathSymbol(renderer.symbol);
@@ -405,13 +468,13 @@ L.esri.WebMap = L.Class.extend({
 	_generateEsriLayer: function(layer) {
 		console.log('generateEsriLayer: ', layer.title, layer);
         
-		console.log(this.webmap);
+		//console.log(this.webmap);
 
 		if(layer.featureCollection !== undefined) {
             // Supporting only point geometry
             console.log('create FeatureCollection');
             var renderer = layer.featureCollection.layers[0].layerDefinition.drawingInfo.renderer;
-            console.log(renderer);
+            //console.log(renderer);
             var features = [];
             layer.featureCollection.layers[0].featureSet.features.map(function(feature) {
                 
@@ -443,7 +506,7 @@ L.esri.WebMap = L.Class.extend({
                         //gradient[Math.round(stop.ratio*100)/100] = 'rgb(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ')';
                         gradient[(Math.round(stop.ratio*100)/100+6)/7] = 'rgb(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ')';
                     });
-                    console.log(layer.layerDefinition.drawingInfo.renderer);
+                    //console.log(layer.layerDefinition.drawingInfo.renderer);
 
                     var lyr = L.esri.Heat.heatmapFeatureLayer({ // Esri Leaflet 2.0
                     //var lyr = L.esri.heatmapFeatureLayer({ // Esri Leaflet 1.0

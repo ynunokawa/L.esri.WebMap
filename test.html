@@ -55,11 +55,24 @@
 
 	//L.esri.basemapLayer("Gray").addTo(map);
 	//L.esri.basemapLayer("GrayLabels").addTo(map);
-    //var map = L.map("map");
+    var map = L.map("map");
 
-	var webmap = L.esri.webMap(webmapId, { map: L.map("map") });
+	var webmap = L.esri.webMap(webmapId, { map: map });
     
     //L.marker([35, 139]).bindLabel('Look revealing label!').addTo(map);
+    
+    // The below should be read after loading webmap!
+    var MapTitleControl = L.Control.extend({
+        options: {
+            position: 'topright'
+        },
+        onAdd: function (map) {
+            var container = L.DomUtil.create('div', 'my-custom-control');
+            container.innerHTML = webmap.title; // Add link to a webmap.
+            return container;
+        }
+    });
+    map.addControl(new MapTitleControl());
 </script>
 
 </body>
