@@ -4,7 +4,7 @@
  * (c) 2016 Yusuke Nunokawa
  */
 
-L.esri.WebMap = L.Class.extend({
+L.esri.WebMap = L.Evented.extend({
 	options: {
 		map: {}
 	},
@@ -19,6 +19,7 @@ L.esri.WebMap = L.Class.extend({
 		this._operationalLayers = {};
 		this._exportOptions = {};
 		this._layoutOptions = {};
+        this._loaded = false;
         
         this.layers = [];
         this.title = '';
@@ -39,6 +40,7 @@ L.esri.WebMap = L.Class.extend({
 		    console.log('WebMap MetaData: ', response);
 				//console.log('extent: ', response.extent);
                 this.webmap.title = response.title;
+                this.webmap.fire('metadataLoad');
 				map.fitBounds([leafletLatlng(response.extent[0]), leafletLatlng(response.extent[1])]);
 		  }
 		});
@@ -54,6 +56,8 @@ L.esri.WebMap = L.Class.extend({
 		    console.log(error);
 		  } else {
 		    console.log('WebMap: ', response);
+                this.webmap._loaded = true;
+                this.webmap.fire('load');
 				//console.log('baseMap: ', response.baseMap);
 				//console.log('operationalLayers: ', response.operationalLayers);
 

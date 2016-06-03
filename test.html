@@ -31,6 +31,16 @@
     #map { position: absolute; top:0; bottom:0; right:0; left:0; }
     .leaflet-popup-content { max-height: 250px; }
     .leaflet-popup-content-description { max-height: 200px; overflow: auto; }
+    .map-title-control {
+        background-color: #fff;
+        text-align: center;
+        text-decoration: none;
+        color: black;
+        padding: 10px;
+        border: 2px solid rgba(0,0,0,0.2);
+        border-radius: 4px;
+        font: bold 1em 'Lucida Console', 'Meiryo', Monaco, monospace;
+    }
   </style>
 </head>
 <body>
@@ -55,24 +65,24 @@
 
 	//L.esri.basemapLayer("Gray").addTo(map);
 	//L.esri.basemapLayer("GrayLabels").addTo(map);
-    var map = L.map("map");
 
-	var webmap = L.esri.webMap(webmapId, { map: map });
+	var webmap = L.esri.webMap(webmapId, { map: L.map("map") });
     
     //L.marker([35, 139]).bindLabel('Look revealing label!').addTo(map);
     
-    // The below should be read after loading webmap!
-    var MapTitleControl = L.Control.extend({
-        options: {
-            position: 'topright'
-        },
-        onAdd: function (map) {
-            var container = L.DomUtil.create('div', 'my-custom-control');
-            container.innerHTML = webmap.title; // Add link to a webmap.
-            return container;
-        }
+    webmap.on('metadataLoad', function() {
+        var MapTitleControl = L.Control.extend({
+            options: {
+                position: 'topright'
+            },
+            onAdd: function (map) {
+                var container = L.DomUtil.create('div', 'map-title-control');
+                container.innerHTML = '<a target="_brank" href="http://www.arcgis.com/home/webmap/viewer.html?webmap=' + webmapId + '">' + webmap.title + '</a>'; // Add link to a webmap.
+                return container;
+            }
+        });
+        webmap._map.addControl(new MapTitleControl());
     });
-    map.addControl(new MapTitleControl());
 </script>
 
 </body>
