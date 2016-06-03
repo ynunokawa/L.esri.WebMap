@@ -20,7 +20,7 @@ L.esri.WebMap = L.Evented.extend({
 		this._exportOptions = {};
 		this._layoutOptions = {};
         this._loaded = false;
-        
+
         this.layers = [];
         this.title = '';
 
@@ -82,7 +82,7 @@ L.esri.WebMap = L.Evented.extend({
 		var changedLatlng = [latlng[1], latlng[0]];
 		return changedLatlng;
 	},
-    
+
     _createPopupContent: function(popupInfo, properties) {
         //console.log(popupInfo, properties);
         var r = /\{([^\]]*)\}/g;
@@ -94,7 +94,7 @@ L.esri.WebMap = L.Evented.extend({
             var m = r.exec(s);
             return properties[m[1]];
         });
-        
+
         var content = '<div class="leaflet-popup-content-title"><h4>' + titleText + '</h4></div><div class="leaflet-popup-content-description">';
         if(popupInfo.fieldInfos.length > 0) {
             popupInfo.fieldInfos.map(function(info) {
@@ -107,11 +107,11 @@ L.esri.WebMap = L.Evented.extend({
             });
         }
         if(popupInfo.mediaInfos.length > 0) {
-            
+
         }
         return content;
     },
-    
+
     _pointSymbol: function(symbol) {
         var icon;
         if(symbol.type === 'esriPMS') {
@@ -206,18 +206,18 @@ L.esri.WebMap = L.Evented.extend({
             }
             /*else if(symbol.style === 'esriSMSDiamond') {
                 if(symbol.outline.style === 'esriSLSNull') {
-                    
+
                 }
                 else {
-                    
+
                 }
             }*/
             else if(symbol.style === '') {
                 if(symbol.outline.style === 'esriSLSNull') {
-                    
+
                 }
                 else {
-                    
+
                 }
             }
             // Other SMSs -> Circle
@@ -262,7 +262,7 @@ L.esri.WebMap = L.Evented.extend({
         }
         return icon;
     },
-    
+
     _pathSymbol: function(symbol) {
         var style;
         if(symbol.style === 'esriSLSSolid') {
@@ -281,7 +281,7 @@ L.esri.WebMap = L.Evented.extend({
         }
         return style;
     },
-    
+
     _calVisualVariables: function(symbol, visualVariables, properties) {
         var vvSymbol = symbol;
         //var value = properties[visualVariables[0].field];
@@ -332,7 +332,7 @@ L.esri.WebMap = L.Evented.extend({
         });
         return vvSymbol;
     },
-    
+
     _generatePathStyle: function(renderer, properties) {
         var style = {};
         if(renderer.type === 'simple') {
@@ -380,7 +380,7 @@ L.esri.WebMap = L.Evented.extend({
         }
         return style;
     },
-    
+
     _generateIcon: function(renderer, properties) {
         //console.log(renderer);
         var icon;
@@ -429,7 +429,7 @@ L.esri.WebMap = L.Evented.extend({
         }
         return icon;
     },
-    
+
     _generateLabel: function(properties, labelingInfo) {
         //console.log('generateLabels: ', properties, labelingInfo);
         var r = /\[([^\]]*)\]/g;
@@ -445,7 +445,7 @@ L.esri.WebMap = L.Evented.extend({
 
 	_generateEsriLayer: function(layer) {
 		console.log('generateEsriLayer: ', layer.title, layer);
-        
+
 		//console.log(this.webmap);
 
 		if(layer.featureCollection !== undefined) {
@@ -460,21 +460,32 @@ L.esri.WebMap = L.Evented.extend({
                 var mercatorToLatlng = L.Projection.SphericalMercator.unproject(L.point(feature.geometry.x, feature.geometry.y));
 
                 var f = L.marker(mercatorToLatlng, { icon: icon, opacity: layer.opacity });
-                
+
                 if(layer.featureCollection.layers[0].popupInfo !== undefined) {
                     var popupContent = this.webmap._createPopupContent(layer.featureCollection.layers[0].popupInfo, feature.attributes);
                     f.bindPopup(popupContent);
                 }
-                
+
                 if(layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo !== undefined) {
                     var labelingInfo = layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo;
                     var labelText = this.webmap._generateLabel(feature.attributes, labelingInfo);
-                    //f.bindLabel(labelText, { noHide: true }).showLabel();
+										// with Leaflet.label
+										//f.bindLabel(labelText, { noHide: true }).showLabel();
+
+										// without Leaflet.label
+										var label = L.marker(mercatorToLatlng, {
+											zIndexOffset: 1,
+								      icon: L.divIcon({
+								        iconSize: null,
+								        className: 'point-label',
+								        html: '<div>' + labelText + '</div>'
+								      })
+								    }).addTo(this.webmap._map);
                 }
-                
+
                 features.push(f);
             });
-            
+
             var lyr = L.featureGroup(features);
             return lyr;
         }
@@ -516,12 +527,12 @@ L.esri.WebMap = L.Evented.extend({
                             //console.log(geojson);
                             //var popupContent = this.webmap._createPopupContent(layer.popupInfo, geojson.properties);
                             var icon = this.webmap._generateIcon(renderer, geojson.properties);
-                            
+
                             var f = L.marker(latlng, {
                                 icon: icon,
                                 opacity: layer.opacity
                             });
-                                
+
                             return f;
                         },
                         style: function (geojson) {
@@ -533,7 +544,7 @@ L.esri.WebMap = L.Evented.extend({
                             else {
                                 //console.log(geojson);
                             }
-                            
+
                             return pathOptions;
                         },
                         onEachFeature: function (geojson, l) {
@@ -545,7 +556,29 @@ L.esri.WebMap = L.Evented.extend({
                                 var labelingInfo = layer.layerDefinition.drawingInfo.labelingInfo;
                                 var labelText = window.webmap._generateLabel(geojson.properties, labelingInfo);
                                 console.log(labelText);
-                                //l.bindLabel(labelText, { noHide: true }).showLabel();
+																// with Leaflet.label
+																//f.bindLabel(labelText, { noHide: true }).showLabel();
+
+																console.log(geojson);
+																console.log(l);
+																var labelPos;
+																var labelClassName;
+																if(l.feature.geometry.type == 'Point') {
+																	labelPos = l.feature.geometry.coordinates;
+																	labelClassName = 'point-label';
+																}
+																else {
+																	labelPos = l.getBounds().getCenter();
+																	labelClassName = 'path-label';
+																}
+																// without Leaflet.label
+																var label = L.marker(labelPos, {
+														      icon: L.divIcon({
+														        iconSize: null,
+														        className: labelClassName,
+														        html: '<div>' + labelText + '</div>'
+														      })
+														    }).addTo(window.webmap._map);
                             }
                         }
                     });
@@ -558,7 +591,7 @@ L.esri.WebMap = L.Evented.extend({
                 if(layer.layerDefinition.definitionExpression !== undefined) {
                     where = layer.layerDefinition.definitionExpression;
                 }
-                
+
                 var lyr = L.esri.featureLayer({
                     url: layer.url,
                     where: where,
@@ -571,7 +604,18 @@ L.esri.WebMap = L.Evented.extend({
                             var labelingInfo = layer.layerDefinition.drawingInfo.labelingInfo;
                             var labelText = window.webmap._generateLabel(geojson.properties, labelingInfo);
                             console.log(labelText);
-                            //l.bindLabel(labelText, { noHide: true }).showLabel();
+														// with Leaflet.label
+														//f.bindLabel(labelText, { noHide: true }).showLabel();
+
+														console.log(geojson);
+														// without Leaflet.label
+														/*var label = L.marker(geojson, {
+												      icon: L.divIcon({
+												        iconSize: null,
+												        className: 'label',
+												        html: '<div>' + labelText + '</div>'
+												      })
+												    }).addTo(this.webmap._map);*/
                         }
                     }
                 });
@@ -583,20 +627,20 @@ L.esri.WebMap = L.Evented.extend({
             var lyr = L.esri.featureLayer({
                 url: layer.url,
                 pointToLayer: function (geojson, latlng) {
-                
+
                     //var popupContent = this.webmap._createPopupContent(layer.popupInfo, geojson.properties);
                     //var icon = this.webmap._generateIcon(renderer, geojson.properties);
-                    
+
                     var f = L.marker(latlng, {
                         //icon: icon,
                         opacity: layer.opacity
                     });
-                    
+
                     if(layer.popupInfo !== undefined) {
                         var popupContent = window.webmap._createPopupContent(layer.popupInfo, geojson.properties);
                         f.bindPopup(popupContent);
                     }
-                        
+
                     return f;
                 }
             });

@@ -7,7 +7,7 @@
     <!-- Load Leaflet from CDN-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet.css" />
     <script src="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet-src.js"></script>
-    
+
     <!-- Load Leaflet Label from GitHub -->
     <script src="https://leaflet.github.io/Leaflet.label/leaflet.label.js"></script>
 
@@ -22,7 +22,7 @@
 
     <!-- Load Vector Icon from GitHub -->
     <script src="https://muxlab.github.io/Leaflet.VectorIcon/L.VectorIcon.js"></script>
-    
+
 	<!-- Load L.esri.WebMap -->
 	<script src="src/L.esri.WebMap.js"></script>
 
@@ -41,6 +41,35 @@
         border-radius: 4px;
         font: bold 1em 'Lucida Console', 'Meiryo', Monaco, monospace;
     }
+
+    /* label.css */
+    .point-label {
+      font-size: 1em;
+      font-weight: bold;
+      text-transform: uppercase;
+      text-align: center;
+      margin-top: -1em;
+      margin-left: -2em;
+      white-space: nowrap;
+    }
+    .path-label {
+      font-size: .8em;
+      font-weight: bold;
+      text-transform: uppercase;
+      text-align: center;
+      margin-top: -1em;
+      white-space: nowrap;
+    }
+    .point-label div {
+      position: relative;
+      left: -50%;
+      text-shadow: 1px 1px 0px #fff, -1px 1px 0px #fff, 1px -1px 0px #fff, -1px -1px 0px #fff;
+    }
+    .path-label div {
+      position: relative;
+      left: -50%;
+      text-shadow: 1px 1px 0px #fff, -1px 1px 0px #fff, 1px -1px 0px #fff, -1px -1px 0px #fff;
+    }
   </style>
 </head>
 <body>
@@ -54,7 +83,7 @@
 	//var webmapId = '0e189846df1146b9873266bc12b81a45'; //ArcGISImageServiceLayer
 	//var webmapId = 'de2482217dd643bca3e97df3e785c6e1'; //ArcGISMapServiceLayer
 	//var webmapId = 'ccee269e69c1404486172aa7ccc80f0a'; //ArcGISTiledMapServiceLayer
-    
+
     var urlParams = location.search.substring(1).split('&');
     for(var i=0; urlParams[i]; i++) {
         var param = urlParams[i].split('=');
@@ -67,9 +96,9 @@
 	//L.esri.basemapLayer("GrayLabels").addTo(map);
 
 	var webmap = L.esri.webMap(webmapId, { map: L.map("map") });
-    
+
     //L.marker([35, 139]).bindLabel('Look revealing label!').addTo(map);
-    
+
     webmap.on('metadataLoad', function() {
         var MapTitleControl = L.Control.extend({
             options: {
