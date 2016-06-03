@@ -261,7 +261,7 @@ L.esri.WebMap = L.Class.extend({
         if(symbol.style === 'esriSLSSolid') {
             style = {
                 color: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
-                weight: symbol.width
+                weight: symbol.size
             }
         }
         if(symbol.style === 'esriSFSSolid') {
@@ -292,7 +292,7 @@ L.esri.WebMap = L.Class.extend({
                 // Color Ramp
                 //console.log(symbol.color);
                 var stops = vv.stops;
-                console.log(vv.stops);
+                //console.log(vv.stops);
                 stops.map(function(stop, i) {
                     //console.log('base color: ', stop.color);
                     if(i === 0) {
