@@ -480,12 +480,16 @@ L.esri.WebMap = L.Class.extend({
             //console.log(renderer);
             var features = [];
             layer.featureCollection.layers[0].featureSet.features.map(function(feature) {
-                
-                var popupContent = this.webmap._createPopupContent(layer.featureCollection.layers[0].popupInfo, feature.attributes);
+
                 var icon = this.webmap._generateIcon(renderer, feature.attributes);
                 var mercatorToLatlng = L.Projection.SphericalMercator.unproject(L.point(feature.geometry.x, feature.geometry.y));
 
-                var f = L.marker(mercatorToLatlng, { icon: icon, opacity: layer.opacity }).bindPopup(popupContent);
+                var f = L.marker(mercatorToLatlng, { icon: icon, opacity: layer.opacity });
+                
+                if(layer.featureCollection.layers[0].popupInfo !== undefined) {
+                    var popupContent = this.webmap._createPopupContent(layer.featureCollection.layers[0].popupInfo, feature.attributes);
+                    f.bindPopup(popupContent);
+                }
                 
                 if(layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo !== undefined) {
                     var labelingInfo = layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo;
@@ -535,7 +539,7 @@ L.esri.WebMap = L.Class.extend({
                         where: where,
                         pointToLayer: function (geojson, latlng) {
                             //console.log(geojson);
-                            var popupContent = this.webmap._createPopupContent(layer.popupInfo, geojson.properties);
+                            //var popupContent = this.webmap._createPopupContent(layer.popupInfo, geojson.properties);
                             var icon = this.webmap._generateIcon(renderer, geojson.properties);
                             
                             var f = L.marker(latlng, {
@@ -605,13 +609,18 @@ L.esri.WebMap = L.Class.extend({
                 url: layer.url,
                 pointToLayer: function (geojson, latlng) {
                 
-                    var popupContent = this.webmap._createPopupContent(layer.popupInfo, geojson.properties);
+                    //var popupContent = this.webmap._createPopupContent(layer.popupInfo, geojson.properties);
                     //var icon = this.webmap._generateIcon(renderer, geojson.properties);
                     
                     var f = L.marker(latlng, {
                         //icon: icon,
                         opacity: layer.opacity
-                    }).bindPopup(popupContent);
+                    });
+                    
+                    if(layer.popupInfo !== undefined) {
+                        var popupContent = window.webmap._createPopupContent(layer.popupInfo, geojson.properties);
+                        f.bindPopup(popupContent);
+                    }
                         
                     return f;
                 }
