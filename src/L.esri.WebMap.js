@@ -268,7 +268,7 @@ L.esri.WebMap = L.Evented.extend({
         if(symbol.style === 'esriSLSSolid') {
             style = {
                 color: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
-                weight: symbol.size
+                weight: symbol.size || symbol.width
             }
         }
         if(symbol.style === 'esriSFSSolid') {
