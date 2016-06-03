@@ -1,10 +1,10 @@
 /*
  * L.esri.WebMap
- * 
- * 
+ * A leaflet plugin to display ArcGIS Web Map. https://github.com/ynunokawa/L.esri.WebMap
+ * (c) 2016 Yusuke Nunokawa
  */
 
-L.esri.WebMap = L.Class.extend({
+L.esri.WebMap = L.Evented.extend({
 	options: {
 		map: {}
 	},
@@ -19,6 +19,7 @@ L.esri.WebMap = L.Class.extend({
 		this._operationalLayers = {};
 		this._exportOptions = {};
 		this._layoutOptions = {};
+        this._loaded = false;
         
         this.layers = [];
         this.title = '';
@@ -39,6 +40,7 @@ L.esri.WebMap = L.Class.extend({
 		    console.log('WebMap MetaData: ', response);
 				//console.log('extent: ', response.extent);
                 this.webmap.title = response.title;
+                this.webmap.fire('metadataLoad');
 				map.fitBounds([leafletLatlng(response.extent[0]), leafletLatlng(response.extent[1])]);
 		  }
 		});
@@ -54,6 +56,8 @@ L.esri.WebMap = L.Class.extend({
 		    console.log(error);
 		  } else {
 		    console.log('WebMap: ', response);
+                this.webmap._loaded = true;
+                this.webmap.fire('load');
 				//console.log('baseMap: ', response.baseMap);
 				//console.log('operationalLayers: ', response.operationalLayers);
 
@@ -326,35 +330,6 @@ L.esri.WebMap = L.Class.extend({
                 });
             }
         });
-        /*if(visualVariables[0].type === 'sizeInfo') {
-            var rate = (value - visualVariables[0].minDataValue)/(visualVariables[0].maxDataValue - visualVariables[0].minDataValue);
-            vvSymbol.size = (rate * (visualVariables[0].maxSize - visualVariables[0].minSize)) + visualVariables[0].minSize;
-            if(value === null) {
-                vvSymbol.size = 6;
-            }
-        }
-        else if(visualVariables[0].type === 'colorInfo') {
-            // Color Ramp
-            //console.log(symbol.color);
-            var stops = visualVariables[0].stops;
-            stops.map(function(stop, i) {
-                if(i === 0) {
-                    if(stop.value > value) {
-                        vvSymbol.color = stop.color;
-                        console.log(vvSymbol.color);
-                    }
-                }
-                else {
-                    if(stop.value > value && stops[i-1].value <= value) {
-                        var rate = (value - stops[i-1].value)/(stop.value - stops[i-1].value);
-                        vvSymbol.color.map(function(color, j) {
-                            vvSymbol.color[j] = Math.round((rate * (stop.color[j] - stops[i-1].color[j])) + stops[i-1].color[j]);
-                        });
-                        //console.log(vvSymbol.color);
-                    }
-                }
-            });
-        }*/
         return vvSymbol;
     },
     
