@@ -4,6 +4,9 @@ Icon
 ._*
 .Spotlight-V100
 
+# Dev
+_*
+
 # Node
 node_modules
 npm-debug.log
