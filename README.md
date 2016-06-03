@@ -13,7 +13,7 @@ Web Map has an enormous spec. So, welcome your contributions to support fully!
 
 ## Demo
 
-You can see your web maps with URL parameter as the below.
+You can see your web maps (that are open to the public) with URL parameter as the below.
 
 `http://ynunokawa.github.io/L.esri.WebMap/test.html?webmap=[your webmap id]`
 
