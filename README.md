@@ -11,6 +11,15 @@ var webmap = L.esri.webMap(webmapId, { map: L.map('map') });
 
 Web Map has an enormous spec. So, welcome your contributions to support fully!
 
+## Demo
+
+You can see your web maps with URL parameter as the below.
+
+`http://ynunokawa.github.io/L.esri.WebMap/test.html?webmap=[your webmap id]`
+
+* [Various styles for a feature layer](http://ynunokawa.github.io/L.esri.WebMap/test.html?webmap=722f3d8ed5e94babbe78c8236a28b42e)
+* []()
+
 ## License
 Copyright 2016 Yusuke Nunokawa.
 
