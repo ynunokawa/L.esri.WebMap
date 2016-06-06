@@ -70,7 +70,7 @@ L.esri.WebMap = L.Evented.extend({
 				response.operationalLayers.map(function(layer) {
                     var lyr = generateEsriLayer(layer);
                     if(lyr !== undefined) {
-                        this.webmap.layers.push(lyr);
+                        //this.webmap.layers.push(lyr);
                         lyr.addTo(map);
                     }
 				});
@@ -488,6 +488,7 @@ L.esri.WebMap = L.Evented.extend({
             });
 
             var lyr = L.featureGroup(features);
+            this.webmap.layers.push({ type: 'FC', title: layer.title || '', layer: lyr });
             return lyr;
         }
 		if(layer.layerType === 'ArcGISFeatureLayer' && layer.layerDefinition !== undefined) {
@@ -511,6 +512,7 @@ L.esri.WebMap = L.Evented.extend({
                         radius: layer.layerDefinition.drawingInfo.renderer.blurRadius * 1.3,
                         gradient: gradient
                     })
+                    this.webmap.layers.push({ type: 'HL', title: layer.title || '', layer: lyr });
                     return lyr;
                 }
                 else {
@@ -583,6 +585,7 @@ L.esri.WebMap = L.Evented.extend({
                             }
                         }
                     });
+                    this.webmap.layers.push({ type: 'FL', title: layer.title || '', layer: lyr });
                     return lyr;
                 }
             }
@@ -603,6 +606,7 @@ L.esri.WebMap = L.Evented.extend({
                         }
                     }
                 });
+                this.webmap.layers.push({ type: 'FL', title: layer.title || '', layer: lyr });
                 return lyr;
             }
 		}
@@ -628,6 +632,7 @@ L.esri.WebMap = L.Evented.extend({
                     return f;
                 }
             });
+            this.webmap.layers.push({ type: 'FL', title: layer.title || '', layer: lyr });
 			return lyr;
 		}
 		if(layer.layerType === 'ArcGISImageServiceLayer') {
@@ -635,18 +640,21 @@ L.esri.WebMap = L.Evented.extend({
 			var lyr = L.esri.imageMapLayer({
 				url: layer.url
 			});
+            this.webmap.layers.push({ type: 'IML', title: layer.title || '', layer: lyr });
 			return lyr;
 		}
 		if(layer.layerType === 'ArcGISMapServiceLayer') {
 			var lyr = L.esri.dynamicMapLayer({
 				url: layer.url
 			});
+            this.webmap.layers.push({ type: 'DML', title: layer.title || '', layer: lyr });
 			return lyr;
 		}
 		if(layer.layerType === 'ArcGISTiledMapServiceLayer') {
 			var lyr = L.esri.tiledMapLayer({
 				url: layer.url
 			});
+            this.webmap.layers.push({ type: 'TML', title: layer.title || '', layer: lyr });
 			return lyr;
 		}
 		if(layer.layerType === '') {
