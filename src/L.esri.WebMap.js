@@ -394,6 +394,7 @@ L.esri.WebMap = L.Evented.extend({
                     if(renderer.visualVariables !== undefined) {
                         symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
                     }
+                    console.log(symbol);
                     icon = this.webmap._pointSymbol(symbol);
                 }
             });
@@ -599,23 +600,6 @@ L.esri.WebMap = L.Evented.extend({
                         if(layer.popupInfo !== undefined) {
                             var popupContent = window.webmap._createPopupContent(layer.popupInfo, geojson.properties);
                             l.bindPopup(popupContent);
-                        }
-                        if(layer.layerDefinition.drawingInfo.labelingInfo !== undefined) {
-                            var labelingInfo = layer.layerDefinition.drawingInfo.labelingInfo;
-                            var labelText = window.webmap._generateLabel(geojson.properties, labelingInfo);
-                            console.log(labelText);
-														// with Leaflet.label
-														//f.bindLabel(labelText, { noHide: true }).showLabel();
-
-														console.log(geojson);
-														// without Leaflet.label
-														/*var label = L.marker(geojson, {
-												      icon: L.divIcon({
-												        iconSize: null,
-												        className: 'label',
-												        html: '<div>' + labelText + '</div>'
-												      })
-												    }).addTo(this.webmap._map);*/
                         }
                     }
                 });
