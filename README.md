@@ -20,6 +20,10 @@ You can see your web maps (that are open to the public) with URL parameter as th
 * [Various styles for a feature layer](http://ynunokawa.github.io/L.esri.WebMap/index.html?webmap=722f3d8ed5e94babbe78c8236a28b42e)
 * []()
 
+## Limitations
+
+Please see [here](https://github.com/ynunokawa/L.esri.WebMap/wiki/Supported-Features).
+
 ## License
 Copyright 2016 Yusuke Nunokawa.
 

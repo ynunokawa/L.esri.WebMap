@@ -21,8 +21,10 @@ L.esri.WebMap = L.Evented.extend({
 		this._layoutOptions = {};
         this._loaded = false;
 
-        this.layers = [];
-        this.title = '';
+        this.layers = []; // Check the layer types here -> https://github.com/ynunokawa/L.esri.WebMap/wiki/Layer-types
+        this.title = ''; // Web Map Title
+        this.bookmarks = []; // Web Map Bookmarks -> [{ name: 'Bookmark name', bounds: <L.latLngBounds> }]
+        this.portalItem = {}; // Web Map Metadata
 
 		this._loadWebMapMetaData(webmapId);
 		this._loadWebMap(webmapId);
@@ -39,6 +41,7 @@ L.esri.WebMap = L.Evented.extend({
 		  } else {
 		    console.log('WebMap MetaData: ', response);
 				//console.log('extent: ', response.extent);
+                this.webmap.portalItem = response;
                 this.webmap.title = response.title;
                 this.webmap.fire('metadataLoad');
 				map.fitBounds([leafletLatlng(response.extent[0]), leafletLatlng(response.extent[1])]);
@@ -61,14 +64,16 @@ L.esri.WebMap = L.Evented.extend({
 
 				// Add Basemap
 				response.baseMap.baseMapLayers.map(function(baseMapLayer) {
-					generateEsriLayer(baseMapLayer).addTo(map);
+					var lyr = generateEsriLayer(baseMapLayer).addTo(map);
+                    if(lyr !== undefined && baseMapLayer.visibility === true) {
+                        lyr.addTo(map);
+                    }
 				});
 
 				// Add Operational Layers
 				response.operationalLayers.map(function(layer) {
                     var lyr = generateEsriLayer(layer);
-                    if(lyr !== undefined) {
-                        //this.webmap.layers.push(lyr);
+                    if(lyr !== undefined && layer.visibility === true) {
                         lyr.addTo(map);
                     }
 				});
@@ -76,6 +81,15 @@ L.esri.WebMap = L.Evented.extend({
                 this.webmap._loaded = true;
                 this.webmap.fire('load');
 		  }
+          
+          if(response.bookmarks !== undefined && response.bookmarks.length > 0) {
+              response.bookmarks.map(function(bookmark) {
+                  var northEast = L.Projection.SphericalMercator.unproject(L.point(bookmark.extent.xmax, bookmark.extent.ymax));
+                  var southWest = L.Projection.SphericalMercator.unproject(L.point(bookmark.extent.xmin, bookmark.extent.ymin));
+                  var bounds = L.latLngBounds(southWest, northEast);
+                  this.webmap.bookmarks.push({ name: bookmark.name, bounds: bounds });
+              });
+          }
 		});
 	},
 
