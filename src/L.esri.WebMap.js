@@ -456,6 +456,7 @@ L.esri.WebMap = L.Evented.extend({
             var renderer = layer.featureCollection.layers[0].layerDefinition.drawingInfo.renderer;
             //console.log(renderer);
             var features = [];
+            var labels = [];
             layer.featureCollection.layers[0].featureSet.features.map(function(feature) {
 
                 var icon = this.webmap._generateIcon(renderer, feature.attributes);
@@ -482,13 +483,19 @@ L.esri.WebMap = L.Evented.extend({
 								        className: 'point-label',
 								        html: '<div>' + labelText + '</div>'
 								      })
-								    }).addTo(this.webmap._map);
+								    });
+                                    
+                                    labels.push(label);
                 }
 
                 features.push(f);
             });
 
             var lyr = L.featureGroup(features);
+            if(labels.length > 0) {
+                var labelsLayer = L.featureGroup(labels);
+                lyr = L.layerGroup([lyr, labelsLayer]);
+            }
             this.webmap.layers.push({ type: 'FC', title: layer.title || '', layer: lyr });
             return lyr;
         }
@@ -524,6 +531,8 @@ L.esri.WebMap = L.Evented.extend({
                         where = layer.layerDefinition.definitionExpression;
                     }
 
+                    var labels = [];
+                    var labelsLayer = L.featureGroup(labels);
                     var lyr = L.esri.featureLayer({
                         url: layer.url,
                         where: where,
@@ -602,10 +611,15 @@ L.esri.WebMap = L.Evented.extend({
                                                                         className: labelClassName,
                                                                         html: '<div>' + labelText + '</div>'
                                                                     })
-                                                                }).addTo(window.webmap._map);
+                                                                });
+                                                                
+                                                                labelsLayer.addLayer(label);
                             }
                         }
                     });
+                    
+                    lyr = L.layerGroup([lyr, labelsLayer]);
+                    
                     this.webmap.layers.push({ type: 'FL', title: layer.title || '', layer: lyr });
                     return lyr;
                 }
