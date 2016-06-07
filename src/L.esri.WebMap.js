@@ -460,6 +460,16 @@ L.esri.WebMap = L.Evented.extend({
         });
         return labelText;
     },
+    
+    _esriWTLUrlTemplateToLeaflet: function(url) {
+        var r = /\{([^\]]*)\}/g;
+        var newUrl = url;
+        newUrl = newUrl.replace(/\{level}/g, '{z}');
+        newUrl = newUrl.replace(/\{col}/g, '{x}');
+        newUrl = newUrl.replace(/\{row}/g, '{y}');
+        //console.log(newUrl);
+        return newUrl;
+    },
 
 	_generateEsriLayer: function(layer) {
 		console.log('generateEsriLayer: ', layer.title, layer);
@@ -715,8 +725,13 @@ L.esri.WebMap = L.Evented.extend({
             this.webmap.layers.push({ type: 'TL', title: layer.title || layer.id || '', layer: lyr });
 			return lyr;
 		}
-		else if(layer.layerType === '') {
-			return false;
+		else if(layer.layerType === 'WebTiledLayer') {
+            var lyrUrl = this.webmap._esriWTLUrlTemplateToLeaflet(layer.templateUrl);
+			var lyr = L.tileLayer(lyrUrl, {
+                attribution: layer.copyright
+            });
+            this.webmap.layers.push({ type: 'TL', title: layer.title || layer.id || '', layer: lyr });
+			return lyr;
 		}
 		else if(layer.layerType === '') {
 			return false;
