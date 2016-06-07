@@ -56,8 +56,6 @@ L.esri.WebMap = L.Evented.extend({
 		    console.log(error);
 		  } else {
 		    console.log('WebMap: ', response);
-                this.webmap._loaded = true;
-                this.webmap.fire('load');
 				//console.log('baseMap: ', response.baseMap);
 				//console.log('operationalLayers: ', response.operationalLayers);
 
@@ -74,6 +72,9 @@ L.esri.WebMap = L.Evented.extend({
                         lyr.addTo(map);
                     }
 				});
+                
+                this.webmap._loaded = true;
+                this.webmap.fire('load');
 		  }
 		});
 	},
@@ -455,6 +456,7 @@ L.esri.WebMap = L.Evented.extend({
             var renderer = layer.featureCollection.layers[0].layerDefinition.drawingInfo.renderer;
             //console.log(renderer);
             var features = [];
+            var labels = [];
             layer.featureCollection.layers[0].featureSet.features.map(function(feature) {
 
                 var icon = this.webmap._generateIcon(renderer, feature.attributes);
@@ -481,13 +483,19 @@ L.esri.WebMap = L.Evented.extend({
 								        className: 'point-label',
 								        html: '<div>' + labelText + '</div>'
 								      })
-								    }).addTo(this.webmap._map);
+								    });
+                                    
+                                    labels.push(label);
                 }
 
                 features.push(f);
             });
 
             var lyr = L.featureGroup(features);
+            if(labels.length > 0) {
+                var labelsLayer = L.featureGroup(labels);
+                lyr = L.layerGroup([lyr, labelsLayer]);
+            }
             this.webmap.layers.push({ type: 'FC', title: layer.title || '', layer: lyr });
             return lyr;
         }
@@ -523,6 +531,8 @@ L.esri.WebMap = L.Evented.extend({
                         where = layer.layerDefinition.definitionExpression;
                     }
 
+                    var labels = [];
+                    var labelsLayer = L.featureGroup(labels);
                     var lyr = L.esri.featureLayer({
                         url: layer.url,
                         where: where,
@@ -566,25 +576,50 @@ L.esri.WebMap = L.Evented.extend({
 																console.log(l);
 																var labelPos;
 																var labelClassName;
-																if(l.feature.geometry.type == 'Point') {
+																if(l.feature.geometry.type === 'Point') {
 																	labelPos = l.feature.geometry.coordinates;
 																	labelClassName = 'point-label';
 																}
+                                                                else if(l.feature.geometry.type === 'LineString') {
+                                                                    console.log(l.feature.geometry.coordinates);
+                                                                    var c = l.feature.geometry.coordinates;
+                                                                    var centralKey = Math.round(c.length/2);
+                                                                    console.log(c[centralKey]);
+                                                                    labelPos = c[centralKey].reverse();
+                                                                    labelClassName = 'path-label';
+                                                                }
+                                                                else if(l.feature.geometry.type === 'MultiLineString') {
+                                                                    console.log(l.feature.geometry.coordinates);
+                                                                    var c = l.feature.geometry.coordinates;
+                                                                    var centralKey = Math.round(c.length/2);
+                                                                    var c2 = c[centralKey];
+                                                                    var centralKey = Math.round(c2.length/2);
+                                                                    console.log(c2[centralKey]);
+                                                                    labelPos = c2[centralKey].reverse();
+                                                                    labelClassName = 'path-label';
+                                                                }
 																else {
 																	labelPos = l.getBounds().getCenter();
+                                                                    console.log(labelPos);
 																	labelClassName = 'path-label';
 																}
 																// without Leaflet.label
 																var label = L.marker(labelPos, {
-														      icon: L.divIcon({
-														        iconSize: null,
-														        className: labelClassName,
-														        html: '<div>' + labelText + '</div>'
-														      })
-														    }).addTo(window.webmap._map);
+                                                                    zIndexOffset: 1,
+                                                                    icon: L.divIcon({
+                                                                        iconSize: null,
+                                                                        className: labelClassName,
+                                                                        html: '<div>' + labelText + '</div>'
+                                                                    })
+                                                                });
+                                                                
+                                                                labelsLayer.addLayer(label);
                             }
                         }
                     });
+                    
+                    lyr = L.layerGroup([lyr, labelsLayer]);
+                    
                     this.webmap.layers.push({ type: 'FL', title: layer.title || '', layer: lyr });
                     return lyr;
                 }
