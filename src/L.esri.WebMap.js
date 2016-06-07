@@ -64,14 +64,16 @@ L.esri.WebMap = L.Evented.extend({
 
 				// Add Basemap
 				response.baseMap.baseMapLayers.map(function(baseMapLayer) {
-					generateEsriLayer(baseMapLayer).addTo(map);
+					var lyr = generateEsriLayer(baseMapLayer).addTo(map);
+                    if(lyr !== undefined && baseMapLayer.visibility === true) {
+                        lyr.addTo(map);
+                    }
 				});
 
 				// Add Operational Layers
 				response.operationalLayers.map(function(layer) {
                     var lyr = generateEsriLayer(layer);
-                    if(lyr !== undefined) {
-                        //this.webmap.layers.push(lyr);
+                    if(lyr !== undefined && layer.visibility === true) {
                         lyr.addTo(map);
                     }
 				});
