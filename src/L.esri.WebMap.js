@@ -56,8 +56,6 @@ L.esri.WebMap = L.Evented.extend({
 		    console.log(error);
 		  } else {
 		    console.log('WebMap: ', response);
-                this.webmap._loaded = true;
-                this.webmap.fire('load');
 				//console.log('baseMap: ', response.baseMap);
 				//console.log('operationalLayers: ', response.operationalLayers);
 
@@ -74,6 +72,9 @@ L.esri.WebMap = L.Evented.extend({
                         lyr.addTo(map);
                     }
 				});
+                
+                this.webmap._loaded = true;
+                this.webmap.fire('load');
 		  }
 		});
 	},
