@@ -15,9 +15,9 @@ Web Map has an enormous spec. So, welcome your contributions to support fully!
 
 You can see your web maps (that are open to the public) with URL parameter as the below.
 
-`http://ynunokawa.github.io/L.esri.WebMap/test.html?webmap=[your webmap id]`
+`http://ynunokawa.github.io/L.esri.WebMap/index.html?webmap=[your webmap id]`
 
-* [Various styles for a feature layer](http://ynunokawa.github.io/L.esri.WebMap/test.html?webmap=722f3d8ed5e94babbe78c8236a28b42e)
+* [Various styles for a feature layer](http://ynunokawa.github.io/L.esri.WebMap/index.html?webmap=722f3d8ed5e94babbe78c8236a28b42e)
 * []()
 
 ## License

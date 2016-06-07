@@ -1,0 +1,118 @@
+<html>
+<head>
+  <meta charset=utf-8 />
+  <title>Displaying Web Map</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <!-- Load Leaflet from CDN-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet-src.js"></script>
+
+    <!-- Load Leaflet Label from GitHub -->
+    <script src="https://leaflet.github.io/Leaflet.label/leaflet.label.js"></script>
+
+    <!-- Load Esri Leaflet from CDN -->
+    <script src="https://cdn.jsdelivr.net/leaflet.esri/2.0.0/esri-leaflet.js"></script>
+
+	<!-- Load Leaflet Heat from CDN -->
+	<script src="https://rawgit.com/Leaflet/Leaflet.heat/gh-pages/dist/leaflet-heat.js"></script>
+
+	<!-- Load Heatmap Feature Layer from CDN -->
+	<script src="https://cdn.jsdelivr.net/leaflet.esri.heatmap-feature-layer/2.0.0-beta.1/esri-leaflet-heatmap-feature-layer.js"></script>
+
+    <!-- Load Vector Icon from GitHub -->
+    <script src="https://muxlab.github.io/Leaflet.VectorIcon/L.VectorIcon.js"></script>
+
+	<!-- Load L.esri.WebMap -->
+	<script src="../src/L.esri.WebMap.js"></script>
+
+  <style>
+    body { margin:0; padding:0; }
+    #map { position: absolute; top:0; bottom:0; right:0; left:0; }
+    .leaflet-popup-content { max-height: 250px; }
+    .leaflet-popup-content-description { max-height: 200px; overflow: auto; }
+    .map-title-control {
+        background-color: #fff;
+        text-align: center;
+        text-decoration: none;
+        color: black;
+        padding: 10px;
+        border: 2px solid rgba(0,0,0,0.2);
+        border-radius: 4px;
+        font: bold 1em 'Lucida Console', 'Meiryo', Monaco, monospace;
+    }
+
+    /* label.css */
+    .point-label {
+      font-size: 1em;
+      font-weight: bold;
+      text-transform: uppercase;
+      text-align: center;
+      margin-top: -1em;
+      margin-left: -2em;
+      white-space: nowrap;
+    }
+    .path-label {
+      font-size: .8em;
+      font-weight: bold;
+      text-transform: uppercase;
+      text-align: center;
+      margin-top: -1em;
+      white-space: nowrap;
+    }
+    .point-label div {
+      position: relative;
+      left: -50%;
+      text-shadow: 1px 1px 0px #fff, -1px 1px 0px #fff, 1px -1px 0px #fff, -1px -1px 0px #fff;
+    }
+    .path-label div {
+      position: relative;
+      left: -50%;
+      text-shadow: 1px 1px 0px #fff, -1px 1px 0px #fff, 1px -1px 0px #fff, -1px -1px 0px #fff;
+    }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script>
+    var webmapId = '22c504d229f14c789c5b49ebff38b941'; //my goal
+
+	//var webmapId = 'f2e9b762544945f390ca4ac3671cfa72'; //ArcGISFeatureLayer
+	//var webmapId = '0e189846df1146b9873266bc12b81a45'; //ArcGISImageServiceLayer
+	//var webmapId = 'de2482217dd643bca3e97df3e785c6e1'; //ArcGISMapServiceLayer
+	//var webmapId = 'ccee269e69c1404486172aa7ccc80f0a'; //ArcGISTiledMapServiceLayer
+
+    var urlParams = location.search.substring(1).split('&');
+    for(var i=0; urlParams[i]; i++) {
+        var param = urlParams[i].split('=');
+        if(param[0] === 'webmap') {
+            webmapId = param[1]
+        }
+    }
+
+	//L.esri.basemapLayer("Gray").addTo(map);
+	//L.esri.basemapLayer("GrayLabels").addTo(map);
+
+	var webmap = L.esri.webMap(webmapId, { map: L.map("map") });
+
+    //L.marker([35, 139]).bindLabel('Look revealing label!').addTo(map);
+
+    webmap.on('metadataLoad', function() {
+        var MapTitleControl = L.Control.extend({
+            options: {
+                position: 'topright'
+            },
+            onAdd: function (map) {
+                var container = L.DomUtil.create('div', 'map-title-control');
+                container.innerHTML = '<a target="_brank" href="http://www.arcgis.com/home/webmap/viewer.html?webmap=' + webmapId + '">' + webmap.title + '</a>'; // Add link to a webmap.
+                return container;
+            }
+        });
+        webmap._map.addControl(new MapTitleControl());
+    });
+</script>
+
+</body>
+</html>
