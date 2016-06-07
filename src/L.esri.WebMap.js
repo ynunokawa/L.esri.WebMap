@@ -23,7 +23,7 @@ L.esri.WebMap = L.Evented.extend({
 
         this.layers = []; // Check the layer types here -> https://github.com/ynunokawa/L.esri.WebMap/wiki/Layer-types
         this.title = ''; // Web Map Title
-        this.bookmarks = []; // Web Map Bookmarks [<L.latLngBounds>]
+        this.bookmarks = []; // Web Map Bookmarks -> [{ name: 'Bookmark name', bounds: <L.latLngBounds> }]
         this.portalItem = {}; // Web Map Metadata
 
 		this._loadWebMapMetaData(webmapId);
@@ -85,7 +85,7 @@ L.esri.WebMap = L.Evented.extend({
                   var northEast = L.Projection.SphericalMercator.unproject(L.point(bookmark.extent.xmax, bookmark.extent.ymax));
                   var southWest = L.Projection.SphericalMercator.unproject(L.point(bookmark.extent.xmin, bookmark.extent.ymin));
                   var bounds = L.latLngBounds(southWest, northEast);
-                  this.webmap.bookmarks.push(bounds);
+                  this.webmap.bookmarks.push({ name: bookmark.name, bounds: bounds });
               });
           }
 		});
