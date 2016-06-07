@@ -672,6 +672,11 @@ L.esri.WebMap = L.Evented.extend({
                         }
                     }
                 });
+            
+                /*lyr.metadata(function(error, response) {
+                    console.log(error, response);
+                }, function(error) { console.log(error); });*/
+                
                 this.webmap.layers.push({ type: 'FL', title: layer.title || '', layer: lyr });
                 return lyr;
             }
@@ -698,6 +703,11 @@ L.esri.WebMap = L.Evented.extend({
                     return f;
                 }
             });
+            
+            /*lyr.metadata(function(error, response) {
+                console.log(error, response);
+            }, function(error) { console.log(error); });*/
+            
             this.webmap.layers.push({ type: 'FL', title: layer.title || '', layer: lyr });
 			return lyr;
 		}
