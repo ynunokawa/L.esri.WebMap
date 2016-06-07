@@ -22,7 +22,7 @@ You can see your web maps (that are open to the public) with URL parameter as th
 
 ## Limitations
 
-Please see [here](https://github.com/ynunokawa/L.esri.WebMap/wiki/Supported-Features#layer).
+Please see [here](https://github.com/ynunokawa/L.esri.WebMap/wiki/Supported-Features).
 
 ## License
 Copyright 2016 Yusuke Nunokawa.
