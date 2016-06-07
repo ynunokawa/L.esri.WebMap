@@ -132,8 +132,13 @@ L.esri.WebMap = L.Evented.extend({
     _pointSymbol: function(symbol) {
         var icon;
         if(symbol.type === 'esriPMS') {
+            var iconUrl = symbol.url;
+            if(symbol.imageData !== undefined) {
+                iconUrl = 'data:' + symbol.contentType + ';base64,' + symbol.imageData;
+            }
             icon = L.icon({
-                iconUrl: symbol.url,
+                //iconUrl: symbol.url,
+                iconUrl: iconUrl,
                 shadowUrl: '',
                 iconSize:     [symbol.height, symbol.width],
                 shadowSize:   [0, 0],
