@@ -515,7 +515,7 @@ L.esri.WebMap = L.Evented.extend({
             this.webmap.layers.push({ type: 'FC', title: layer.title || '', layer: lyr });
             return lyr;
         }
-		if(layer.layerType === 'ArcGISFeatureLayer' && layer.layerDefinition !== undefined) {
+		else if(layer.layerType === 'ArcGISFeatureLayer' && layer.layerDefinition !== undefined) {
             if(layer.layerDefinition.drawingInfo !== undefined){
                 if(layer.layerDefinition.drawingInfo.renderer.type === 'heatmap'){
                     console.log('create HeatmapLayer');
@@ -661,7 +661,7 @@ L.esri.WebMap = L.Evented.extend({
                 return lyr;
             }
 		}
-		if(layer.layerType === 'ArcGISFeatureLayer') {
+		else if(layer.layerType === 'ArcGISFeatureLayer') {
 			console.log('create ArcGISFeatureLayer');
             var lyr = L.esri.featureLayer({
                 url: layer.url,
@@ -686,7 +686,7 @@ L.esri.WebMap = L.Evented.extend({
             this.webmap.layers.push({ type: 'FL', title: layer.title || '', layer: lyr });
 			return lyr;
 		}
-		if(layer.layerType === 'ArcGISImageServiceLayer') {
+		else if(layer.layerType === 'ArcGISImageServiceLayer') {
 			console.log('create ArcGISImageServiceLayer');
 			var lyr = L.esri.imageMapLayer({
 				url: layer.url
@@ -694,26 +694,38 @@ L.esri.WebMap = L.Evented.extend({
             this.webmap.layers.push({ type: 'IML', title: layer.title || '', layer: lyr });
 			return lyr;
 		}
-		if(layer.layerType === 'ArcGISMapServiceLayer') {
+		else if(layer.layerType === 'ArcGISMapServiceLayer') {
 			var lyr = L.esri.dynamicMapLayer({
 				url: layer.url
 			});
             this.webmap.layers.push({ type: 'DML', title: layer.title || '', layer: lyr });
 			return lyr;
 		}
-		if(layer.layerType === 'ArcGISTiledMapServiceLayer') {
+		else if(layer.layerType === 'ArcGISTiledMapServiceLayer') {
 			var lyr = L.esri.tiledMapLayer({
 				url: layer.url
 			});
             this.webmap.layers.push({ type: 'TML', title: layer.title || '', layer: lyr });
 			return lyr;
 		}
-		if(layer.layerType === '') {
+		else if(layer.layerType === 'OpenStreetMap') {
+			var lyr = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            });
+            this.webmap.layers.push({ type: 'TL', title: layer.title || layer.id || '', layer: lyr });
+			return lyr;
+		}
+		else if(layer.layerType === '') {
 			return false;
 		}
-		if(layer.layerType === '') {
+		else if(layer.layerType === '') {
 			return false;
 		}
+        else {
+            var lyr = L.featureGroup([]);
+            console.log('Unsupported Layer: ', layer);
+			return lyr;
+        }
 	}
 
 });
