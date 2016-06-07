@@ -78,18 +78,20 @@ L.esri.WebMap = L.Evented.extend({
                     }
 				});
                 
+                // Add Bookmarks
+                if(response.bookmarks !== undefined && response.bookmarks.length > 0) {
+                    response.bookmarks.map(function(bookmark) {
+                        // Esri Extent Geometry to L.latLngBounds
+                        var northEast = L.Projection.SphericalMercator.unproject(L.point(bookmark.extent.xmax, bookmark.extent.ymax));
+                        var southWest = L.Projection.SphericalMercator.unproject(L.point(bookmark.extent.xmin, bookmark.extent.ymin));
+                        var bounds = L.latLngBounds(southWest, northEast);
+                        this.webmap.bookmarks.push({ name: bookmark.name, bounds: bounds });
+                    });
+                }
+                
                 this.webmap._loaded = true;
                 this.webmap.fire('load');
 		  }
-          
-          if(response.bookmarks !== undefined && response.bookmarks.length > 0) {
-              response.bookmarks.map(function(bookmark) {
-                  var northEast = L.Projection.SphericalMercator.unproject(L.point(bookmark.extent.xmax, bookmark.extent.ymax));
-                  var southWest = L.Projection.SphericalMercator.unproject(L.point(bookmark.extent.xmin, bookmark.extent.ymin));
-                  var bounds = L.latLngBounds(southWest, northEast);
-                  this.webmap.bookmarks.push({ name: bookmark.name, bounds: bounds });
-              });
-          }
 		});
 	},
 
