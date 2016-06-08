@@ -20,6 +20,7 @@ L.esri.WebMap = L.Evented.extend({
 		this._exportOptions = {};
 		this._layoutOptions = {};
         this._loaded = false;
+				this._metadataLoaded = false;
 
         this.layers = []; // Check the layer types here -> https://github.com/ynunokawa/L.esri.WebMap/wiki/Layer-types
         this.title = ''; // Web Map Title
@@ -33,6 +34,7 @@ L.esri.WebMap = L.Evented.extend({
 	_loadWebMapMetaData: function(id) {
         //console.log(this);
 		var map = this._map;
+		var webmap = this;
 		var leafletLatlng = this.leafletLatlng;
 		var webmapMetaDataRequestUrl = 'https://www.arcgis.com/sharing/rest/content/items/' + id;
 		L.esri.request(webmapMetaDataRequestUrl, {}, function(error, response){
@@ -41,10 +43,11 @@ L.esri.WebMap = L.Evented.extend({
 		  } else {
 		    console.log('WebMap MetaData: ', response);
 				//console.log('extent: ', response.extent);
-                this.webmap.portalItem = response;
-                this.webmap.title = response.title;
-                this.webmap.fire('metadataLoad');
+        webmap.portalItem = response;
+        webmap.title = response.title;
+        webmap.fire('metadataLoad');
 				map.fitBounds([leafletLatlng(response.extent[0]), leafletLatlng(response.extent[1])]);
+				webmap._metadataLoaded = true;
 		  }
 		});
 	},
@@ -64,20 +67,20 @@ L.esri.WebMap = L.Evented.extend({
 
 				// Add Basemap
 				response.baseMap.baseMapLayers.map(function(baseMapLayer) {
-					var lyr = generateEsriLayer(baseMapLayer).addTo(map);
+					var lyr = this._generateEsriLayer(baseMapLayer).addTo(map);
                     if(lyr !== undefined && baseMapLayer.visibility === true) {
                         lyr.addTo(map);
                     }
-				});
+				}.bind(this));
 
 				// Add Operational Layers
 				response.operationalLayers.map(function(layer) {
-                    var lyr = generateEsriLayer(layer);
+                    var lyr = this._generateEsriLayer(layer);
                     if(lyr !== undefined && layer.visibility === true) {
                         lyr.addTo(map);
                     }
-				});
-                
+				}.bind(this));
+
                 // Add Bookmarks
                 if(response.bookmarks !== undefined && response.bookmarks.length > 0) {
                     response.bookmarks.map(function(bookmark) {
@@ -85,14 +88,14 @@ L.esri.WebMap = L.Evented.extend({
                         var northEast = L.Projection.SphericalMercator.unproject(L.point(bookmark.extent.xmax, bookmark.extent.ymax));
                         var southWest = L.Projection.SphericalMercator.unproject(L.point(bookmark.extent.xmin, bookmark.extent.ymin));
                         var bounds = L.latLngBounds(southWest, northEast);
-                        this.webmap.bookmarks.push({ name: bookmark.name, bounds: bounds });
-                    });
+                        this.bookmarks.push({ name: bookmark.name, bounds: bounds });
+                    }.bind(this));
                 }
-                
-                this.webmap._loaded = true;
-                this.webmap.fire('load');
+
+                this._loaded = true;
+                this.fire('load');
 		  }
-		});
+		}.bind(this));
 	},
 
 	leafletLatlng: function(latlng) {
@@ -114,7 +117,7 @@ L.esri.WebMap = L.Evented.extend({
 
         var content = '<div class="leaflet-popup-content-title"><h4>' + titleText + '</h4></div><div class="leaflet-popup-content-description">';
         if(popupInfo.fieldInfos.length > 0) {
-            popupInfo.fieldInfos.map(function(info) {
+            popupInfo.fieldInfos.map(function(info, i) {
                 if(popupInfo.fieldInfos.length === i+1) {
                     content += '<div style="font-weight:bold;color:#999;margin-top:5px;">' + info.label + '</div> ' + properties[info.fieldName] + '</div>';
                 }
@@ -365,11 +368,11 @@ L.esri.WebMap = L.Evented.extend({
                 if(info.value === properties[renderer.field1]) { // field2, field3は後で考えよう
                     var symbol = info.symbol;
                     if(renderer.visualVariables !== undefined) {
-                        symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
+                        symbol = this._calVisualVariables(info.symbol, renderer.visualVariables, properties);
                     }
-                    style = this.webmap._pathSymbol(symbol);
+                    style = this._pathSymbol(symbol);
                 }
-            });
+            }.bind(this));
         }
         if(renderer.type === 'classBreaks') {
             renderer.classBreakInfos.map(function(info, i) {
@@ -385,20 +388,20 @@ L.esri.WebMap = L.Evented.extend({
                 if(renderer.classBreakInfos.length === (i+1)) {
                     if(info.classMaxValue >= properties[renderer.field] && prevInfo <= properties[renderer.field]) {
                         if(renderer.visualVariables !== undefined) {
-                            symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
+                            symbol = this._calVisualVariables(info.symbol, renderer.visualVariables, properties);
                         }
-                        style = this.webmap._pathSymbol(info.symbol);
+                        style = this._pathSymbol(info.symbol);
                     }
                 }
                 else {
                     if(info.classMaxValue > properties[renderer.field] && prevInfo <= properties[renderer.field]) {
                         if(renderer.visualVariables !== undefined) {
-                            symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
+                            symbol = this._calVisualVariables(info.symbol, renderer.visualVariables, properties);
                         }
-                        style = this.webmap._pathSymbol(info.symbol);
+                        style = this._pathSymbol(info.symbol);
                     }
                 }
-            });
+            }.bind(this));
         }
         return style;
     },
@@ -414,12 +417,12 @@ L.esri.WebMap = L.Evented.extend({
                 if(info.value === properties[renderer.field1]) { // field2, field3は後で考えよう
                     var symbol = info.symbol;
                     if(renderer.visualVariables !== undefined) {
-                        symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
+                        symbol = this._calVisualVariables(info.symbol, renderer.visualVariables, properties);
                     }
-                    console.log(symbol);
-                    icon = this.webmap._pointSymbol(symbol);
+                    //console.log(symbol);
+                    icon = this._pointSymbol(symbol);
                 }
-            });
+            }.bind(this));
         }
         if(renderer.type === 'classBreaks') {
             renderer.classBreakInfos.map(function(info, i) {
@@ -435,20 +438,20 @@ L.esri.WebMap = L.Evented.extend({
                 if(renderer.classBreakInfos.length === (i+1)) {
                     if(info.classMaxValue >= properties[renderer.field] && prevInfo <= properties[renderer.field]) {
                         if(renderer.visualVariables !== undefined) {
-                            symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
+                            symbol = this._calVisualVariables(info.symbol, renderer.visualVariables, properties);
                         }
-                        icon = this.webmap._pointSymbol(symbol);
+                        icon = this._pointSymbol(symbol);
                     }
                 }
                 else {
                     if(info.classMaxValue > properties[renderer.field] && prevInfo <= properties[renderer.field]) {
                         if(renderer.visualVariables !== undefined) {
-                            symbol = this.webmap._calVisualVariables(info.symbol, renderer.visualVariables, properties);
+                            symbol = this._calVisualVariables(info.symbol, renderer.visualVariables, properties);
                         }
-                        icon = this.webmap._pointSymbol(info.symbol);
+                        icon = this._pointSymbol(info.symbol);
                     }
                 }
-            });
+            }.bind(this));
         }
         return icon;
     },
@@ -465,7 +468,7 @@ L.esri.WebMap = L.Evented.extend({
         });
         return labelText;
     },
-    
+
     _esriWTLUrlTemplateToLeaflet: function(url) {
         var r = /\{([^\]]*)\}/g;
         var newUrl = url;
@@ -479,7 +482,7 @@ L.esri.WebMap = L.Evented.extend({
 	_generateEsriLayer: function(layer) {
 		console.log('generateEsriLayer: ', layer.title, layer);
 
-		//console.log(this.webmap);
+		//console.log(this);
 
 		if(layer.featureCollection !== undefined) {
             // Supporting only point geometry
@@ -490,19 +493,19 @@ L.esri.WebMap = L.Evented.extend({
             var labels = [];
             layer.featureCollection.layers[0].featureSet.features.map(function(feature) {
 
-                var icon = this.webmap._generateIcon(renderer, feature.attributes);
+                var icon = this._generateIcon(renderer, feature.attributes);
                 var mercatorToLatlng = L.Projection.SphericalMercator.unproject(L.point(feature.geometry.x, feature.geometry.y));
 
                 var f = L.marker(mercatorToLatlng, { icon: icon, opacity: layer.opacity });
 
                 if(layer.featureCollection.layers[0].popupInfo !== undefined) {
-                    var popupContent = this.webmap._createPopupContent(layer.featureCollection.layers[0].popupInfo, feature.attributes);
+                    var popupContent = this._createPopupContent(layer.featureCollection.layers[0].popupInfo, feature.attributes);
                     f.bindPopup(popupContent);
                 }
 
                 if(layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo !== undefined) {
                     var labelingInfo = layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo;
-                    var labelText = this.webmap._generateLabel(feature.attributes, labelingInfo);
+                    var labelText = this._generateLabel(feature.attributes, labelingInfo);
 										// with Leaflet.label
 										//f.bindLabel(labelText, { noHide: true }).showLabel();
 
@@ -515,19 +518,19 @@ L.esri.WebMap = L.Evented.extend({
 								        html: '<div>' + labelText + '</div>'
 								      })
 								    });
-                                    
+
                                     labels.push(label);
                 }
 
                 features.push(f);
-            });
+            }.bind(this));
 
             var lyr = L.featureGroup(features);
             if(labels.length > 0) {
                 var labelsLayer = L.featureGroup(labels);
                 lyr = L.layerGroup([lyr, labelsLayer]);
             }
-            this.webmap.layers.push({ type: 'FC', title: layer.title || '', layer: lyr });
+            this.layers.push({ type: 'FC', title: layer.title || '', layer: lyr });
             return lyr;
         }
 		else if(layer.layerType === 'ArcGISFeatureLayer' && layer.layerDefinition !== undefined) {
@@ -551,7 +554,7 @@ L.esri.WebMap = L.Evented.extend({
                         radius: layer.layerDefinition.drawingInfo.renderer.blurRadius * 1.3,
                         gradient: gradient
                     })
-                    this.webmap.layers.push({ type: 'HL', title: layer.title || '', layer: lyr });
+                    this.layers.push({ type: 'HL', title: layer.title || '', layer: lyr });
                     return lyr;
                 }
                 else {
@@ -569,8 +572,8 @@ L.esri.WebMap = L.Evented.extend({
                         where: where,
                         pointToLayer: function (geojson, latlng) {
                             //console.log(geojson);
-                            //var popupContent = this.webmap._createPopupContent(layer.popupInfo, geojson.properties);
-                            var icon = this.webmap._generateIcon(renderer, geojson.properties);
+                            //var popupContent = this._createPopupContent(layer.popupInfo, geojson.properties);
+                            var icon = this._generateIcon(renderer, geojson.properties);
 
                             var f = L.marker(latlng, {
                                 icon: icon,
@@ -578,33 +581,33 @@ L.esri.WebMap = L.Evented.extend({
                             });
 
                             return f;
-                        },
+                        }.bind(this),
                         style: function (geojson) {
                             var pathOptions;
                             //console.log(geojson);
                             if(geojson.geometry.type === 'LineString' || geojson.geometry.type === 'MultiLineString' || geojson.geometry.type === 'Polygon' || geojson.geometry.type === 'MultiPolygon') {
-                                pathOptions = this.webmap._generatePathStyle(renderer, geojson.properties);
+                                pathOptions = this._generatePathStyle(renderer, geojson.properties);
                             }
                             else {
                                 //console.log(geojson);
                             }
 
                             return pathOptions;
-                        },
+                        }.bind(this),
                         onEachFeature: function (geojson, l) {
                             if(layer.popupInfo !== undefined) {
-                                var popupContent = window.webmap._createPopupContent(layer.popupInfo, geojson.properties);
+                                var popupContent = this._createPopupContent(layer.popupInfo, geojson.properties);
                                 l.bindPopup(popupContent);
                             }
                             if(layer.layerDefinition.drawingInfo.labelingInfo !== undefined) {
                                 var labelingInfo = layer.layerDefinition.drawingInfo.labelingInfo;
                                 var labelText = window.webmap._generateLabel(geojson.properties, labelingInfo);
-                                console.log(labelText);
+                                //console.log(labelText);
                                 // with Leaflet.label
                                 //f.bindLabel(labelText, { noHide: true }).showLabel();
 
-                                console.log(geojson);
-                                console.log(l);
+                                //console.log(geojson);
+                                //console.log(l);
                                 var labelPos;
                                 var labelClassName;
                                 if(l.feature.geometry.type === 'Point') {
@@ -612,26 +615,26 @@ L.esri.WebMap = L.Evented.extend({
                                     labelClassName = 'point-label';
                                 }
                                 else if(l.feature.geometry.type === 'LineString') {
-                                    console.log(l.feature.geometry.coordinates);
+                                    //console.log(l.feature.geometry.coordinates);
                                     var c = l.feature.geometry.coordinates;
                                     var centralKey = Math.round(c.length/2);
-                                    console.log(c[centralKey]);
+                                    //console.log(c[centralKey]);
                                     labelPos = c[centralKey].reverse();
                                     labelClassName = 'path-label';
                                 }
                                 else if(l.feature.geometry.type === 'MultiLineString') {
-                                    console.log(l.feature.geometry.coordinates);
+                                    //.log(l.feature.geometry.coordinates);
                                     var c = l.feature.geometry.coordinates;
                                     var centralKey = Math.round(c.length/2);
                                     var c2 = c[centralKey];
                                     var centralKey = Math.round(c2.length/2);
-                                    console.log(c2[centralKey]);
+                                    //console.log(c2[centralKey]);
                                     labelPos = c2[centralKey].reverse();
                                     labelClassName = 'path-label';
                                 }
                                 else {
                                     labelPos = l.getBounds().getCenter();
-                                    console.log(labelPos);
+                                    //console.log(labelPos);
                                     labelClassName = 'path-label';
                                 }
                                 // without Leaflet.label
@@ -643,15 +646,15 @@ L.esri.WebMap = L.Evented.extend({
                                         html: '<div>' + labelText + '</div>'
                                     })
                                 });
-                                
+
                                 labelsLayer.addLayer(label);
                             }
-                        }
+                        }.bind(this)
                     });
-                    
+
                     lyr = L.layerGroup([lyr, labelsLayer]);
-                    
-                    this.webmap.layers.push({ type: 'FL', title: layer.title || '', layer: lyr });
+
+                    this.layers.push({ type: 'FL', title: layer.title || '', layer: lyr });
                     return lyr;
                 }
             }
@@ -672,12 +675,12 @@ L.esri.WebMap = L.Evented.extend({
                         }
                     }
                 });
-            
+
                 /*lyr.metadata(function(error, response) {
                     console.log(error, response);
                 }, function(error) { console.log(error); });*/
-                
-                this.webmap.layers.push({ type: 'FL', title: layer.title || '', layer: lyr });
+
+                this.layers.push({ type: 'FL', title: layer.title || '', layer: lyr });
                 return lyr;
             }
 		}
@@ -687,8 +690,8 @@ L.esri.WebMap = L.Evented.extend({
                 url: layer.url,
                 pointToLayer: function (geojson, latlng) {
 
-                    //var popupContent = this.webmap._createPopupContent(layer.popupInfo, geojson.properties);
-                    //var icon = this.webmap._generateIcon(renderer, geojson.properties);
+                    //var popupContent = this._createPopupContent(layer.popupInfo, geojson.properties);
+                    //var icon = this._generateIcon(renderer, geojson.properties);
 
                     var f = L.marker(latlng, {
                         //icon: icon,
@@ -703,12 +706,12 @@ L.esri.WebMap = L.Evented.extend({
                     return f;
                 }
             });
-            
+
             /*lyr.metadata(function(error, response) {
                 console.log(error, response);
             }, function(error) { console.log(error); });*/
-            
-            this.webmap.layers.push({ type: 'FL', title: layer.title || '', layer: lyr });
+
+            this.layers.push({ type: 'FL', title: layer.title || '', layer: lyr });
 			return lyr;
 		}
 		else if(layer.layerType === 'ArcGISImageServiceLayer') {
@@ -716,36 +719,36 @@ L.esri.WebMap = L.Evented.extend({
 			var lyr = L.esri.imageMapLayer({
 				url: layer.url
 			});
-            this.webmap.layers.push({ type: 'IML', title: layer.title || '', layer: lyr });
+            this.layers.push({ type: 'IML', title: layer.title || '', layer: lyr });
 			return lyr;
 		}
 		else if(layer.layerType === 'ArcGISMapServiceLayer') {
 			var lyr = L.esri.dynamicMapLayer({
 				url: layer.url
 			});
-            this.webmap.layers.push({ type: 'DML', title: layer.title || '', layer: lyr });
+            this.layers.push({ type: 'DML', title: layer.title || '', layer: lyr });
 			return lyr;
 		}
 		else if(layer.layerType === 'ArcGISTiledMapServiceLayer') {
 			var lyr = L.esri.tiledMapLayer({
 				url: layer.url
 			});
-            this.webmap.layers.push({ type: 'TML', title: layer.title || '', layer: lyr });
+            this.layers.push({ type: 'TML', title: layer.title || '', layer: lyr });
 			return lyr;
 		}
 		else if(layer.layerType === 'OpenStreetMap') {
 			var lyr = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             });
-            this.webmap.layers.push({ type: 'TL', title: layer.title || layer.id || '', layer: lyr });
+            this.layers.push({ type: 'TL', title: layer.title || layer.id || '', layer: lyr });
 			return lyr;
 		}
 		else if(layer.layerType === 'WebTiledLayer') {
-            var lyrUrl = this.webmap._esriWTLUrlTemplateToLeaflet(layer.templateUrl);
+            var lyrUrl = this._esriWTLUrlTemplateToLeaflet(layer.templateUrl);
 			var lyr = L.tileLayer(lyrUrl, {
                 attribution: layer.copyright
             });
-            this.webmap.layers.push({ type: 'TL', title: layer.title || layer.id || '', layer: lyr });
+            this.layers.push({ type: 'TL', title: layer.title || layer.id || '', layer: lyr });
 			return lyr;
 		}
 		else if(layer.layerType === '') {
