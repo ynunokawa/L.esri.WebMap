@@ -152,13 +152,13 @@ L.esri.WebMap = L.Evented.extend({
                 if(symbol.outline.style === 'esriSLSNull') {
                     icon = L.vectorIcon({
                         //className: 'my-vector-icon',
-                        svgHeight: (symbol.size/2 + symbol.outline.width) * 2,
-                        svgWidth: (symbol.size/2 + symbol.outline.width) * 2,
+                        svgHeight: ((symbol.size*4/3)/2 + symbol.outline.width) * 2,
+                        svgWidth: ((symbol.size*4/3)/2 + symbol.outline.width) * 2,
                         type: 'circle',
                         shape: {
-                            r: symbol.size/2 + '',
-                            cx: symbol.size/2 + symbol.outline.width,
-                            cy: symbol.size/2 + symbol.outline.width
+                            r: (symbol.size*4/3)/2 + '',
+                            cx: (symbol.size*4/3)/2 + symbol.outline.width,
+                            cy: (symbol.size*4/3)/2 + symbol.outline.width
                         },
                         style: {
                             fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
@@ -170,13 +170,13 @@ L.esri.WebMap = L.Evented.extend({
                 else {
                     icon = L.vectorIcon({
                         //className: 'my-vector-icon',
-                        svgHeight: (symbol.size/2 + symbol.outline.width) * 2,
-                        svgWidth: (symbol.size/2 + symbol.outline.width) * 2,
+                        svgHeight: ((symbol.size*4/3)/2 + symbol.outline.width) * 2,
+                        svgWidth: ((symbol.size*4/3)/2 + symbol.outline.width) * 2,
                         type: 'circle',
                         shape: {
-                            r: symbol.size/2 + '',
-                            cx: symbol.size/2 + symbol.outline.width,
-                            cy: symbol.size/2 + symbol.outline.width
+                            r: (symbol.size*4/3)/2 + '',
+                            cx: (symbol.size*4/3)/2 + symbol.outline.width,
+                            cy: (symbol.size*4/3)/2 + symbol.outline.width
                         },
                         style: {
                             fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
@@ -190,14 +190,14 @@ L.esri.WebMap = L.Evented.extend({
                 if(symbol.outline.style === 'esriSLSNull') {
                     icon = L.vectorIcon({
                         //className: 'my-vector-icon',
-                        svgHeight: symbol.size + symbol.outline.width * 2 + 2,
-                        svgWidth: symbol.size + symbol.outline.width * 2 + 2,
+                        svgHeight: (symbol.size*4/3) + symbol.outline.width * 2 + 2,
+                        svgWidth: (symbol.size*4/3) + symbol.outline.width * 2 + 2,
                         type: 'rect',
                         shape: {
                             x: '1',
                             y: '1',
-                            width: symbol.size + '',
-                            height: symbol.size + ''
+                            width: (symbol.size*4/3) + '',
+                            height: (symbol.size*4/3) + ''
                         },
                         style: {
                             fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
@@ -209,14 +209,14 @@ L.esri.WebMap = L.Evented.extend({
                 else {
                     icon = L.vectorIcon({
                         //className: 'my-vector-icon',
-                        svgHeight: symbol.size + symbol.outline.width * 2 + 2,
-                        svgWidth: symbol.size + symbol.outline.width * 2 + 2,
+                        svgHeight: (symbol.size*4/3) + symbol.outline.width * 2 + 2,
+                        svgWidth: (symbol.size*4/3) + symbol.outline.width * 2 + 2,
                         type: 'rect',
                         shape: {
                             x: '1',
                             y: '1',
-                            width: symbol.size + '',
-                            height: symbol.size + ''
+                            width: (symbol.size*4/3) + '',
+                            height: (symbol.size*4/3) + ''
                         },
                         style: {
                             fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
@@ -247,13 +247,13 @@ L.esri.WebMap = L.Evented.extend({
                 if(symbol.outline.style === 'esriSLSNull') {
                     icon = L.vectorIcon({
                         //className: 'my-vector-icon',
-                        svgHeight: (symbol.size + symbol.outline.width) * 2,
-                        svgWidth: (symbol.size + symbol.outline.width) * 2,
+                        svgHeight: ((symbol.size*4/3) + symbol.outline.width) * 2,
+                        svgWidth: ((symbol.size*4/3) + symbol.outline.width) * 2,
                         type: 'circle',
                         shape: {
-                            r: symbol.size + '',
-                            cx: symbol.size + symbol.outline.width,
-                            cy: symbol.size + symbol.outline.width
+                            r: (symbol.size*4/3) + '',
+                            cx: (symbol.size*4/3) + symbol.outline.width,
+                            cy: (symbol.size*4/3) + symbol.outline.width
                         },
                         style: {
                             fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
@@ -265,13 +265,13 @@ L.esri.WebMap = L.Evented.extend({
                 else {
                     icon = L.vectorIcon({
                         //className: 'my-vector-icon',
-                        svgHeight: (symbol.size + symbol.outline.width) * 2,
-                        svgWidth: (symbol.size + symbol.outline.width) * 2,
+                        svgHeight: ((symbol.size*4/3) + symbol.outline.width) * 2,
+                        svgWidth: ((symbol.size*4/3) + symbol.outline.width) * 2,
                         type: 'circle',
                         shape: {
-                            r: symbol.size + '',
-                            cx: symbol.size + symbol.outline.width,
-                            cy: symbol.size + symbol.outline.width
+                            r: (symbol.size*4/3) + '',
+                            cx: (symbol.size*4/3) + symbol.outline.width,
+                            cy: (symbol.size*4/3) + symbol.outline.width
                         },
                         style: {
                             fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
@@ -290,7 +290,7 @@ L.esri.WebMap = L.Evented.extend({
         if(symbol.style === 'esriSLSSolid') {
             style = {
                 color: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
-                weight: symbol.size || symbol.width
+                weight: (symbol.size*4/3) || symbol.width
             }
         }
         if(symbol.style === 'esriSFSSolid') {
