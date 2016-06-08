@@ -140,11 +140,11 @@ L.esri.WebMap = L.Evented.extend({
                 //iconUrl: symbol.url,
                 iconUrl: iconUrl,
                 shadowUrl: '',
-                iconSize:     [symbol.height, symbol.width],
+                iconSize:     [(symbol.height*4/3), (symbol.width*4/3)],
                 shadowSize:   [0, 0],
-                iconAnchor:   [symbol.height-16, symbol.width-1],
+                iconAnchor:   [(symbol.height*4/3)-16, (symbol.width*4/3)-1],
                 shadowAnchor: [0, 0],
-                popupAnchor:  [symbol.width/3, symbol.height*-1]
+                popupAnchor:  [(symbol.width*4/3)/3, (symbol.height*4/3)*-1]
             });
         }
         if(symbol.type === 'esriSMS') {
@@ -152,13 +152,13 @@ L.esri.WebMap = L.Evented.extend({
                 if(symbol.outline.style === 'esriSLSNull') {
                     icon = L.vectorIcon({
                         //className: 'my-vector-icon',
-                        svgHeight: (symbol.size/2 + symbol.outline.width) * 2,
-                        svgWidth: (symbol.size/2 + symbol.outline.width) * 2,
+                        svgHeight: ((symbol.size*4/3)/2 + (symbol.outline.width*4/3)) * 2,
+                        svgWidth: ((symbol.size*4/3)/2 + (symbol.outline.width*4/3)) * 2,
                         type: 'circle',
                         shape: {
-                            r: symbol.size/2 + '',
-                            cx: symbol.size/2 + symbol.outline.width,
-                            cy: symbol.size/2 + symbol.outline.width
+                            r: (symbol.size*4/3)/2 + '',
+                            cx: (symbol.size*4/3)/2 + (symbol.outline.width*4/3),
+                            cy: (symbol.size*4/3)/2 + (symbol.outline.width*4/3)
                         },
                         style: {
                             fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
@@ -170,18 +170,18 @@ L.esri.WebMap = L.Evented.extend({
                 else {
                     icon = L.vectorIcon({
                         //className: 'my-vector-icon',
-                        svgHeight: (symbol.size/2 + symbol.outline.width) * 2,
-                        svgWidth: (symbol.size/2 + symbol.outline.width) * 2,
+                        svgHeight: ((symbol.size*4/3)/2 + (symbol.outline.width*4/3)) * 2,
+                        svgWidth: ((symbol.size*4/3)/2 + (symbol.outline.width*4/3)) * 2,
                         type: 'circle',
                         shape: {
-                            r: symbol.size/2 + '',
-                            cx: symbol.size/2 + symbol.outline.width,
-                            cy: symbol.size/2 + symbol.outline.width
+                            r: (symbol.size*4/3)/2 + '',
+                            cx: (symbol.size*4/3)/2 + (symbol.outline.width*4/3),
+                            cy: (symbol.size*4/3)/2 + (symbol.outline.width*4/3)
                         },
                         style: {
                             fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
                             stroke: 'rgba(' + symbol.outline.color[0] + ',' + symbol.outline.color[1] + ',' + symbol.outline.color[2] + ',' + symbol.outline.color[3]/255 + ')',
-                            strokeWidth: symbol.outline.width
+                            strokeWidth: (symbol.outline.width*4/3)
                         }
                     });
                 }
@@ -190,14 +190,14 @@ L.esri.WebMap = L.Evented.extend({
                 if(symbol.outline.style === 'esriSLSNull') {
                     icon = L.vectorIcon({
                         //className: 'my-vector-icon',
-                        svgHeight: symbol.size + symbol.outline.width * 2 + 2,
-                        svgWidth: symbol.size + symbol.outline.width * 2 + 2,
+                        svgHeight: (symbol.size*4/3) + (symbol.outline.width*4/3) * 2 + 2,
+                        svgWidth: (symbol.size*4/3) + (symbol.outline.width*4/3) * 2 + 2,
                         type: 'rect',
                         shape: {
                             x: '1',
                             y: '1',
-                            width: symbol.size + '',
-                            height: symbol.size + ''
+                            width: (symbol.size*4/3) + '',
+                            height: (symbol.size*4/3) + ''
                         },
                         style: {
                             fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
@@ -209,19 +209,19 @@ L.esri.WebMap = L.Evented.extend({
                 else {
                     icon = L.vectorIcon({
                         //className: 'my-vector-icon',
-                        svgHeight: symbol.size + symbol.outline.width * 2 + 2,
-                        svgWidth: symbol.size + symbol.outline.width * 2 + 2,
+                        svgHeight: (symbol.size*4/3) + (symbol.outline.width*4/3) * 2 + 2,
+                        svgWidth: (symbol.size*4/3) + (symbol.outline.width*4/3) * 2 + 2,
                         type: 'rect',
                         shape: {
                             x: '1',
                             y: '1',
-                            width: symbol.size + '',
-                            height: symbol.size + ''
+                            width: (symbol.size*4/3) + '',
+                            height: (symbol.size*4/3) + ''
                         },
                         style: {
                             fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
                             stroke: 'rgba(' + symbol.outline.color[0] + ',' + symbol.outline.color[1] + ',' + symbol.outline.color[2] + ',' + symbol.outline.color[3]/255 + ')',
-                            strokeWidth: symbol.outline.width
+                            strokeWidth: (symbol.outline.width*4/3)
                         }
                     });
                 }
@@ -247,13 +247,13 @@ L.esri.WebMap = L.Evented.extend({
                 if(symbol.outline.style === 'esriSLSNull') {
                     icon = L.vectorIcon({
                         //className: 'my-vector-icon',
-                        svgHeight: (symbol.size + symbol.outline.width) * 2,
-                        svgWidth: (symbol.size + symbol.outline.width) * 2,
+                        svgHeight: ((symbol.size*4/3) + (symbol.outline.width*4/3)) * 2,
+                        svgWidth: ((symbol.size*4/3) + (symbol.outline.width*4/3)) * 2,
                         type: 'circle',
                         shape: {
-                            r: symbol.size + '',
-                            cx: symbol.size + symbol.outline.width,
-                            cy: symbol.size + symbol.outline.width
+                            r: (symbol.size*4/3) + '',
+                            cx: (symbol.size*4/3) + (symbol.outline.width*4/3),
+                            cy: (symbol.size*4/3) + (symbol.outline.width*4/3)
                         },
                         style: {
                             fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
@@ -265,18 +265,18 @@ L.esri.WebMap = L.Evented.extend({
                 else {
                     icon = L.vectorIcon({
                         //className: 'my-vector-icon',
-                        svgHeight: (symbol.size + symbol.outline.width) * 2,
-                        svgWidth: (symbol.size + symbol.outline.width) * 2,
+                        svgHeight: ((symbol.size*4/3) + (symbol.outline.width*4/3)) * 2,
+                        svgWidth: ((symbol.size*4/3) + (symbol.outline.width*4/3)) * 2,
                         type: 'circle',
                         shape: {
-                            r: symbol.size + '',
-                            cx: symbol.size + symbol.outline.width,
-                            cy: symbol.size + symbol.outline.width
+                            r: (symbol.size*4/3) + '',
+                            cx: (symbol.size*4/3) + (symbol.outline.width*4/3),
+                            cy: (symbol.size*4/3) + (symbol.outline.width*4/3)
                         },
                         style: {
                             fill: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
                             stroke: 'rgba(' + symbol.outline.color[0] + ',' + symbol.outline.color[1] + ',' + symbol.outline.color[2] + ',' + symbol.outline.color[3]/255 + ')',
-                            strokeWidth: symbol.outline.width
+                            strokeWidth: (symbol.outline.width*4/3)
                         }
                     });
                 }
@@ -290,7 +290,7 @@ L.esri.WebMap = L.Evented.extend({
         if(symbol.style === 'esriSLSSolid') {
             style = {
                 color: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
-                weight: symbol.size || symbol.width
+                weight: (symbol.size*4/3) || (symbol.width*4/3)
             }
         }
         if(symbol.style === 'esriSFSSolid') {
@@ -298,7 +298,7 @@ L.esri.WebMap = L.Evented.extend({
                 fillColor: 'rgb(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ')',
                 fillOpacity: symbol.color[3]/255,
                 color: 'rgba(' + symbol.outline.color[0] + ',' + symbol.outline.color[1] + ',' + symbol.outline.color[2] + ',' + symbol.outline.color[3]/255 + ')',
-                weight: symbol.outline.width
+                weight: (symbol.outline.width*4/3)
             }
         }
         return style;
@@ -600,51 +600,51 @@ L.esri.WebMap = L.Evented.extend({
                                 var labelingInfo = layer.layerDefinition.drawingInfo.labelingInfo;
                                 var labelText = window.webmap._generateLabel(geojson.properties, labelingInfo);
                                 console.log(labelText);
-																// with Leaflet.label
-																//f.bindLabel(labelText, { noHide: true }).showLabel();
+                                // with Leaflet.label
+                                //f.bindLabel(labelText, { noHide: true }).showLabel();
 
-																console.log(geojson);
-																console.log(l);
-																var labelPos;
-																var labelClassName;
-																if(l.feature.geometry.type === 'Point') {
-																	labelPos = l.feature.geometry.coordinates;
-																	labelClassName = 'point-label';
-																}
-                                                                else if(l.feature.geometry.type === 'LineString') {
-                                                                    console.log(l.feature.geometry.coordinates);
-                                                                    var c = l.feature.geometry.coordinates;
-                                                                    var centralKey = Math.round(c.length/2);
-                                                                    console.log(c[centralKey]);
-                                                                    labelPos = c[centralKey].reverse();
-                                                                    labelClassName = 'path-label';
-                                                                }
-                                                                else if(l.feature.geometry.type === 'MultiLineString') {
-                                                                    console.log(l.feature.geometry.coordinates);
-                                                                    var c = l.feature.geometry.coordinates;
-                                                                    var centralKey = Math.round(c.length/2);
-                                                                    var c2 = c[centralKey];
-                                                                    var centralKey = Math.round(c2.length/2);
-                                                                    console.log(c2[centralKey]);
-                                                                    labelPos = c2[centralKey].reverse();
-                                                                    labelClassName = 'path-label';
-                                                                }
-																else {
-																	labelPos = l.getBounds().getCenter();
-                                                                    console.log(labelPos);
-																	labelClassName = 'path-label';
-																}
-																// without Leaflet.label
-																var label = L.marker(labelPos, {
-                                                                    zIndexOffset: 1,
-                                                                    icon: L.divIcon({
-                                                                        iconSize: null,
-                                                                        className: labelClassName,
-                                                                        html: '<div>' + labelText + '</div>'
-                                                                    })
-                                                                });
-                                                                
-                                                                labelsLayer.addLayer(label);
+                                console.log(geojson);
+                                console.log(l);
+                                var labelPos;
+                                var labelClassName;
+                                if(l.feature.geometry.type === 'Point') {
+                                    labelPos = l.feature.geometry.coordinates;
+                                    labelClassName = 'point-label';
+                                }
+                                else if(l.feature.geometry.type === 'LineString') {
+                                    console.log(l.feature.geometry.coordinates);
+                                    var c = l.feature.geometry.coordinates;
+                                    var centralKey = Math.round(c.length/2);
+                                    console.log(c[centralKey]);
+                                    labelPos = c[centralKey].reverse();
+                                    labelClassName = 'path-label';
+                                }
+                                else if(l.feature.geometry.type === 'MultiLineString') {
+                                    console.log(l.feature.geometry.coordinates);
+                                    var c = l.feature.geometry.coordinates;
+                                    var centralKey = Math.round(c.length/2);
+                                    var c2 = c[centralKey];
+                                    var centralKey = Math.round(c2.length/2);
+                                    console.log(c2[centralKey]);
+                                    labelPos = c2[centralKey].reverse();
+                                    labelClassName = 'path-label';
+                                }
+                                else {
+                                    labelPos = l.getBounds().getCenter();
+                                    console.log(labelPos);
+                                    labelClassName = 'path-label';
+                                }
+                                // without Leaflet.label
+                                var label = L.marker(labelPos, {
+                                    zIndexOffset: 1,
+                                    icon: L.divIcon({
+                                        iconSize: null,
+                                        className: labelClassName,
+                                        html: '<div>' + labelText + '</div>'
+                                    })
+                                });
+                                
+                                labelsLayer.addLayer(label);
                             }
                         }
                     });
