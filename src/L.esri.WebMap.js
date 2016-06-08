@@ -140,11 +140,11 @@ L.esri.WebMap = L.Evented.extend({
                 //iconUrl: symbol.url,
                 iconUrl: iconUrl,
                 shadowUrl: '',
-                iconSize:     [symbol.height, symbol.width],
+                iconSize:     [(symbol.height*4/3), (symbol.width*4/3)],
                 shadowSize:   [0, 0],
-                iconAnchor:   [symbol.height-16, symbol.width-1],
+                iconAnchor:   [(symbol.height*4/3)-16, (symbol.width*4/3)-1],
                 shadowAnchor: [0, 0],
-                popupAnchor:  [symbol.width/3, symbol.height*-1]
+                popupAnchor:  [(symbol.width*4/3)/3, (symbol.height*4/3)*-1]
             });
         }
         if(symbol.type === 'esriSMS') {
@@ -290,7 +290,7 @@ L.esri.WebMap = L.Evented.extend({
         if(symbol.style === 'esriSLSSolid') {
             style = {
                 color: 'rgba(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ',' + symbol.color[3]/255 + ')',
-                weight: (symbol.size*4/3) || symbol.width
+                weight: (symbol.size*4/3) || (symbol.width*4/3)
             }
         }
         if(symbol.style === 'esriSFSSolid') {
