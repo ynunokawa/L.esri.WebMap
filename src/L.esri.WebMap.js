@@ -600,51 +600,51 @@ L.esri.WebMap = L.Evented.extend({
                                 var labelingInfo = layer.layerDefinition.drawingInfo.labelingInfo;
                                 var labelText = window.webmap._generateLabel(geojson.properties, labelingInfo);
                                 console.log(labelText);
-																// with Leaflet.label
-																//f.bindLabel(labelText, { noHide: true }).showLabel();
+                                // with Leaflet.label
+                                //f.bindLabel(labelText, { noHide: true }).showLabel();
 
-																console.log(geojson);
-																console.log(l);
-																var labelPos;
-																var labelClassName;
-																if(l.feature.geometry.type === 'Point') {
-																	labelPos = l.feature.geometry.coordinates;
-																	labelClassName = 'point-label';
-																}
-                                                                else if(l.feature.geometry.type === 'LineString') {
-                                                                    console.log(l.feature.geometry.coordinates);
-                                                                    var c = l.feature.geometry.coordinates;
-                                                                    var centralKey = Math.round(c.length/2);
-                                                                    console.log(c[centralKey]);
-                                                                    labelPos = c[centralKey].reverse();
-                                                                    labelClassName = 'path-label';
-                                                                }
-                                                                else if(l.feature.geometry.type === 'MultiLineString') {
-                                                                    console.log(l.feature.geometry.coordinates);
-                                                                    var c = l.feature.geometry.coordinates;
-                                                                    var centralKey = Math.round(c.length/2);
-                                                                    var c2 = c[centralKey];
-                                                                    var centralKey = Math.round(c2.length/2);
-                                                                    console.log(c2[centralKey]);
-                                                                    labelPos = c2[centralKey].reverse();
-                                                                    labelClassName = 'path-label';
-                                                                }
-																else {
-																	labelPos = l.getBounds().getCenter();
-                                                                    console.log(labelPos);
-																	labelClassName = 'path-label';
-																}
-																// without Leaflet.label
-																var label = L.marker(labelPos, {
-                                                                    zIndexOffset: 1,
-                                                                    icon: L.divIcon({
-                                                                        iconSize: null,
-                                                                        className: labelClassName,
-                                                                        html: '<div>' + labelText + '</div>'
-                                                                    })
-                                                                });
-                                                                
-                                                                labelsLayer.addLayer(label);
+                                console.log(geojson);
+                                console.log(l);
+                                var labelPos;
+                                var labelClassName;
+                                if(l.feature.geometry.type === 'Point') {
+                                    labelPos = l.feature.geometry.coordinates;
+                                    labelClassName = 'point-label';
+                                }
+                                else if(l.feature.geometry.type === 'LineString') {
+                                    console.log(l.feature.geometry.coordinates);
+                                    var c = l.feature.geometry.coordinates;
+                                    var centralKey = Math.round(c.length/2);
+                                    console.log(c[centralKey]);
+                                    labelPos = c[centralKey].reverse();
+                                    labelClassName = 'path-label';
+                                }
+                                else if(l.feature.geometry.type === 'MultiLineString') {
+                                    console.log(l.feature.geometry.coordinates);
+                                    var c = l.feature.geometry.coordinates;
+                                    var centralKey = Math.round(c.length/2);
+                                    var c2 = c[centralKey];
+                                    var centralKey = Math.round(c2.length/2);
+                                    console.log(c2[centralKey]);
+                                    labelPos = c2[centralKey].reverse();
+                                    labelClassName = 'path-label';
+                                }
+                                else {
+                                    labelPos = l.getBounds().getCenter();
+                                    console.log(labelPos);
+                                    labelClassName = 'path-label';
+                                }
+                                // without Leaflet.label
+                                var label = L.marker(labelPos, {
+                                    zIndexOffset: 1,
+                                    icon: L.divIcon({
+                                        iconSize: null,
+                                        className: labelClassName,
+                                        html: '<div>' + labelText + '</div>'
+                                    })
+                                });
+                                
+                                labelsLayer.addLayer(label);
                             }
                         }
                     });
