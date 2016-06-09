@@ -18,6 +18,7 @@ You can see your web maps (that are open to the public) with URL parameter as th
 `http://ynunokawa.github.io/L.esri.WebMap/index.html?webmap=[your webmap id]`
 
 * [Various styles for a feature layer](http://ynunokawa.github.io/L.esri.WebMap/index.html?webmap=722f3d8ed5e94babbe78c8236a28b42e)
+* [2 ArcGIS WebMaps in 1 leaflet map](http://ynunokawa.github.io/L.esri.WebMap/examples/two-in-one.html)
 * []()
 
 ## Limitations
