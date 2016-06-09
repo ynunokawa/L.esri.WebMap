@@ -73,7 +73,7 @@
     
     /* Map ID Form */
     #idFormContainer {
-        position: fixed;
+        position: relative;
         z-index: 999;
         top: 0;
         left: 0;
@@ -87,11 +87,14 @@
         display: none;
     }
     #forms {
-        position: fixed;
-        left: 50%;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin: auto;
+        height: 40%;
         width: 100%;
-        bottom: 50%;
-        margin:-1.5em 0 0 -50%;
         text-align: center;
     }
     .mapid-form {
@@ -165,10 +168,12 @@
     layer.addTo(map);
   
     document.getElementById('btn').addEventListener("click", function () {
-        checkMap.map(function(c) { c = false });
-        webmapId1 = document.getElementById('form1').value;
-        webmapId2 = document.getElementById('form2').value;
-        checkIds(webmapId1, webmapId2);
+        if(document.getElementById('form1').value !== '' && document.getElementById('form2').value !== '') {
+            checkMap.map(function(c) { c = false });
+            webmapId1 = document.getElementById('form1').value;
+            webmapId2 = document.getElementById('form2').value;
+            checkIds(webmapId1, webmapId2);
+        }
     });
     
     document.getElementById('form1').addEventListener("change", function () {
