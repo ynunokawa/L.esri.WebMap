@@ -7,7 +7,7 @@
 L.esri.WebMap = L.Evented.extend({
 	options: {
 		map: {},
-        token: ''
+        token: null
 	},
 
 	initialize: function(webmapId, options) {
@@ -22,7 +22,7 @@ L.esri.WebMap = L.Evented.extend({
 		this._exportOptions = {};
 		this._layoutOptions = {};
         this._loaded = false;
-				this._metadataLoaded = false;
+		this._metadataLoaded = false;
 
         this.layers = []; // Check the layer types here -> https://github.com/ynunokawa/L.esri.WebMap/wiki/Layer-types
         this.title = ''; // Web Map Title
@@ -35,6 +35,7 @@ L.esri.WebMap = L.Evented.extend({
 
 	_loadWebMapMetaData: function(id) {
         //console.log(this);
+        //console.log(this._token);
 		var map = this._map;
 		var webmap = this;
 		var leafletLatlng = this.leafletLatlng;

@@ -143,6 +143,10 @@
             map: map,
             token: token
         });
+        
+        webmap.on('load', function() {
+            map.removeLayer(layer);
+        });
 
         webmap.on('metadataLoad', function() {
             authPane.innerHTML = '<a target="_brank" href="http://www.arcgis.com/home/webmap/viewer.html?webmap=' + webmapId + '">' + webmap.title + '</a>'; // Add link to a webmap.
