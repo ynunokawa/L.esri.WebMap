@@ -601,7 +601,7 @@ L.esri.WebMap = L.Evented.extend({
                             }
                             if(layer.layerDefinition.drawingInfo.labelingInfo !== undefined) {
                                 var labelingInfo = layer.layerDefinition.drawingInfo.labelingInfo;
-                                var labelText = window.webmap._generateLabel(geojson.properties, labelingInfo);
+                                var labelText = this._generateLabel(geojson.properties, labelingInfo);
                                 //console.log(labelText);
                                 // with Leaflet.label
                                 //f.bindLabel(labelText, { noHide: true }).showLabel();
@@ -670,10 +670,10 @@ L.esri.WebMap = L.Evented.extend({
                     where: where,
                     onEachFeature: function (geojson, l) {
                         if(layer.popupInfo !== undefined) {
-                            var popupContent = window.webmap._createPopupContent(layer.popupInfo, geojson.properties);
+                            var popupContent = this._createPopupContent(layer.popupInfo, geojson.properties);
                             l.bindPopup(popupContent);
                         }
-                    }
+                    }.bind(this)
                 });
 
                 /*lyr.metadata(function(error, response) {
@@ -699,12 +699,12 @@ L.esri.WebMap = L.Evented.extend({
                     });
 
                     if(layer.popupInfo !== undefined) {
-                        var popupContent = window.webmap._createPopupContent(layer.popupInfo, geojson.properties);
+                        var popupContent = this._createPopupContent(layer.popupInfo, geojson.properties);
                         f.bindPopup(popupContent);
                     }
 
                     return f;
-                }
+                }.bind(this)
             });
 
             /*lyr.metadata(function(error, response) {
