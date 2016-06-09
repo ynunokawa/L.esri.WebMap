@@ -1,0 +1,315 @@
+<html>
+<head>
+  <meta charset=utf-8 />
+  <title>2 ArcGIS WebMaps in 1 leaflet map</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <!-- Load Leaflet from CDN-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet-src.js"></script>
+
+    <!-- Load Leaflet Label from GitHub -->
+    <script src="https://leaflet.github.io/Leaflet.label/leaflet.label.js"></script>
+
+    <!-- Load Esri Leaflet from CDN -->
+    <script src="https://cdn.jsdelivr.net/leaflet.esri/2.0.0/esri-leaflet.js"></script>
+
+	<!-- Load Leaflet Heat from CDN -->
+	<script src="https://rawgit.com/Leaflet/Leaflet.heat/gh-pages/dist/leaflet-heat.js"></script>
+
+	<!-- Load Heatmap Feature Layer from CDN -->
+	<script src="https://cdn.jsdelivr.net/leaflet.esri.heatmap-feature-layer/2.0.0-beta.1/esri-leaflet-heatmap-feature-layer.js"></script>
+
+    <!-- Load Vector Icon from GitHub -->
+    <script src="https://muxlab.github.io/Leaflet.VectorIcon/L.VectorIcon.js"></script>
+
+    <!-- Load L.esri.WebMap -->
+	<script src="../src/L.esri.WebMap.js"></script>
+
+  <style>
+    body { margin:0; padding:0; }
+    #map { position: absolute; top:0; bottom:0; right:0; left:0; z-index:1; }
+    .leaflet-popup-content { max-height: 250px; }
+    .leaflet-popup-content-description { max-height: 200px; overflow: auto; }
+    .map-title-control {
+        background-color: #fff;
+        text-align: center;
+        text-decoration: none;
+        color: black;
+        padding: 10px;
+        border: 2px solid rgba(0,0,0,0.2);
+        border-radius: 4px;
+        font-family: "Avenir LT W01 35 Light", "Century Gothic", "Meiryo", Helvetica, Arial, sans-serif;
+    }
+
+    /* label.css */
+    .point-label {
+      font-size: 1em;
+      font-weight: bold;
+      text-transform: uppercase;
+      text-align: center;
+      margin-top: -1em;
+      margin-left: -2em;
+      white-space: nowrap;
+    }
+    .path-label {
+      font-size: .8em;
+      font-weight: bold;
+      text-transform: uppercase;
+      text-align: center;
+      margin-top: -1em;
+      white-space: nowrap;
+    }
+    .point-label div {
+      position: relative;
+      left: -50%;
+      text-shadow: 1px 1px 0px #fff, -1px 1px 0px #fff, 1px -1px 0px #fff, -1px -1px 0px #fff;
+    }
+    .path-label div {
+      position: relative;
+      left: -50%;
+      text-shadow: 1px 1px 0px #fff, -1px 1px 0px #fff, 1px -1px 0px #fff, -1px -1px 0px #fff;
+    }
+    
+    /* Map ID Form */
+    #idFormContainer {
+        position: fixed;
+        z-index: 999;
+        top: 0;
+        left: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.7);
+        font-family: "Avenir LT W01 35 Light", "Century Gothic", "Meiryo", Helvetica, Arial, sans-serif;
+    }
+    .hide {
+        display: none;
+    }
+    #forms {
+        position: fixed;
+        left: 50%;
+        width: 100%;
+        bottom: 50%;
+        margin:-1.5em 0 0 -50%;
+        text-align: center;
+    }
+    .mapid-form {
+        height: 30px;
+        width: 60%;
+        margin: 15px;
+        padding: 5px;
+        font-family: "Avenir LT W01 35 Light", "Century Gothic", "Meiryo", Helvetica, Arial, sans-serif;
+        opacity: 0.8;
+    }
+    .disabled-id {
+        box-shadow: 0 0 7px red;
+	    border: 1px solid red;
+    }
+    .btn {
+        border: 0;
+        color: #fff;
+        background-color: #20b2aa;
+        font-weight: 700;
+        margin: 5px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.42857143;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        background-image: none;
+        transition: all 1s;
+        width: 30%;
+    }
+    .btn-enabled {
+        cursor: pointer;
+        height: 42px;
+        background-color: #55acee;
+    }
+    .btn-disabled {
+        height: 42px;
+        background-color: #ccc;
+    }
+    .btn-chatter:hover {
+        background-color: #55d2ee;
+    }
+  </style>
+</head>
+<body>
+
+<div id="idFormContainer">
+    <div id="forms">
+        <p>2 ArcGIS WebMaps in 1 leaflet map</p>
+        <input id="form1" class="mapid-form" type="form" placeholder="ID1" /><br>
+        <input id="form2" class="mapid-form" type="form" placeholder="ID2" /><br>
+        <button id="btn" class="btn btn-disabled">Get maps!</button>
+    </div>
+</div>
+<div id="map"></div>
+
+<script>
+    var mapsLoaded = false;
+    var metadataLoaded = false;
+    var checkMap = [false, false];
+    var forms = document.querySelectorAll(".mapid-form");
+
+    var webmap1, webmap2;
+    var webmapId1 = '';
+    var webmapId2 = '';
+
+    var map = L.map('map').setView([35, 139], 5);
+    var layer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    });
+    layer.addTo(map);
+  
+    document.getElementById('btn').addEventListener("click", function () {
+        checkMap.map(function(c) { c = false });
+        webmapId1 = document.getElementById('form1').value;
+        webmapId2 = document.getElementById('form2').value;
+        checkIds(webmapId1, webmapId2);
+    });
+    
+    document.getElementById('form1').addEventListener("change", function () {
+        forms[0].className = 'mapid-form';
+        forms[1].className = 'mapid-form';
+        if(document.getElementById('form1').value !== '' && document.getElementById('form2').value !== '') {
+            document.getElementById('btn').className = 'btn btn-enabled';
+        }
+        else {
+            document.getElementById('btn').className = 'btn btn-disabled';
+        }
+    });
+    
+    document.getElementById('form2').addEventListener("change", function () {
+        forms[0].className = 'mapid-form';
+        forms[1].className = 'mapid-form';
+        if(document.getElementById('form1').value !== '' && document.getElementById('form2').value !== '') {
+            document.getElementById('btn').className = 'btn btn-enabled';
+        }
+        else {
+            document.getElementById('btn').className = 'btn btn-disabled';
+        }
+    });
+  
+    function checkIds(id1, id2) {
+        var webmapMetaDataRequestUrl1 = 'https://www.arcgis.com/sharing/rest/content/items/' + id1;
+        var webmapMetaDataRequestUrl2 = 'https://www.arcgis.com/sharing/rest/content/items/' + id2;
+        L.esri.request(webmapMetaDataRequestUrl1, {}, function(error, response){
+            if(error){
+                console.log(error);
+                document.getElementById('form1').className = 'mapid-form disabled-id';
+            } else {
+                console.log('WebMap1 MetaData: ', response);
+                if(response.type === 'Web Map') {
+                    checkMap[0] = true;
+                    if(checkMap[1] === true) {
+                        initWebmaps();
+                    }
+                }
+                else {
+                    document.getElementById('form1').className = 'mapid-form disabled-id';
+                }
+            }
+        });
+        L.esri.request(webmapMetaDataRequestUrl2, {}, function(error, response){
+            if(error){
+                console.log(error);
+                document.getElementById('form2').className = 'mapid-form disabled-id';
+            } else {
+                console.log('WebMap2 MetaData: ', response);
+                if(response.type === 'Web Map') {
+                    checkMap[1] = true;
+                    if(checkMap[0] === true) {
+                        initWebmaps();
+                    }
+                }
+                else {
+                    document.getElementById('form2').className = 'mapid-form disabled-id';
+                }
+            }
+        });
+    }
+
+    function initWebmaps() {
+        document.getElementById('idFormContainer').className = 'hide';
+        
+        webmap1 = L.esri.webMap(webmapId1, { map: map });
+        webmap2 = L.esri.webMap(webmapId2, { map: map });
+            
+        webmap1.on('load', function() {
+            if(webmap2._loaded === true && mapsLoaded === false) {
+                mapsLoaded = true;
+                initLayerControl();
+            }
+        });
+        webmap2.on('load', function() {
+            if(webmap1._loaded === true && mapsLoaded === false) {
+                mapsLoaded = true;
+                initLayerControl();
+            }
+        });
+
+        webmap1.on('metadataLoad', function() {
+            if(webmap2._metadataLoaded === true && metadataLoaded === false) {
+                metadataLoaded = true;
+                initTitleControl();
+            }
+        });
+        webmap2.on('metadataLoad', function() {
+            if(webmap1._metadataLoaded === true && metadataLoaded === false) {
+                metadataLoaded = true;
+                initTitleControl();
+            }
+        });
+    }
+
+    function initTitleControl() {
+        var MapTitleControl = L.Control.extend({
+            options: {
+                position: 'topright'
+            },
+            onAdd: function (map) {
+                var container = L.DomUtil.create('div', 'map-title-control');
+                container.innerHTML = '<a target="_brank" href="http://www.arcgis.com/home/webmap/viewer.html?webmap=' + webmapId1 + '">' + webmap1.title + '</a>' +
+                    ' & ' + '<a target="_brank" href="http://www.arcgis.com/home/webmap/viewer.html?webmap=' + webmapId2 + '">' + webmap2.title + '</a>';
+                return container;
+            }
+        });
+
+        map.addControl(new MapTitleControl());
+    }
+
+    function initLayerControl() {
+        var basemaps = {};
+        var overlayMaps = {};
+        
+        webmap1.layers.map(function(l, i) {
+            console.log(l);
+            if(i === 0) {
+                basemaps[l.title] = l.layer;
+            }
+            else {
+                overlayMaps[l.title] = l.layer;
+            }
+        });
+        webmap2.layers.map(function(l, i) {
+            console.log(l);
+            if(i === 0) {
+                basemaps[l.title] = l.layer;
+            }
+            else {
+                overlayMaps[l.title] = l.layer;
+            }
+        });
+        L.control.layers(basemaps, overlayMaps, {
+            position: 'bottomright'
+        }).addTo(map);
+        
+        map.removeLayer(layer);
+    }
+</script>
+
+</body>
+</html>
