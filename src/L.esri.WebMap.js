@@ -6,13 +6,15 @@
 
 L.esri.WebMap = L.Evented.extend({
 	options: {
-		map: {}
+		map: {},
+        token: ''
 	},
 
 	initialize: function(webmapId, options) {
 		L.setOptions(this, options);
 
 		this._map = this.options.map;
+        this._token = this.options.token;
 		this._webmapId = webmapId;
 		this._mapOptions = {};
 		this._baseMap = {};
