@@ -162,8 +162,11 @@
     var webmapId2 = '';
 
     var map = L.map('map').setView([35, 139], 5);
-    var layer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    /*var layer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    });*/
+    var layer = L.tileLayer('https://api.mapbox.com/styles/v1/ynunokawa/ciha1zkiu001a8vm36uvwle32/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoieW51bm9rYXdhIiwiYSI6ImNpaDkxcXg3YzB0c3p1dWtpZTJrcTczYmIifQ.mDJcqEDs62VDMQd0iVtMRw', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, &copy; Mapbox, Design &copy; Yusuke Nunokawa'
     });
     layer.addTo(map);
   

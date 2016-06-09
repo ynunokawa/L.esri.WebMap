@@ -6,13 +6,15 @@
 
 L.esri.WebMap = L.Evented.extend({
 	options: {
-		map: {}
+		map: {},
+        token: null
 	},
 
 	initialize: function(webmapId, options) {
 		L.setOptions(this, options);
 
 		this._map = this.options.map;
+        this._token = this.options.token;
 		this._webmapId = webmapId;
 		this._mapOptions = {};
 		this._baseMap = {};
@@ -20,7 +22,7 @@ L.esri.WebMap = L.Evented.extend({
 		this._exportOptions = {};
 		this._layoutOptions = {};
         this._loaded = false;
-				this._metadataLoaded = false;
+		this._metadataLoaded = false;
 
         this.layers = []; // Check the layer types here -> https://github.com/ynunokawa/L.esri.WebMap/wiki/Layer-types
         this.title = ''; // Web Map Title
@@ -33,6 +35,7 @@ L.esri.WebMap = L.Evented.extend({
 
 	_loadWebMapMetaData: function(id) {
         //console.log(this);
+        //console.log(this._token);
 		var map = this._map;
 		var webmap = this;
 		var leafletLatlng = this.leafletLatlng;
@@ -601,7 +604,7 @@ L.esri.WebMap = L.Evented.extend({
                             }
                             if(layer.layerDefinition.drawingInfo.labelingInfo !== undefined) {
                                 var labelingInfo = layer.layerDefinition.drawingInfo.labelingInfo;
-                                var labelText = window.webmap._generateLabel(geojson.properties, labelingInfo);
+                                var labelText = this._generateLabel(geojson.properties, labelingInfo);
                                 //console.log(labelText);
                                 // with Leaflet.label
                                 //f.bindLabel(labelText, { noHide: true }).showLabel();
@@ -670,10 +673,10 @@ L.esri.WebMap = L.Evented.extend({
                     where: where,
                     onEachFeature: function (geojson, l) {
                         if(layer.popupInfo !== undefined) {
-                            var popupContent = window.webmap._createPopupContent(layer.popupInfo, geojson.properties);
+                            var popupContent = this._createPopupContent(layer.popupInfo, geojson.properties);
                             l.bindPopup(popupContent);
                         }
-                    }
+                    }.bind(this)
                 });
 
                 /*lyr.metadata(function(error, response) {
@@ -699,12 +702,12 @@ L.esri.WebMap = L.Evented.extend({
                     });
 
                     if(layer.popupInfo !== undefined) {
-                        var popupContent = window.webmap._createPopupContent(layer.popupInfo, geojson.properties);
+                        var popupContent = this._createPopupContent(layer.popupInfo, geojson.properties);
                         f.bindPopup(popupContent);
                     }
 
                     return f;
-                }
+                }.bind(this)
             });
 
             /*lyr.metadata(function(error, response) {
