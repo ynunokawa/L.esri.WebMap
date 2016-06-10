@@ -754,6 +754,26 @@ L.esri.WebMap = L.Evented.extend({
             this.layers.push({ type: 'TL', title: layer.title || layer.id || '', layer: lyr });
 			return lyr;
 		}
+		/*else if(layer.layerType === 'VectorTileLayer') {
+            var serviceUrl = '';
+            var urlPaths = layer.styleUrl.split('/');
+            urlPaths.map(function(p, i) {
+                if(i < urlPaths.length-4) {
+                    serviceUrl += p + '/';
+                }
+            });
+            L.esri.request(serviceUrl+'VectorTileServer', { f: 'json' }, function(error, response){
+                if(error){
+                    console.log(error);
+                } else {
+                    console.log(serviceUrl + 'VectorTileServer/' + response.tiles[0]);
+                    var lyr = L.vectorGrid.protobuf(serviceUrl + 'VectorTileServer/' + response.tiles[0], {});
+                    this.layers.push({ type: 'VTL', title: layer.title || layer.id || '', layer: lyr });
+			        lyr.addTo(this._map);
+                    //return lyr;
+                }
+            }.bind(this));
+		}*/
 		else if(layer.layerType === '') {
 			return false;
 		}
