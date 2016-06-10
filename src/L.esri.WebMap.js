@@ -614,7 +614,7 @@ L.esri.WebMap = L.Evented.extend({
                                 var labelPos;
                                 var labelClassName;
                                 if(l.feature.geometry.type === 'Point') {
-                                    labelPos = l.feature.geometry.coordinates;
+                                    labelPos = l.feature.geometry.coordinates.reverse();
                                     labelClassName = 'point-label';
                                 }
                                 else if(l.feature.geometry.type === 'LineString') {
