@@ -122,10 +122,10 @@ L.esri.WebMap = L.Evented.extend({
         if(popupInfo.fieldInfos.length > 0) {
             popupInfo.fieldInfos.map(function(info, i) {
                 if(popupInfo.fieldInfos.length === i+1) {
-                    content += '<div style="font-weight:bold;color:#999;margin-top:5px;">' + info.label + '</div> ' + properties[info.fieldName] + '</div>';
+                    content += '<div style="font-weight:bold;color:#999;margin-top:5px;">' + info.label + '</div><p style="margin-top:0;margin-bottom:5px;">' + properties[info.fieldName] + '</p></div>';
                 }
                 else {
-                    content += '<div style="font-weight:bold;color:#999;margin-top:5px;">' + info.label + '</div> ' + properties[info.fieldName] + '<br>';
+                    content += '<div style="font-weight:bold;color:#999;margin-top:5px;">' + info.label + '</div><p style="margin-top:0;margin-bottom:5px;">' + properties[info.fieldName] + '</p>';
                 }
             });
         }
