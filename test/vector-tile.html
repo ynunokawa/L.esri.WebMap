@@ -19,6 +19,9 @@
 
 	<!-- Load Heatmap Feature Layer from CDN -->
 	<script src="https://cdn.jsdelivr.net/leaflet.esri.heatmap-feature-layer/2.0.0-beta.1/esri-leaflet-heatmap-feature-layer.js"></script>
+    
+    <!-- Load Vector Grid from GitHub -->
+    <script src="http://ivansanchez.github.io/Leaflet.VectorGrid/dist/Leaflet.VectorGrid.js"></script>
 
     <!-- Load Vector Icon from GitHub -->
     <script src="https://muxlab.github.io/Leaflet.VectorIcon/L.VectorIcon.js"></script>
@@ -77,14 +80,9 @@
 <div id="map"></div>
 
 <script>
-    var webmapId = '22c504d229f14c789c5b49ebff38b941'; //my goal
+    var webmapId = '722f3d8ed5e94babbe78c8236a28b42e'; // map with vt
 
-	//var webmapId = 'f2e9b762544945f390ca4ac3671cfa72'; //ArcGISFeatureLayer
-	//var webmapId = '0e189846df1146b9873266bc12b81a45'; //ArcGISImageServiceLayer
-	//var webmapId = 'de2482217dd643bca3e97df3e785c6e1'; //ArcGISMapServiceLayer
-	//var webmapId = 'ccee269e69c1404486172aa7ccc80f0a'; //ArcGISTiledMapServiceLayer
-
-    var urlParams = location.search.substring(1).split('&');
+	var urlParams = location.search.substring(1).split('&');
     for(var i=0; urlParams[i]; i++) {
         var param = urlParams[i].split('=');
         if(param[0] === 'webmap') {
@@ -92,12 +90,7 @@
         }
     }
 
-	//L.esri.basemapLayer("Gray").addTo(map);
-	//L.esri.basemapLayer("GrayLabels").addTo(map);
-
 	var webmap = L.esri.webMap(webmapId, { map: L.map("map") });
-
-    //L.marker([35, 139]).bindLabel('Look revealing label!').addTo(map);
 
     webmap.on('metadataLoad', function() {
         var MapTitleControl = L.Control.extend({

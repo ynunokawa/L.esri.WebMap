@@ -122,10 +122,10 @@ L.esri.WebMap = L.Evented.extend({
         if(popupInfo.fieldInfos.length > 0) {
             popupInfo.fieldInfos.map(function(info, i) {
                 if(popupInfo.fieldInfos.length === i+1) {
-                    content += '<div style="font-weight:bold;color:#999;margin-top:5px;">' + info.label + '</div> ' + properties[info.fieldName] + '</div>';
+                    content += '<div style="font-weight:bold;color:#999;margin-top:5px;">' + info.label + '</div><p style="margin-top:0;margin-bottom:5px;">' + properties[info.fieldName] + '</p></div>';
                 }
                 else {
-                    content += '<div style="font-weight:bold;color:#999;margin-top:5px;">' + info.label + '</div> ' + properties[info.fieldName] + '<br>';
+                    content += '<div style="font-weight:bold;color:#999;margin-top:5px;">' + info.label + '</div><p style="margin-top:0;margin-bottom:5px;">' + properties[info.fieldName] + '</p>';
                 }
             });
         }
@@ -614,7 +614,7 @@ L.esri.WebMap = L.Evented.extend({
                                 var labelPos;
                                 var labelClassName;
                                 if(l.feature.geometry.type === 'Point') {
-                                    labelPos = l.feature.geometry.coordinates;
+                                    labelPos = l.feature.geometry.coordinates.reverse();
                                     labelClassName = 'point-label';
                                 }
                                 else if(l.feature.geometry.type === 'LineString') {
@@ -754,6 +754,26 @@ L.esri.WebMap = L.Evented.extend({
             this.layers.push({ type: 'TL', title: layer.title || layer.id || '', layer: lyr });
 			return lyr;
 		}
+		/*else if(layer.layerType === 'VectorTileLayer') {
+            var serviceUrl = '';
+            var urlPaths = layer.styleUrl.split('/');
+            urlPaths.map(function(p, i) {
+                if(i < urlPaths.length-4) {
+                    serviceUrl += p + '/';
+                }
+            });
+            L.esri.request(serviceUrl+'VectorTileServer', { f: 'json' }, function(error, response){
+                if(error){
+                    console.log(error);
+                } else {
+                    console.log(serviceUrl + 'VectorTileServer/' + response.tiles[0]);
+                    var lyr = L.vectorGrid.protobuf(serviceUrl + 'VectorTileServer/' + response.tiles[0], {});
+                    this.layers.push({ type: 'VTL', title: layer.title || layer.id || '', layer: lyr });
+			        lyr.addTo(this._map);
+                    //return lyr;
+                }
+            }.bind(this));
+		}*/
 		else if(layer.layerType === '') {
 			return false;
 		}
