@@ -309,10 +309,21 @@ L.esri.WebMap = L.Evented.extend({
         }
 
         if(symbol.style === 'esriSFSSolid') {
+            var color = symbol.color
+            var outlineColor = symbol.outline.color;
+            
+            if(symbol.color === null) {
+                color = [0,0,0,0];
+            }
+            
+            if(symbol.outline.color === null) {
+                outlineColor = [0,0,0,0];
+            }
+            
             style = {
-                fillColor: 'rgb(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ')',
-                fillOpacity: symbol.color[3]/255,
-                color: 'rgba(' + symbol.outline.color[0] + ',' + symbol.outline.color[1] + ',' + symbol.outline.color[2] + ',' + symbol.outline.color[3]/255 + ')',
+                fillColor: 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')',
+                fillOpacity: color[3]/255,
+                color: 'rgba(' + outlineColor[0] + ',' + outlineColor[1] + ',' + outlineColor[2] + ',' + outlineColor[3]/255 + ')',
                 weight: (symbol.outline.width*4/3)
             }
         }
@@ -609,6 +620,7 @@ L.esri.WebMap = L.Evented.extend({
                     var lyr = L.esri.featureLayer({
                         url: layer.url,
                         where: where,
+                        ignoreRenderer: true,
                         pointToLayer: function (geojson, latlng) {
                             //console.log(geojson);
                             //var popupContent = this._createPopupContent(layer.popupInfo, geojson.properties);
@@ -730,6 +742,12 @@ L.esri.WebMap = L.Evented.extend({
 			console.log('create ArcGISFeatureLayer');
             var lyr = L.esri.featureLayer({
                 url: layer.url,
+                onEachFeature: function (geojson, l) {
+                    if(layer.popupInfo !== undefined) {
+                        var popupContent = this._createPopupContent(layer.popupInfo, geojson.properties);
+                        l.bindPopup(popupContent);
+                    }
+                }.bind(this),
                 pointToLayer: function (geojson, latlng) {
 
                     //var popupContent = this._createPopupContent(layer.popupInfo, geojson.properties);
@@ -739,11 +757,6 @@ L.esri.WebMap = L.Evented.extend({
                         //icon: icon,
                         opacity: layer.opacity
                     });
-
-                    if(layer.popupInfo !== undefined) {
-                        var popupContent = this._createPopupContent(layer.popupInfo, geojson.properties);
-                        f.bindPopup(popupContent);
-                    }
 
                     return f;
                 }.bind(this)
