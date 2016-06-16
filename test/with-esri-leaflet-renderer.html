@@ -19,11 +19,12 @@
 
 	<!-- Load Heatmap Feature Layer from CDN -->
 	<script src="https://cdn.jsdelivr.net/leaflet.esri.heatmap-feature-layer/2.0.0-beta.1/esri-leaflet-heatmap-feature-layer.js"></script>
+    
+    <!-- Load Esri Leaflet Renderers from CDN -->
+    <script src="//cdn.jsdelivr.net/leaflet.esri.renderers/2.0.2/esri-leaflet-renderers.js"></script>
 
     <!-- Load Vector Icon from GitHub -->
     <script src="https://muxlab.github.io/Leaflet.VectorIcon/L.VectorIcon.js"></script>
-    
-    <script src="//cdn.jsdelivr.net/leaflet.esri.renderers/2.0.2/esri-leaflet-renderers.js"></script>
 
 	<!-- Load L.esri.WebMap -->
 	<script src="../src/L.esri.WebMap.js"></script>
@@ -31,7 +32,7 @@
   <style>
     body { margin:0; padding:0; }
     #map { position: absolute; top:0; bottom:0; right:0; left:0; }
-    .leaflet-popup-content { max-height: 250px; }
+    .leaflet-popup-content { max-height: 250px; min-width: 250px; }
     .leaflet-popup-content-description { max-height: 200px; overflow: auto; }
     .map-title-control {
         background-color: #fff;
