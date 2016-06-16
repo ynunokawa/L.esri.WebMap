@@ -2,6 +2,8 @@
 
 A plugin to display [ArcGIS Web Map](http://doc.arcgis.com/en/arcgis-online/reference/what-is-web-map.htm) on Leaflet maps.
 
+![](images/esri-leaflet-webmap.png)
+
 You can see it with just 1 line code.
 
 ```JavaScript
