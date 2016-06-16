@@ -731,6 +731,12 @@ L.esri.WebMap = L.Evented.extend({
 			console.log('create ArcGISFeatureLayer');
             var lyr = L.esri.featureLayer({
                 url: layer.url,
+                onEachFeature: function (geojson, l) {
+                    if(layer.popupInfo !== undefined) {
+                        var popupContent = this._createPopupContent(layer.popupInfo, geojson.properties);
+                        l.bindPopup(popupContent);
+                    }
+                }.bind(this),
                 pointToLayer: function (geojson, latlng) {
 
                     //var popupContent = this._createPopupContent(layer.popupInfo, geojson.properties);
@@ -740,11 +746,6 @@ L.esri.WebMap = L.Evented.extend({
                         //icon: icon,
                         opacity: layer.opacity
                     });
-
-                    if(layer.popupInfo !== undefined) {
-                        var popupContent = this._createPopupContent(layer.popupInfo, geojson.properties);
-                        f.bindPopup(popupContent);
-                    }
 
                     return f;
                 }.bind(this)
