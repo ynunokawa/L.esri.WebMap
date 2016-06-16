@@ -609,6 +609,7 @@ L.esri.WebMap = L.Evented.extend({
                     var lyr = L.esri.featureLayer({
                         url: layer.url,
                         where: where,
+                        ignoreRenderer: true,
                         pointToLayer: function (geojson, latlng) {
                             //console.log(geojson);
                             //var popupContent = this._createPopupContent(layer.popupInfo, geojson.properties);
