@@ -309,10 +309,21 @@ L.esri.WebMap = L.Evented.extend({
         }
 
         if(symbol.style === 'esriSFSSolid') {
+            var color = symbol.color
+            var outlineColor = symbol.outline.color;
+            
+            if(symbol.color === null) {
+                color = [0,0,0,0];
+            }
+            
+            if(symbol.outline.color === null) {
+                outlineColor = [0,0,0,0];
+            }
+            
             style = {
-                fillColor: 'rgb(' + symbol.color[0] + ',' + symbol.color[1] + ',' + symbol.color[2] + ')',
-                fillOpacity: symbol.color[3]/255,
-                color: 'rgba(' + symbol.outline.color[0] + ',' + symbol.outline.color[1] + ',' + symbol.outline.color[2] + ',' + symbol.outline.color[3]/255 + ')',
+                fillColor: 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')',
+                fillOpacity: color[3]/255,
+                color: 'rgba(' + outlineColor[0] + ',' + outlineColor[1] + ',' + outlineColor[2] + ',' + outlineColor[3]/255 + ')',
                 weight: (symbol.outline.width*4/3)
             }
         }
