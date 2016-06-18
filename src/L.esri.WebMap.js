@@ -2,12 +2,12 @@
  * L.esri.WebMap
  * A leaflet plugin to display ArcGIS Web Map. https://github.com/ynunokawa/L.esri.WebMap
  * (c) 2016 Yusuke Nunokawa
- * 
+ *
  * @example
- * 
+ *
  * ```js
  * var webmap = L.webmap('22c504d229f14c789c5b49ebff38b941', { map: L.map('map') });
- * ``` 
+ * ```
  */
 
 L.esri.WebMap = L.Evented.extend({
@@ -311,15 +311,15 @@ L.esri.WebMap = L.Evented.extend({
         if(symbol.style === 'esriSFSSolid') {
             var color = symbol.color
             var outlineColor = symbol.outline.color;
-            
+
             if(symbol.color === null) {
                 color = [0,0,0,0];
             }
-            
+
             if(symbol.outline.color === null) {
                 outlineColor = [0,0,0,0];
             }
-            
+
             style = {
                 fillColor: 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')',
                 fillOpacity: color[3]/255,
@@ -518,7 +518,7 @@ L.esri.WebMap = L.Evented.extend({
         newUrl = newUrl.replace(/\{col}/g, '{x}');
         newUrl = newUrl.replace(/\{row}/g, '{y}');
         //console.log(newUrl);
- 
+
         return newUrl;
     },
 
@@ -790,13 +790,24 @@ L.esri.WebMap = L.Evented.extend({
 			return lyr;
 		}
 		else if(layer.layerType === 'ArcGISTiledMapServiceLayer') {
-			var lyr = L.esri.tiledMapLayer({
-				url: layer.url
-			});
+      try {
+        var lyr = L.esri.basemapLayer(layer.title);
+      }
+      catch (e) {
+        var lyr = L.esri.tiledMapLayer({
+  				url: layer.url
+  			});
 
-            this.layers.push({ type: 'TML', title: layer.title || '', layer: lyr });
+        L.esri.request(layer.url, {}, function (err, res) {
+          var maxWidth = (this._map.getSize().x - 55);
+          var tiledAttribution = '<span class="esri-attributions" style="line-height:14px; vertical-align: -3px; text-overflow:ellipsis; white-space:nowrap; overflow:hidden; display:inline-block; max-width:' + maxWidth + 'px;">' + res.copyrightText + '</span>'
+          this._map.attributionControl.addAttribution(tiledAttribution);
+        }, this);
+      }
 
-			return lyr;
+      this.layers.push({ type: 'TML', title: layer.title || '', layer: lyr });
+      return lyr;
+
 		}
 		else if(layer.layerType === 'OpenStreetMap') {
 			var lyr = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
