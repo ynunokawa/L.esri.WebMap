@@ -119,15 +119,15 @@ L.esri.WebMap = L.Evented.extend({
             return properties[m[1]];
         });
 
-        content = '<div class="leaflet-popup-content-title"><h4>' + titleText + '</h4></div><div class="leaflet-popup-content-description">';
+        content = '<div class="leaflet-popup-content-title"><h4>' + titleText + '</h4></div><div class="leaflet-popup-content-description" style="max-height:200px;overflow:auto;">';
 
         if(popupInfo.fieldInfos.length > 0) {
             popupInfo.fieldInfos.map(function(info, i) {
                 if(popupInfo.fieldInfos.length === i+1) {
-                    content += '<div style="font-weight:bold;color:#999;margin-top:5px;">' + info.label + '</div><p style="margin-top:0;margin-bottom:5px;">' + properties[info.fieldName] + '</p></div>';
+                    content += '<div style="font-weight:bold;color:#999;margin-top:5px;word-break:break-all;">' + info.label + '</div><p style="margin-top:0;margin-bottom:5px;word-break:break-all;">' + properties[info.fieldName] + '</p></div>';
                 }
                 else {
-                    content += '<div style="font-weight:bold;color:#999;margin-top:5px;">' + info.label + '</div><p style="margin-top:0;margin-bottom:5px;">' + properties[info.fieldName] + '</p>';
+                    content += '<div style="font-weight:bold;color:#999;margin-top:5px;word-break:break-all;">' + info.label + '</div><p style="margin-top:0;margin-bottom:5px;word-break:break-all;">' + properties[info.fieldName] + '</p>';
                 }
             });
         }
