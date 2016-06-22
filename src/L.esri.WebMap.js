@@ -110,7 +110,7 @@ L.esri.WebMap = L.Evented.extend({
         var titleText = '';
         var content = '';
 
-        if(popupInfo.title !== undefined) {
+        if (popupInfo.title !== undefined) {
             titleText = popupInfo.title;
         }
 
@@ -120,19 +120,16 @@ L.esri.WebMap = L.Evented.extend({
         });
 
         content = '<div class="leaflet-popup-content-title"><h4>' + titleText + '</h4></div><div class="leaflet-popup-content-description" style="max-height:200px;overflow:auto;">';
-
-        if(popupInfo.fieldInfos.length > 0) {
-            popupInfo.fieldInfos.map(function(info, i) {
-                if(popupInfo.fieldInfos.length === i+1) {
-                    content += '<div style="font-weight:bold;color:#999;margin-top:5px;word-break:break-all;">' + info.label + '</div><p style="margin-top:0;margin-bottom:5px;word-break:break-all;">' + properties[info.fieldName] + '</p></div>';
-                }
-                else {
-                    content += '<div style="font-weight:bold;color:#999;margin-top:5px;word-break:break-all;">' + info.label + '</div><p style="margin-top:0;margin-bottom:5px;word-break:break-all;">' + properties[info.fieldName] + '</p>';
-                }
-            });
+     
+        for (var i = 0; i < popupInfo.fieldInfos.length; i++) {
+            if (popupInfo.fieldInfos[i].visible === true) {
+                content += '<div style="font-weight:bold;color:#999;margin-top:5px;word-break:break-all;">' + popupInfo.fieldInfos[i].label + '</div><p style="margin-top:0;margin-bottom:5px;word-break:break-all;">' + properties[popupInfo.fieldInfos[i].fieldName] + '</p>';
+            }
         }
 
-        if(popupInfo.mediaInfos.length > 0) {
+        content += '</div>';
+
+        if (popupInfo.mediaInfos.length > 0) {
             // It does not support mediaInfos for popup contents.
         }
 
