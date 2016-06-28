@@ -23,6 +23,14 @@ You can see your web maps (that are open to the public) with URL parameter as th
 * [2 ArcGIS WebMaps in 1 leaflet map](http://ynunokawa.github.io/L.esri.WebMap/examples/two-in-one.html)
 * []()
 
+## Development Instructions
+
+1. [Fork and clone](https://help.github.com/articles/fork-a-repo/) L.esri.WebMap
+- `cd` into the `L.esri.WebMap` folder
+- Install the dependencies with `npm install`
+- Run `npm start` from the command line. This will compile minified source in a brand new dist directory, launch a tiny webserver and begin watching the raw source for changes
+- Make your changes and create a [pull request](https://help.github.com/articles/creating-a-pull-request/)
+
 ## Limitations
 
 Please see [here](https://github.com/ynunokawa/L.esri.WebMap/wiki/Supported-Features).
