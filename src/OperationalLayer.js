@@ -317,8 +317,7 @@ export function _generateEsriLayer (layer, layers, map) {
 }
 
 
-// i will duplicate the below functions
-// and replace esri-leaflet-renderers.
+// i will replace the below functions with esri-leaflet-renderers.
 export function _pointSymbol (symbol) {
     var icon;
 
