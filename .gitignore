@@ -13,3 +13,6 @@ npm-debug.log
 
 # Bower
 bower_components
+
+# Built Files
+dist
