@@ -6,7 +6,7 @@
   "scripts": {
     "prebuild": "mkdirp dist",
     "build": "rollup -c profiles/debug.js & rollup -c profiles/production.js",
-    "lint": "semistandard src/*.js & semistandard src/**/*.js",
+    "lint": "semistandard src/**/*.js",
     "start": "watch 'npm run build' src & http-server -p 5000 -c-1 -o",
     "test": "npm run lint && npm run build"
   },
