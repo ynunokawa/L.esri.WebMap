@@ -1,4 +1,5 @@
 import L from 'leaflet';
+import { featureCollection } from './FeatureCollection/FeatureCollection';
 import { createPopupContent } from './Popup/Popup';
 import { createLabelText } from './Label/Label';
 
@@ -16,20 +17,10 @@ export function _generateEsriLayer (layer, layers, map) {
   if (layer.featureCollection !== undefined) {
     // Supporting only point geometry
     console.log('create FeatureCollection');
-    var features = [];
-    renderer = layer.featureCollection.layers[0].layerDefinition.drawingInfo.renderer;
 
-    layer.featureCollection.layers[0].featureSet.features.map(function (feature) {
-      var icon = _generateIcon(renderer, feature.attributes);
-      var mercatorToLatlng = L.Projection.SphericalMercator.unproject(L.point(feature.geometry.x, feature.geometry.y));
-      var f = L.marker(mercatorToLatlng, { icon: icon, opacity: layer.opacity });
-
-      if (layer.featureCollection.layers[0].popupInfo !== undefined) {
-        var popupContent = createPopupContent(layer.featureCollection.layers[0].popupInfo, feature.attributes);
-        f.bindPopup(popupContent);
-      }
-
-      if (layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo !== undefined) {
+    if (layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo !== undefined) {
+      layer.featureCollection.layers[0].featureSet.features.map(function (feature) {
+        var mercatorToLatlng = L.Projection.SphericalMercator.unproject(L.point(feature.geometry.x, feature.geometry.y));
         var labelingInfo = layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo;
         var labelText = createLabelText(feature.attributes, labelingInfo);
 
@@ -47,12 +38,14 @@ export function _generateEsriLayer (layer, layers, map) {
         });
 
         labels.push(label);
-      }
+      });
+    }
 
-      features.push(f);
+    lyr = featureCollection([], {
+      data: layer.featureCollection,
+      opacity: layer.opacity,
+      renderer: layer.featureCollection.layers[0].layerDefinition.drawingInfo.renderer
     });
-
-    lyr = L.featureGroup(features);
 
     if (labels.length > 0) {
       labelsLayer = L.featureGroup(labels);
@@ -625,7 +618,14 @@ export function _esriWTLUrlTemplateToLeaflet (url) {
 }
 
 export var OperationalLayer = {
-  operationalLayer: operationalLayer
+  operationalLayer: operationalLayer,
+  _generateEsriLayer: _generateEsriLayer,
+  _pointSymbol: _pointSymbol,
+  _pathSymbol: _pathSymbol,
+  _calVisualVariables: _calVisualVariables,
+  _generatePathStyle: _generatePathStyle,
+  _generateIcon: _generateIcon,
+  _esriWTLUrlTemplateToLeaflet: _esriWTLUrlTemplateToLeaflet
 };
 
 export default OperationalLayer;
