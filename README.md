@@ -1,5 +1,7 @@
 # L.esri.WebMap
 
+[![Build Status](https://travis-ci.org/ynunokawa/L.esri.WebMap.svg?branch=master)](https://travis-ci.org/ynunokawa/L.esri.WebMap)
+
 A plugin to display [ArcGIS Web Map](http://doc.arcgis.com/en/arcgis-online/reference/what-is-web-map.htm) on Leaflet maps.
 
 ![](images/esri-leaflet-webmap.png)
