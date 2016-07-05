@@ -4,27 +4,27 @@
   <title>L.esri.WebMap Demo</title>
   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
-    <!-- Load Leaflet from CDN-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet.css" />
-    <script src="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet-src.js"></script>
+  <!-- Load Leaflet from CDN-->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.1/leaflet-src.js"></script>
 
-    <!-- Load Leaflet Label from GitHub -->
-    <script src="https://leaflet.github.io/Leaflet.label/leaflet.label.js"></script>
+  <!-- Load Leaflet Label from GitHub -->
+  <script src="https://leaflet.github.io/Leaflet.label/leaflet.label.js"></script>
 
-    <!-- Load Esri Leaflet from CDN -->
-    <script src="https://cdn.jsdelivr.net/leaflet.esri/2.0.0/esri-leaflet.js"></script>
+  <!-- Load Esri Leaflet from CDN -->
+  <script src="https://cdn.jsdelivr.net/leaflet.esri/2.0.0/esri-leaflet.js"></script>
 
 	<!-- Load Leaflet Heat from CDN -->
 	<script src="https://rawgit.com/Leaflet/Leaflet.heat/gh-pages/dist/leaflet-heat.js"></script>
 
 	<!-- Load Heatmap Feature Layer from CDN -->
 	<script src="https://cdn.jsdelivr.net/leaflet.esri.heatmap-feature-layer/2.0.0-beta.1/esri-leaflet-heatmap-feature-layer.js"></script>
-    
-    <!-- Load Esri Leaflet Renderers from CDN -->
-    <script src="//cdn.jsdelivr.net/leaflet.esri.renderers/2.0.3/esri-leaflet-renderers.js"></script>
 
-    <!-- Load Vector Icon from GitHub -->
-    <script src="https://muxlab.github.io/Leaflet.VectorIcon/L.VectorIcon.js"></script>
+  <!-- Load Esri Leaflet Renderers from CDN -->
+  <script src="//cdn.jsdelivr.net/leaflet.esri.renderers/2.0.3/esri-leaflet-renderers.js"></script>
+
+  <!-- Load Vector Icon from GitHub -->
+  <script src="https://muxlab.github.io/Leaflet.VectorIcon/L.VectorIcon.js"></script>
 
 	<!-- Load L.esri.WebMap -->
 	<script src="dist/esri-leaflet-webmap.js"></script>
@@ -44,29 +44,14 @@
     }
 
     /* label.css */
-    .point-label {
+    .esri-leaflet-webmap-labels {
       font-size: 1em;
       font-weight: bold;
       text-transform: uppercase;
       text-align: center;
-      margin-top: -2em;
-      margin-left: -2em;
       white-space: nowrap;
     }
-    .path-label {
-      font-size: .8em;
-      font-weight: bold;
-      text-transform: uppercase;
-      text-align: center;
-      margin-top: -1em;
-      white-space: nowrap;
-    }
-    .point-label div {
-      position: relative;
-      left: -50%;
-      text-shadow: 1px 1px 0px #fff, -1px 1px 0px #fff, 1px -1px 0px #fff, -1px -1px 0px #fff;
-    }
-    .path-label div {
+    .esri-leaflet-webmap-labels div {
       position: relative;
       left: -50%;
       text-shadow: 1px 1px 0px #fff, -1px 1px 0px #fff, 1px -1px 0px #fff, -1px -1px 0px #fff;
@@ -103,7 +88,7 @@
         });
         webmap._map.addControl(new MapTitleControl());
     });
-    
+
     webmap.on('load', function() {
         console.log('webmap loaded', webmap.layers);
         var overlayMaps = {};

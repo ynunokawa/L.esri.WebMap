@@ -19,7 +19,7 @@
 
 	<!-- Load Heatmap Feature Layer from CDN -->
 	<script src="https://cdn.jsdelivr.net/leaflet.esri.heatmap-feature-layer/2.0.0-beta.1/esri-leaflet-heatmap-feature-layer.js"></script>
-    
+
     <!-- Load Esri Leaflet Renderers from CDN -->
     <script src="//cdn.jsdelivr.net/leaflet.esri.renderers/2.0.3/esri-leaflet-renderers.js"></script>
 
@@ -44,34 +44,19 @@
     }
 
     /* label.css */
-    .point-label {
+    .esri-leaflet-webmap-labels {
       font-size: 1em;
       font-weight: bold;
       text-transform: uppercase;
       text-align: center;
-      margin-top: -2em;
-      margin-left: -2em;
       white-space: nowrap;
     }
-    .path-label {
-      font-size: .8em;
-      font-weight: bold;
-      text-transform: uppercase;
-      text-align: center;
-      margin-top: -1em;
-      white-space: nowrap;
-    }
-    .point-label div {
+    .esri-leaflet-webmap-labels div {
       position: relative;
       left: -50%;
       text-shadow: 1px 1px 0px #fff, -1px 1px 0px #fff, 1px -1px 0px #fff, -1px -1px 0px #fff;
     }
-    .path-label div {
-      position: relative;
-      left: -50%;
-      text-shadow: 1px 1px 0px #fff, -1px 1px 0px #fff, 1px -1px 0px #fff, -1px -1px 0px #fff;
-    }
-    
+
     /* Map ID Form */
     #idFormContainer {
         position: relative;
@@ -171,7 +156,7 @@
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, &copy; Mapbox, Design &copy; Yusuke Nunokawa'
     });
     layer.addTo(map);
-  
+
     document.getElementById('btn').addEventListener("click", function () {
         if(document.getElementById('form1').value !== '' && document.getElementById('form2').value !== '') {
             checkMap.map(function(c) { c = false });
@@ -180,7 +165,7 @@
             checkIds(webmapId1, webmapId2);
         }
     });
-    
+
     document.getElementById('form1').addEventListener("change", function () {
         forms[0].className = 'mapid-form';
         forms[1].className = 'mapid-form';
@@ -191,7 +176,7 @@
             document.getElementById('btn').className = 'btn btn-disabled';
         }
     });
-    
+
     document.getElementById('form2').addEventListener("change", function () {
         forms[0].className = 'mapid-form';
         forms[1].className = 'mapid-form';
@@ -202,7 +187,7 @@
             document.getElementById('btn').className = 'btn btn-disabled';
         }
     });
-  
+
     function checkIds(id1, id2) {
         var webmapMetaDataRequestUrl1 = 'https://www.arcgis.com/sharing/rest/content/items/' + id1;
         var webmapMetaDataRequestUrl2 = 'https://www.arcgis.com/sharing/rest/content/items/' + id2;
@@ -244,10 +229,10 @@
 
     function initWebmaps() {
         document.getElementById('idFormContainer').className = 'hide';
-        
+
         webmap1 = L.esri.webMap(webmapId1, { map: map });
         webmap2 = L.esri.webMap(webmapId2, { map: map });
-            
+
         webmap1.on('load', function() {
             if(webmap2._loaded === true && mapsLoaded === false) {
                 mapsLoaded = true;
@@ -294,7 +279,7 @@
     function initLayerControl() {
         var basemaps = {};
         var overlayMaps = {};
-        
+
         webmap1.layers.map(function(l, i) {
             console.log(l);
             if(i === 0) {
@@ -316,7 +301,7 @@
         L.control.layers(basemaps, overlayMaps, {
             position: 'bottomright'
         }).addTo(map);
-        
+
         map.removeLayer(layer);
     }
 </script>

@@ -19,7 +19,7 @@
 
 	<!-- Load Heatmap Feature Layer from CDN -->
 	<script src="https://cdn.jsdelivr.net/leaflet.esri.heatmap-feature-layer/2.0.0-beta.1/esri-leaflet-heatmap-feature-layer.js"></script>
-    
+
     <!-- Load Esri Leaflet Renderers from CDN -->
     <script src="//cdn.jsdelivr.net/leaflet.esri.renderers/2.0.3/esri-leaflet-renderers.js"></script>
 
@@ -44,35 +44,20 @@
     }
 
     /* label.css */
-    .point-label {
+    .esri-leaflet-webmap-labels {
       font-size: 1em;
       font-weight: bold;
       text-transform: uppercase;
       text-align: center;
-      margin-top: -2em;
-      margin-left: -2em;
       white-space: nowrap;
     }
-    .path-label {
-      font-size: .8em;
-      font-weight: bold;
-      text-transform: uppercase;
-      text-align: center;
-      margin-top: -1em;
-      white-space: nowrap;
-    }
-    .point-label div {
+    .esri-leaflet-webmap-labels div {
       position: relative;
       left: -50%;
       text-shadow: 1px 1px 0px #fff, -1px 1px 0px #fff, 1px -1px 0px #fff, -1px -1px 0px #fff;
     }
-    .path-label div {
-      position: relative;
-      left: -50%;
-      text-shadow: 1px 1px 0px #fff, -1px 1px 0px #fff, 1px -1px 0px #fff, -1px -1px 0px #fff;
-    }
-    
-    
+
+
     #auth {
         position: absolute;
         top: 10px;
@@ -111,7 +96,7 @@
             webmapId = param[1]
         }
     }
-    
+
     var clientID = 'amzWrJmix4r9OiWt';
     var accessToken;
     var callbacks = [];
@@ -121,7 +106,7 @@
 
     var authPane = document.getElementById('auth');
     var signInButton = document.getElementById('sign-in');
-    
+
     var map = L.map('map').setView([35, 139], 5);
     var layer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -140,11 +125,11 @@
     // this function will be called when the oauth process is complete
     window.oauthCallback = function(token) {
         console.log(token);
-        var webmap = L.esri.webMap(webmapId, { 
+        var webmap = L.esri.webMap(webmapId, {
             map: map,
             token: token
         });
-        
+
         webmap.on('load', function() {
             map.removeLayer(layer);
         });
