@@ -12,7 +12,6 @@ export function _generateEsriLayer (layer, layers, map) {
   var lyr;
   var labels = [];
   var labelsLayer;
-  var renderer;
 
   if (layer.featureCollection !== undefined) {
     // Supporting only point geometry
