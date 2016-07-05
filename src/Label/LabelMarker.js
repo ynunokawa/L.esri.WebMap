@@ -8,12 +8,12 @@ export var LabelMarker = L.Marker.extend({
   },
 
   initialize: function (latlng, options) {
-		L.setOptions(this, options);
-		this._latlng = L.latLng(latlng);
+    L.setOptions(this, options);
+    this._latlng = L.latLng(latlng);
 
     var labelText = this._createLabelText(this.options.properties, this.options.labelingInfo);
     this._setLabelIcon(labelText, this.options.offset);
-	},
+  },
 
   _createLabelText: function (properties, labelingInfo) {
     var r = /\[([^\]]*)\]/g;
