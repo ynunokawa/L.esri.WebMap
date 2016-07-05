@@ -19,13 +19,13 @@
 
 	<!-- Load Heatmap Feature Layer from CDN -->
 	<script src="https://cdn.jsdelivr.net/leaflet.esri.heatmap-feature-layer/2.0.0-beta.1/esri-leaflet-heatmap-feature-layer.js"></script>
-    
+
     <!-- Load Esri Leaflet Renderers from CDN -->
     <script src="//cdn.jsdelivr.net/leaflet.esri.renderers/2.0.3/esri-leaflet-renderers.js"></script>
 
     <!-- Load Vector Icon from GitHub -->
     <script src="https://muxlab.github.io/Leaflet.VectorIcon/L.VectorIcon.js"></script>
-    
+
     <!-- Load L.esri.WebMap -->
 	<script src="../dist/esri-leaflet-webmap.js"></script>
 
@@ -44,29 +44,14 @@
     }
 
     /* label.css */
-    .point-label {
+    .esri-leaflet-webmap-labels {
       font-size: 1em;
       font-weight: bold;
       text-transform: uppercase;
       text-align: center;
-      margin-top: -2em;
-      margin-left: -2em;
       white-space: nowrap;
     }
-    .path-label {
-      font-size: .8em;
-      font-weight: bold;
-      text-transform: uppercase;
-      text-align: center;
-      margin-top: -1em;
-      white-space: nowrap;
-    }
-    .point-label div {
-      position: relative;
-      left: -50%;
-      text-shadow: 1px 1px 0px #fff, -1px 1px 0px #fff, 1px -1px 0px #fff, -1px -1px 0px #fff;
-    }
-    .path-label div {
+    .esri-leaflet-webmap-labels div {
       position: relative;
       left: -50%;
       text-shadow: 1px 1px 0px #fff, -1px 1px 0px #fff, 1px -1px 0px #fff, -1px -1px 0px #fff;
@@ -113,7 +98,7 @@
         });
         webmap._map.addControl(new MapTitleControl());
     });
-    
+
     webmap.on('load', function() {
         console.log('webmap loaded', webmap.layers);
         var overlayMaps = {};
