@@ -1,7 +1,7 @@
 import L from 'leaflet';
 import { featureCollection } from './FeatureCollection/FeatureCollection';
+import { labelMarker } from './Label/LabelMarker';
 import { createPopupContent } from './Popup/Popup';
-import { createLabelText } from './Label/Label';
 
 export function operationalLayer (layer, layers, map) {
   return _generateEsriLayer(layer, layers, map);
@@ -21,19 +21,12 @@ export function _generateEsriLayer (layer, layers, map) {
       layer.featureCollection.layers[0].featureSet.features.map(function (feature) {
         var mercatorToLatlng = L.Projection.SphericalMercator.unproject(L.point(feature.geometry.x, feature.geometry.y));
         var labelingInfo = layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo;
-        var labelText = createLabelText(feature.attributes, labelingInfo);
 
-        // with Leaflet.label
-        // f.bindLabel(labelText, { noHide: true }).showLabel();
-
-        // without Leaflet.label
-        var label = L.marker(mercatorToLatlng, {
+        var label = labelMarker(mercatorToLatlng, {
           zIndexOffset: 1,
-          icon: L.divIcon({
-            iconSize: null,
-            className: 'point-label',
-            html: '<div>' + labelText + '</div>'
-          })
+          properties: feature.attributes,
+          labelingInfo: labelingInfo,
+          offset: [20, 20]
         });
 
         labels.push(label);
@@ -99,19 +92,17 @@ export function _generateEsriLayer (layer, layers, map) {
             }
             if (layer.layerDefinition.drawingInfo.labelingInfo !== undefined) {
               var labelingInfo = layer.layerDefinition.drawingInfo.labelingInfo;
-              var labelText = createLabelText(geojson.properties, labelingInfo);
-
-              // with Leaflet.label
-              // f.bindLabel(labelText, { noHide: true }).showLabel();
 
               var labelPos;
               var labelClassName;
               var centralKey;
               var c, c2;
+              var offset = [0, 0];
 
               if (l.feature.geometry.type === 'Point') {
                 labelPos = l.feature.geometry.coordinates.reverse();
                 labelClassName = 'point-label';
+                offset = [20, 20];
               } else if (l.feature.geometry.type === 'LineString') {
                 c = l.feature.geometry.coordinates;
                 centralKey = Math.round(c.length / 2);
@@ -130,14 +121,11 @@ export function _generateEsriLayer (layer, layers, map) {
                 labelClassName = 'path-label';
               }
 
-              // without Leaflet.label
-              var label = L.marker(labelPos, {
+              var label = labelMarker(labelPos, {
                 zIndexOffset: 1,
-                icon: L.divIcon({
-                  iconSize: null,
-                  className: labelClassName,
-                  html: '<div>' + labelText + '</div>'
-                })
+                properties: geojson.properties,
+                labelingInfo: labelingInfo,
+                offset: offset
               });
 
               labelsLayer.addLayer(label);
