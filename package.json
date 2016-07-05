@@ -33,7 +33,7 @@
   "dependencies": {
     "esri-leaflet": "^2.0.0",
     "esri-leaflet-heatmap-feature-layer": "^2.0.0-beta.1",
-    "esri-leaflet-renderers": "^2.0.2",
+    "esri-leaflet-renderers": "^2.0.3",
     "leaflet": "^1.0.0-rc.1",
     "leaflet-vectoricon": "^0.1.0",
     "leaflet.heat": "^0.1.3"
