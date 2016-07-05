@@ -12,7 +12,6 @@ export function _generateEsriLayer (layer, layers, map) {
   var lyr;
   var labels = [];
   var labelsLayer;
-  var renderer;
 
   if (layer.featureCollection !== undefined) {
     // Supporting only point geometry
@@ -83,7 +82,6 @@ export function _generateEsriLayer (layer, layers, map) {
         return lyr;
       } else {
         console.log('create ArcGISFeatureLayer (with layerDefinition.drawingInfo)');
-        renderer = layer.layerDefinition.drawingInfo.renderer;
 
         if (layer.layerDefinition.definitionExpression !== undefined) {
           where = layer.layerDefinition.definitionExpression;
@@ -93,27 +91,7 @@ export function _generateEsriLayer (layer, layers, map) {
         lyr = L.esri.featureLayer({
           url: layer.url,
           where: where,
-          ignoreRenderer: true,
-          pointToLayer: function (geojson, latlng) {
-            var icon = _generateIcon(renderer, geojson.properties);
-            var f = L.marker(latlng, {
-              icon: icon,
-              opacity: layer.opacity
-            });
-
-            return f;
-          },
-          style: function (geojson) {
-            var pathOptions;
-
-            if (geojson.geometry.type === 'LineString' || geojson.geometry.type === 'MultiLineString' || geojson.geometry.type === 'Polygon' || geojson.geometry.type === 'MultiPolygon') {
-              pathOptions = _generatePathStyle(renderer, geojson.properties);
-            } else {
-              // console.log(geojson);
-            }
-
-            return pathOptions;
-          },
+          drawingInfo: layer.layerDefinition.drawingInfo,
           onEachFeature: function (geojson, l) {
             if (layer.popupInfo !== undefined) {
               var popupContent = createPopupContent(layer.popupInfo, geojson.properties);
