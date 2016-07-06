@@ -36,7 +36,14 @@ export function _generateEsriLayer (layer, layers, map) {
     lyr = featureCollection([], {
       data: layer.featureCollection,
       opacity: layer.opacity,
-      renderer: layer.featureCollection.layers[0].layerDefinition.drawingInfo.renderer
+      renderer: layer.featureCollection.layers[0].layerDefinition.drawingInfo.renderer,
+      onEachFeature: function (geojson, l) {
+        if (layer.featureCollection.layers[0].popupInfo !== undefined) {
+          var popupContent = createPopupContent(layer.featureCollection.layers[0].popupInfo, geojson.properties);
+          console.log(popupContent);
+          l.bindPopup(popupContent);
+        }
+      }
     });
 
     if (labels.length > 0) {
@@ -94,20 +101,17 @@ export function _generateEsriLayer (layer, layers, map) {
               var labelingInfo = layer.layerDefinition.drawingInfo.labelingInfo;
 
               var labelPos;
-              var labelClassName;
               var centralKey;
               var c, c2;
               var offset = [0, 0];
 
               if (l.feature.geometry.type === 'Point') {
                 labelPos = l.feature.geometry.coordinates.reverse();
-                labelClassName = 'point-label';
                 offset = [20, 20];
               } else if (l.feature.geometry.type === 'LineString') {
                 c = l.feature.geometry.coordinates;
                 centralKey = Math.round(c.length / 2);
                 labelPos = c[centralKey].reverse();
-                labelClassName = 'path-label';
               } else if (l.feature.geometry.type === 'MultiLineString') {
                 c = l.feature.geometry.coordinates;
                 centralKey = Math.round(c.length / 2);
@@ -115,10 +119,8 @@ export function _generateEsriLayer (layer, layers, map) {
                 centralKey = Math.round(c2.length / 2);
 
                 labelPos = c2[centralKey].reverse();
-                labelClassName = 'path-label';
               } else {
                 labelPos = l.getBounds().getCenter();
-                labelClassName = 'path-label';
               }
 
               var label = labelMarker(labelPos, {
