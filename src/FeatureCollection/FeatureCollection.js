@@ -29,7 +29,7 @@ export var FeatureCollection = L.GeoJSON.extend({
       this._getFeatureCollection(this.data);
     }
     else {
-      this._perseFeatureCollection(this.data);
+      this._parseFeatureCollection(this.data);
     }
   },
   
@@ -39,12 +39,12 @@ export var FeatureCollection = L.GeoJSON.extend({
       if (err) {
         console.log(err);
       } else {
-        this._perseFeatureCollection(res);
+        this._parseFeatureCollection(res);
       }
     }, this);
   },
 
-  _perseFeatureCollection: function (data) {
+  _parseFeatureCollection: function (data) {
     var features = data.layers[0].featureSet.features;
     var geometryType = data.layers[0].layerDefinition.geometryType; // 'esriGeometryPoint' | 'esriGeometryMultipoint' | 'esriGeometryPolyline' | 'esriGeometryPolygon' | 'esriGeometryEnvelope'
     var geojson = this._featureCollectionToGeoJSON(features, geometryType);
