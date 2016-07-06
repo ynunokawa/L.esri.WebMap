@@ -193,8 +193,8 @@ export var FeatureCollection = L.GeoJSON.extend({
   }
 });
 
-export function featureCollection (layers, options) {
-  return new FeatureCollection(layers, options);
+export function featureCollection (geojson, options) {
+  return new FeatureCollection(geojson, options);
 }
 
 export default featureCollection;
