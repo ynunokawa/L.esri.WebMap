@@ -4,7 +4,7 @@ import { classBreaksRenderer, uniqueValueRenderer, simpleRenderer } from 'esri-l
 
 export var FeatureCollection = L.GeoJSON.extend({
   options: {
-    data: {}, // Esri Feature Collection JSON
+    data: {}, // Esri Feature Collection JSON or Item ID
     opacity: 1,
     renderer: {}
   },
