@@ -24,8 +24,24 @@ export var FeatureCollection = L.GeoJSON.extend({
         this.addLayer(layers[i]);
       }
     }
-
-    this._perseFeatureCollection(this.data);
+    
+    if (typeof this.data === 'string') {
+      this._getFeatureCollection(this.data);
+    }
+    else {
+      this._perseFeatureCollection(this.data);
+    }
+  },
+  
+  _getFeatureCollection: function (itemId) {
+    var url = 'https://www.arcgis.com/sharing/rest/content/items/' + itemId + '/data';
+    L.esri.request(url, {}, function (err, res) {
+      if (err) {
+        console.log(err);
+      } else {
+        this._perseFeatureCollection(res);
+      }
+    }, this);
   },
 
   _perseFeatureCollection: function (data) {
@@ -34,6 +50,7 @@ export var FeatureCollection = L.GeoJSON.extend({
     var geojson = this._featureCollectionToGeoJSON(features, geometryType);
 
     this._setRenderers(data.layers[0].layerDefinition);
+    console.log(geojson);
     this.addData(geojson);
   },
 
@@ -57,11 +74,58 @@ export var FeatureCollection = L.GeoJSON.extend({
           properties: features[i].attributes
         };
       } else if (geometryType === 'esriGeometryMultipoint') {
+        var j, plen;
+        var points = [];
 
+        for (j = 0, plen = features[i].geometry.points.length; j < plen; j++) {
+          var mercatorToLatlng = L.Projection.SphericalMercator.unproject(L.point(features[i].geometry.points[j][0], features[i].geometry.points[j][1]));
+          var coordinates = [mercatorToLatlng.lng, mercatorToLatlng.lat];
+          points.push(coordinates);
+        }
+        
+        f = {
+          type: 'Feature',
+          geometry: { type: 'MultiPoint', coordinates: points },
+          properties: features[i].attributes
+        };
       } else if (geometryType === 'esriGeometryPolyline') {
+        var j, k, pathlen, pathslen;
+        var paths = [];
 
+        for (j = 0, pathslen = features[i].geometry.paths.length; j < pathslen; j++) {
+          var path = [];
+          for (k = 0, pathlen = features[i].geometry.paths[j].length; k < pathlen; k++) {
+            var mercatorToLatlng = L.Projection.SphericalMercator.unproject(L.point(features[i].geometry.paths[j][k][0], features[i].geometry.paths[j][k][1]));
+            var coordinates = [mercatorToLatlng.lng, mercatorToLatlng.lat];
+            path.push(coordinates);
+          }
+          paths.push(path);
+        }
+        
+        f = {
+          type: 'Feature',
+          geometry: { type: 'MultiLineString', coordinates: paths },
+          properties: features[i].attributes
+        };
       } else if (geometryType === 'esriGeometryPolygon') {
+        var j, k, ringlen, ringslen;
+        var rings = [];
 
+        for (j = 0, ringslen = features[i].geometry.rings.length; j < ringslen; j++) {
+          var ring = [];
+          for (k = 0, ringlen = features[i].geometry.rings[j].length; k < ringlen; k++) {
+            var mercatorToLatlng = L.Projection.SphericalMercator.unproject(L.point(features[i].geometry.rings[j][k][0], features[i].geometry.rings[j][k][1]));
+            var coordinates = [mercatorToLatlng.lng, mercatorToLatlng.lat];
+            ring.push(coordinates);
+          }
+          rings.push(ring);
+        }
+
+        f = {
+          type: 'Feature',
+          geometry: { type: 'MultiPolygon', coordinates: rings },
+          properties: features[i].attributes
+        };
       } else if (geometryType === 'esriGeometryEnvelope') {
 
       }
@@ -72,6 +136,22 @@ export var FeatureCollection = L.GeoJSON.extend({
     geojson.features = featuresArray;
 
     return geojson;
+  },
+  
+  _checkForProportionalSymbols: function (geometryType, renderer) {
+    this._hasProportionalSymbols = false;
+    if (geometryType === 'esriGeometryPolygon') {
+      if (renderer.backgroundFillSymbol) {
+        this._hasProportionalSymbols = true;
+      }
+      // check to see if the first symbol in the classbreaks is a marker symbol
+      if (renderer.classBreakInfos && renderer.classBreakInfos.length) {
+        var sym = renderer.classBreakInfos[0].symbol;
+        if (sym && (sym.type === 'esriSMS' || sym.type === 'esriPMS')) {
+          this._hasProportionalSymbols = true;
+        }
+      }
+    }
   },
 
   _setRenderers: function (layerDefinition) {

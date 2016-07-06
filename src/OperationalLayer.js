@@ -17,7 +17,7 @@ export function _generateEsriLayer (layer, layers, map) {
     // Supporting only point geometry
     console.log('create FeatureCollection');
 
-    if (layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo !== undefined) {
+    if (layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo) {
       layer.featureCollection.layers[0].featureSet.features.map(function (feature) {
         var mercatorToLatlng = L.Projection.SphericalMercator.unproject(L.point(feature.geometry.x, feature.geometry.y));
         var labelingInfo = layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo;
@@ -34,13 +34,12 @@ export function _generateEsriLayer (layer, layers, map) {
     }
 
     lyr = featureCollection([], {
-      data: layer.featureCollection,
+      data: layer.itemId || layer.featureCollection,
       opacity: layer.opacity,
       renderer: layer.featureCollection.layers[0].layerDefinition.drawingInfo.renderer,
       onEachFeature: function (geojson, l) {
         if (layer.featureCollection.layers[0].popupInfo !== undefined) {
           var popupContent = createPopupContent(layer.featureCollection.layers[0].popupInfo, geojson.properties);
-          console.log(popupContent);
           l.bindPopup(popupContent);
         }
       }
