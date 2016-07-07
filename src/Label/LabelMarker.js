@@ -1,4 +1,5 @@
 import L from 'leaflet';
+import { labelIcon } from './LabelIcon';
 
 export var LabelMarker = L.Marker.extend({
   options: {
@@ -28,10 +29,8 @@ export var LabelMarker = L.Marker.extend({
   },
 
   _setLabelIcon: function (text, offset) {
-    var icon = L.divIcon({
-      iconSize: null,
-      className: 'esri-leaflet-webmap-labels',
-      html: '<div>' + text + '</div>',
+    var icon = labelIcon({
+      text: text,
       iconAnchor: offset
     });
 
