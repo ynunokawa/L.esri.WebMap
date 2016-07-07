@@ -1,6 +1,6 @@
 {
   "name": "esri-leaflet-webmap",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "A leaflet plugin to display ArcGIS Web Map.",
   "main": "dist/esri-leaflet-webmap-debug.js",
   "scripts": {
