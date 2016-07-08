@@ -81,6 +81,9 @@ export function _generateEsriLayer (layer, layers, map) {
         return lyr;
       } else {
         console.log('create ArcGISFeatureLayer (with layerDefinition.drawingInfo)');
+        var drawingInfo = layer.layerDefinition.drawingInfo;
+        drawingInfo.transparency = 100 - (layer.opacity * 100);
+        console.log(drawingInfo.transparency);
 
         if (layer.layerDefinition.definitionExpression !== undefined) {
           where = layer.layerDefinition.definitionExpression;
@@ -90,7 +93,7 @@ export function _generateEsriLayer (layer, layers, map) {
         lyr = L.esri.featureLayer({
           url: layer.url,
           where: where,
-          drawingInfo: layer.layerDefinition.drawingInfo,
+          drawingInfo: drawingInfo,
           onEachFeature: function (geojson, l) {
             if (layer.popupInfo !== undefined) {
               var popupContent = createPopupContent(layer.popupInfo, geojson.properties);
@@ -171,14 +174,6 @@ export function _generateEsriLayer (layer, layers, map) {
           var popupContent = createPopupContent(layer.popupInfo, geojson.properties);
           l.bindPopup(popupContent);
         }
-      },
-      pointToLayer: function (geojson, latlng) {
-        var f = L.marker(latlng, {
-          // icon: icon,
-          opacity: layer.opacity
-        });
-
-        return f;
       }
     });
 
@@ -188,7 +183,8 @@ export function _generateEsriLayer (layer, layers, map) {
   } else if (layer.layerType === 'ArcGISImageServiceLayer') {
     console.log('create ArcGISImageServiceLayer');
     lyr = L.esri.imageMapLayer({
-      url: layer.url
+      url: layer.url,
+      opacity: layer.opacity || 1
     });
 
     layers.push({ type: 'IML', title: layer.title || '', layer: lyr });
@@ -196,7 +192,8 @@ export function _generateEsriLayer (layer, layers, map) {
     return lyr;
   } else if (layer.layerType === 'ArcGISMapServiceLayer') {
     lyr = L.esri.dynamicMapLayer({
-      url: layer.url
+      url: layer.url,
+      opacity: layer.opacity || 1
     });
 
     layers.push({ type: 'DML', title: layer.title || '', layer: lyr });
@@ -221,6 +218,8 @@ export function _generateEsriLayer (layer, layers, map) {
       });
     }
 
+    document.getElementsByClassName('leaflet-tile-pane')[0].style.opacity = layer.opacity || 1;
+
     layers.push({ type: 'TML', title: layer.title || '', layer: lyr });
 
     return lyr;
@@ -237,6 +236,7 @@ export function _generateEsriLayer (layer, layers, map) {
     lyr = L.tileLayer(lyrUrl, {
       attribution: layer.copyright
     });
+    document.getElementsByClassName('leaflet-tile-pane')[0].style.opacity = layer.opacity || 1;
 
     layers.push({ type: 'TL', title: layer.title || layer.id || '', layer: lyr });
 
