@@ -16,12 +16,12 @@
 
 	<!-- Load Heatmap Feature Layer from CDN -->
 	<script src="https://cdn.jsdelivr.net/leaflet.esri.heatmap-feature-layer/2.0.0-beta.1/esri-leaflet-heatmap-feature-layer.js"></script>
-    
+
     <!-- Load Esri Leaflet Renderers from CDN -->
-    <script src="//cdn.jsdelivr.net/leaflet.esri.renderers/2.0.3/esri-leaflet-renderers.js"></script>
+    <script src="https://cdn.jsdelivr.net/leaflet.esri.renderers/2.0.3/esri-leaflet-renderers.js"></script>
 
     <!-- Load L.esri.WebMap -->
-	<script src="https://cdn.rawgit.com/ynunokawa/L.esri.WebMap/v0.3.3/dist/esri-leaflet-webmap.js"></script>
+	<script src="https://cdn.jsdelivr.net/leaflet.esri.webmap/0.3.3/esri-leaflet-webmap.js"></script>
 
   <style>
     body { margin:0; padding:0; }
@@ -82,7 +82,7 @@
         });
         webmap._map.addControl(new MapTitleControl());
     });
-    
+
     webmap.on('load', function() {
         console.log('webmap loaded', webmap.layers);
         var overlayMaps = {};
