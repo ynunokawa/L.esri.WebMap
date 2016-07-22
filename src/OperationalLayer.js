@@ -14,7 +14,6 @@ export function _generateEsriLayer (layer, layers, map) {
   var labelsLayer;
 
   if (layer.featureCollection !== undefined) {
-    // Supporting only point geometry
     console.log('create FeatureCollection');
 
     if (layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo && layer.featureCollection.layers[0].featureSet) {
@@ -51,6 +50,14 @@ export function _generateEsriLayer (layer, layers, map) {
     }
 
     layers.push({ type: 'FC', title: layer.title || '', layer: lyr });
+
+    return lyr;
+  } else if (layer.type === 'Feature Collection') {
+    console.log('create FeatureCollection without featureCollection property');
+    lyr = featureCollection([], {
+      data: layer.itemId,
+      opacity: layer.opacity
+    });
 
     return lyr;
   } else if (layer.layerType === 'ArcGISFeatureLayer' && layer.layerDefinition !== undefined) {
