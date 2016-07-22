@@ -31,6 +31,7 @@
   "homepage": "https://github.com/ynunokawa/L.esri.WebMap#readme",
   "jsnext:main": "src/EsriLeafletWebMap.js",
   "dependencies": {
+    "arcgis-to-geojson-utils": "^1.0.1",
     "esri-leaflet": "^2.0.0",
     "esri-leaflet-heatmap-feature-layer": "^2.0.0-beta.1",
     "esri-leaflet-renderers": "^2.0.3",
