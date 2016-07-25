@@ -1,6 +1,9 @@
 import L from 'leaflet';
 import { featureCollection } from './FeatureCollection/FeatureCollection';
 import { labelMarker } from './Label/LabelMarker';
+import { pointLabelPos } from './Label/PointLabel';
+import { polylineLabelPos } from './Label/PolylineLabel';
+import { polygonLabelPos } from './Label/PolygonLabel';
 import { createPopupContent } from './Popup/Popup';
 
 export function operationalLayer (layer, layers, map) {
@@ -108,35 +111,24 @@ export function _generateEsriLayer (layer, layers, map) {
             }
             if (layer.layerDefinition.drawingInfo.labelingInfo !== undefined) {
               var labelingInfo = layer.layerDefinition.drawingInfo.labelingInfo;
-
+              var coordinates = l.feature.geometry.coordinates;
               var labelPos;
-              var centralKey;
-              var c, c2;
-              var offset = [0, 0];
 
               if (l.feature.geometry.type === 'Point') {
-                labelPos = l.feature.geometry.coordinates.reverse();
-                offset = [20, 20];
+                labelPos = pointLabelPos(coordinates);
               } else if (l.feature.geometry.type === 'LineString') {
-                c = l.feature.geometry.coordinates;
-                centralKey = Math.round(c.length / 2);
-                labelPos = c[centralKey].reverse();
+                labelPos = polylineLabelPos(coordinates);
               } else if (l.feature.geometry.type === 'MultiLineString') {
-                c = l.feature.geometry.coordinates;
-                centralKey = Math.round(c.length / 2);
-                c2 = c[centralKey];
-                centralKey = Math.round(c2.length / 2);
-
-                labelPos = c2[centralKey].reverse();
+                labelPos = polylineLabelPos(coordinates[Math.round(coordinates.length / 2)]);
               } else {
-                labelPos = l.getBounds().getCenter();
+                labelPos = polygonLabelPos(l);
               }
 
-              var label = labelMarker(labelPos, {
+              var label = labelMarker(labelPos.position, {
                 zIndexOffset: 1,
                 properties: geojson.properties,
                 labelingInfo: labelingInfo,
-                offset: offset
+                offset: labelPos.offset
               });
 
               labelsLayer.addLayer(label);
