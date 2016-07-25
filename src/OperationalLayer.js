@@ -19,22 +19,7 @@ export function _generateEsriLayer (layer, layers, map) {
   if (layer.featureCollection !== undefined) {
     console.log('create FeatureCollection');
 
-    if (layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo && layer.featureCollection.layers[0].featureSet) {
-      layer.featureCollection.layers[0].featureSet.features.map(function (feature) {
-        var mercatorToLatlng = L.Projection.SphericalMercator.unproject(L.point(feature.geometry.x, feature.geometry.y));
-        var labelingInfo = layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo;
-
-        var label = labelMarker(mercatorToLatlng, {
-          zIndexOffset: 1,
-          properties: feature.attributes,
-          labelingInfo: labelingInfo,
-          offset: [20, 20]
-        });
-
-        labels.push(label);
-      });
-    }
-
+    labelsLayer = L.featureGroup(labels);
     lyr = featureCollection([], {
       data: layer.itemId || layer.featureCollection,
       opacity: layer.opacity,
@@ -44,13 +29,34 @@ export function _generateEsriLayer (layer, layers, map) {
           var popupContent = createPopupContent(layer.featureCollection.layers[0].popupInfo, geojson.properties);
           l.bindPopup(popupContent);
         }
+        if (layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo !== undefined) {
+          var labelingInfo = layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo;
+          var coordinates = l.feature.geometry.coordinates;
+          var labelPos;
+
+          if (l.feature.geometry.type === 'Point') {
+            labelPos = pointLabelPos(coordinates);
+          } else if (l.feature.geometry.type === 'LineString') {
+            labelPos = polylineLabelPos(coordinates);
+          } else if (l.feature.geometry.type === 'MultiLineString') {
+            labelPos = polylineLabelPos(coordinates[Math.round(coordinates.length / 2)]);
+          } else {
+            labelPos = polygonLabelPos(l);
+          }
+
+          var label = labelMarker(labelPos.position, {
+            zIndexOffset: 1,
+            properties: geojson.properties,
+            labelingInfo: labelingInfo,
+            offset: labelPos.offset
+          });
+
+          labelsLayer.addLayer(label);
+        }
       }
     });
 
-    if (labels.length > 0) {
-      labelsLayer = L.featureGroup(labels);
-      lyr = L.layerGroup([lyr, labelsLayer]);
-    }
+    lyr = L.layerGroup([lyr, labelsLayer]);
 
     layers.push({ type: 'FC', title: layer.title || '', layer: lyr });
 
