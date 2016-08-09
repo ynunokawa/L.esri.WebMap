@@ -20,7 +20,9 @@ export var WebMap = L.Evented.extend({
     // L.Map
     map: {},
     // access token for secure contents on ArcGIS Online
-    token: null
+    token: null,
+    // server domain name (default= 'www.arcgis.com')
+    server:'www.arcgis.com'
   },
 
   initialize: function (webmapId, options) {
@@ -28,6 +30,7 @@ export var WebMap = L.Evented.extend({
 
     this._map = this.options.map;
     this._token = this.options.token;
+    this._server = this.options.server;
     this._webmapId = webmapId;
     this._loaded = false;
     this._metadataLoaded = false;
@@ -44,11 +47,15 @@ export var WebMap = L.Evented.extend({
   },
 
   _loadWebMapMetaData: function (id) {
+    var params = {};
     var map = this._map;
     var webmap = this;
-    var webmapMetaDataRequestUrl = 'https://www.arcgis.com/sharing/rest/content/items/' + id;
+    var webmapMetaDataRequestUrl = 'https://' + this._server + '/sharing/rest/content/items/' + id;
+    if (this._token && this._token.length>0){
+      params.token = this._token;
+    }
 
-    L.esri.request(webmapMetaDataRequestUrl, {}, function (error, response) {
+    L.esri.request(webmapMetaDataRequestUrl, params, function (error, response) {
       if (error) {
         console.log(error);
       } else {
@@ -65,9 +72,13 @@ export var WebMap = L.Evented.extend({
   _loadWebMap: function (id) {
     var map = this._map;
     var layers = this.layers;
-    var webmapRequestUrl = 'https://www.arcgis.com/sharing/rest/content/items/' + id + '/data';
+    var params = {};
+    var webmapRequestUrl = 'https://' + this._server + '/sharing/rest/content/items/' + id + '/data';
+    if (this._token && this._token.length>0){
+      params.token = this._token;
+    }
 
-    L.esri.request(webmapRequestUrl, {}, function (error, response) {
+    L.esri.request(webmapRequestUrl, params, function (error, response) {
       if (error) {
         console.log(error);
       } else {
