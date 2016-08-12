@@ -22,7 +22,7 @@ export var WebMap = L.Evented.extend({
     // access token for secure contents on ArcGIS Online
     token: null,
     // server domain name (default= 'www.arcgis.com')
-    server:'www.arcgis.com'
+    server: 'www.arcgis.com'
   },
 
   initialize: function (webmapId, options) {
@@ -51,7 +51,7 @@ export var WebMap = L.Evented.extend({
     var map = this._map;
     var webmap = this;
     var webmapMetaDataRequestUrl = 'https://' + this._server + '/sharing/rest/content/items/' + id;
-    if (this._token && this._token.length>0){
+    if (this._token && this._token.length > 0) {
       params.token = this._token;
     }
 
@@ -74,7 +74,7 @@ export var WebMap = L.Evented.extend({
     var layers = this.layers;
     var params = {};
     var webmapRequestUrl = 'https://' + this._server + '/sharing/rest/content/items/' + id + '/data';
-    if (this._token && this._token.length>0){
+    if (this._token && this._token.length > 0) {
       params.token = this._token;
     }
 

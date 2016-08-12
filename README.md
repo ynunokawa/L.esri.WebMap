@@ -30,9 +30,9 @@ You can see your web maps (that are open to the public) with URL parameter as th
 1. [Fork and clone](https://help.github.com/articles/fork-a-repo/) L.esri.WebMap
 2. `cd` into the `L.esri.WebMap` folder
 3. Install the dependencies with `npm install`
-4. Run `npm start` from the command line. This will compile minified source in a brand new dist directory, launch a tiny webserver and begin watching the raw source for changes
-5. Run `npm lint` to improve the code that you have added or updated
-6. Make your changes and create a [pull request](https://help.github.com/articles/creating-a-pull-request/)
+4. Run `npm start` from the command line. This will compile minified source in a brand new dist directory, launch a tiny webserver and begin watching the raw source for changes.
+5. Run `npm test` to make sure you haven't introduced a new 'feature' accidentally.
+6. Make your changes **in its own topic branch** and create a [pull request](https://help.github.com/articles/creating-a-pull-request/)
 
 ## Limitations
 
