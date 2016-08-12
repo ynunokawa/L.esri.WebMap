@@ -1,7 +1,9 @@
 import L from 'leaflet';
 
 import { arcgisToGeoJSON } from 'arcgis-to-geojson-utils';
-import { classBreaksRenderer, uniqueValueRenderer, simpleRenderer } from 'esri-leaflet-renderers';
+import { classBreaksRenderer } from 'esri-leaflet-renderers/src/Renderers/ClassBreaksRenderer';
+import { uniqueValueRenderer } from 'esri-leaflet-renderers/src/Renderers/UniqueValueRenderer';
+import { simpleRenderer } from 'esri-leaflet-renderers/src/Renderers/SimpleRenderer';
 
 export var FeatureCollection = L.GeoJSON.extend({
   options: {
