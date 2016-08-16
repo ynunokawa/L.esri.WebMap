@@ -6,11 +6,11 @@ import { polylineLabelPos } from './Label/PolylineLabel';
 import { polygonLabelPos } from './Label/PolygonLabel';
 import { createPopupContent } from './Popup/Popup';
 
-export function operationalLayer (layer, layers, map) {
-  return _generateEsriLayer(layer, layers, map);
+export function operationalLayer (layer, layers, map, paneName) {
+  return _generateEsriLayer(layer, layers, map, paneName);
 }
 
-export function _generateEsriLayer (layer, layers, map) {
+export function _generateEsriLayer (layer, layers, map, paneName) {
   console.log('generateEsriLayer: ', layer.title, layer);
   var lyr;
   var labels = [];
@@ -19,11 +19,15 @@ export function _generateEsriLayer (layer, layers, map) {
   if (layer.featureCollection !== undefined) {
     console.log('create FeatureCollection');
 
+    var labelPaneName = paneName + '-label';
+    map.createPane(labelPaneName);
+
     labelsLayer = L.featureGroup(labels);
     lyr = featureCollection([], {
       data: layer.itemId || layer.featureCollection,
       opacity: layer.opacity,
       renderer: layer.featureCollection.layers[0].layerDefinition.drawingInfo.renderer,
+      pane: paneName,
       onEachFeature: function (geojson, l) {
         if (layer.featureCollection.layers[0].popupInfo !== undefined) {
           var popupContent = createPopupContent(layer.featureCollection.layers[0].popupInfo, geojson.properties);
@@ -48,7 +52,8 @@ export function _generateEsriLayer (layer, layers, map) {
             zIndexOffset: 1,
             properties: geojson.properties,
             labelingInfo: labelingInfo,
-            offset: labelPos.offset
+            offset: labelPos.offset,
+            pane: labelPaneName
           });
 
           labelsLayer.addLayer(label);
@@ -65,6 +70,7 @@ export function _generateEsriLayer (layer, layers, map) {
     console.log('create FeatureCollection without featureCollection property');
     lyr = featureCollection([], {
       data: layer.itemId,
+      pane: paneName,
       opacity: layer.opacity
     });
 
@@ -89,7 +95,8 @@ export function _generateEsriLayer (layer, layers, map) {
           max: layer.layerDefinition.drawingInfo.renderer.maxPixelIntensity,
           blur: layer.layerDefinition.drawingInfo.renderer.blurRadius,
           radius: layer.layerDefinition.drawingInfo.renderer.blurRadius * 1.3,
-          gradient: gradient
+          gradient: gradient,
+          pane: paneName
         });
 
         layers.push({ type: 'HL', title: layer.title || '', layer: lyr });
@@ -105,11 +112,16 @@ export function _generateEsriLayer (layer, layers, map) {
           where = layer.layerDefinition.definitionExpression;
         }
 
+        var labelPaneName = paneName + '-label';
+        map.createPane(labelPaneName);
+
         labelsLayer = L.featureGroup(labels);
+
         lyr = L.esri.featureLayer({
           url: layer.url,
           where: where,
           drawingInfo: drawingInfo,
+          pane: paneName,
           onEachFeature: function (geojson, l) {
             if (layer.popupInfo !== undefined) {
               var popupContent = createPopupContent(layer.popupInfo, geojson.properties);
@@ -134,7 +146,8 @@ export function _generateEsriLayer (layer, layers, map) {
                 zIndexOffset: 1,
                 properties: geojson.properties,
                 labelingInfo: labelingInfo,
-                offset: labelPos.offset
+                offset: labelPos.offset,
+                pane: labelPaneName
               });
 
               labelsLayer.addLayer(label);
@@ -158,6 +171,7 @@ export function _generateEsriLayer (layer, layers, map) {
       lyr = L.esri.featureLayer({
         url: layer.url,
         where: where,
+        pane: paneName,
         onEachFeature: function (geojson, l) {
           if (layer.popupInfo !== undefined) {
             var popupContent = createPopupContent(layer.popupInfo, geojson.properties);
@@ -174,6 +188,7 @@ export function _generateEsriLayer (layer, layers, map) {
     console.log('create ArcGISFeatureLayer');
     lyr = L.esri.featureLayer({
       url: layer.url,
+      pane: paneName,
       onEachFeature: function (geojson, l) {
         if (layer.popupInfo !== undefined) {
           var popupContent = createPopupContent(layer.popupInfo, geojson.properties);
@@ -189,6 +204,7 @@ export function _generateEsriLayer (layer, layers, map) {
     console.log('create ArcGISImageServiceLayer');
     lyr = L.esri.imageMapLayer({
       url: layer.url,
+      pane: paneName,
       opacity: layer.opacity || 1
     });
 
@@ -198,6 +214,7 @@ export function _generateEsriLayer (layer, layers, map) {
   } else if (layer.layerType === 'ArcGISMapServiceLayer') {
     lyr = L.esri.dynamicMapLayer({
       url: layer.url,
+      pane: paneName,
       opacity: layer.opacity || 1
     });
 

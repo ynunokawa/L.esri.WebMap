@@ -93,8 +93,10 @@ export var WebMap = L.Evented.extend({
         });
 
         // Add Operational Layers
-        response.operationalLayers.map(function (layer) {
-          var lyr = operationalLayer(layer, layers, map);
+        response.operationalLayers.map(function (layer, i) {
+          var paneName = 'esri-webmap-layer' + i;
+          map.createPane(paneName);
+          var lyr = operationalLayer(layer, layers, map, paneName);
           if (lyr !== undefined && layer.visibility === true) {
             lyr.addTo(map);
           }
