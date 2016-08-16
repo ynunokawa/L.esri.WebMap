@@ -52,7 +52,7 @@ This change log adheres to standards from [Keep a CHANGELOG](http://keepachangel
 - Separate module for labeling as [`LabelMarker`](https://github.com/ynunokawa/L.esri.WebMap/blob/master/src/Label/LabelMarker.js)
 
 [Unreleased]: https://github.com/ynunokawa/L.esri.WebMap/compare/v0.3.4...HEAD
-[0.3.4]: https://github.com/ynunokawa/L.esri.WebMap/compare/0.3.3...v0.3.4
-[0.3.3]: https://github.com/ynunokawa/L.esri.WebMap/compare/0.3.2...v0.3.3
-[0.3.2]: https://github.com/ynunokawa/L.esri.WebMap/compare/0.3.1...v0.3.2
+[0.3.4]: https://github.com/ynunokawa/L.esri.WebMap/compare/v0.3.3...v0.3.4
+[0.3.3]: https://github.com/ynunokawa/L.esri.WebMap/compare/v0.3.2...v0.3.3
+[0.3.2]: https://github.com/ynunokawa/L.esri.WebMap/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/ynunokawa/L.esri.WebMap/compare/0.3.0...v0.3.1
