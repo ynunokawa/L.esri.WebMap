@@ -15,11 +15,11 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
   var lyr;
   var labels = [];
   var labelsLayer;
+  var labelPaneName = paneName + '-label';
 
   if (layer.featureCollection !== undefined) {
     console.log('create FeatureCollection');
 
-    var labelPaneName = paneName + '-label';
     map.createPane(labelPaneName);
 
     labelsLayer = L.featureGroup(labels);
@@ -112,7 +112,6 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
           where = layer.layerDefinition.definitionExpression;
         }
 
-        var labelPaneName = paneName + '-label';
         map.createPane(labelPaneName);
 
         labelsLayer = L.featureGroup(labels);
