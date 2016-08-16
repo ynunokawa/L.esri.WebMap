@@ -5,6 +5,25 @@ This change log adheres to standards from [Keep a CHANGELOG](http://keepachangel
 
 ## [Unreleased]
 
+## [0.3.4] - 2016-08-16
+
+### Added
+
+- Support for authorization `token` and `server` for WebMap request (by @manders)
+- Support for layer order with [custom pane](http://leafletjs.com/examples/map-panes.html#custom-pane)
+- Support for `FeatureCollection` without `featureCollection` property
+- Support for layer opacity (partial)
+
+### Fixed
+
+- FeatureLayer does not appear after initializing (#57)
+
+### Changed
+
+- Separate modules for calculating a label position
+- Use `arcgis-to-geojson-utils` as converter
+- Separate a module for label icon as LabelIcon
+
 ## [0.3.3] - 2016-07-07
 
 ### Added
@@ -32,5 +51,8 @@ This change log adheres to standards from [Keep a CHANGELOG](http://keepachangel
 - Separate module for a feature collection as [`FeatureCollection`](https://github.com/ynunokawa/L.esri.WebMap/blob/master/src/FeatureCollection/FeatureCollection.js)
 - Separate module for labeling as [`LabelMarker`](https://github.com/ynunokawa/L.esri.WebMap/blob/master/src/Label/LabelMarker.js)
 
-[Unreleased]: https://github.com/ynunokawa/L.esri.WebMap/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/ynunokawa/L.esri.WebMap/compare/v0.3.4...HEAD
+[0.3.4]: https://github.com/ynunokawa/L.esri.WebMap/compare/0.3.3...v0.3.4
+[0.3.3]: https://github.com/ynunokawa/L.esri.WebMap/compare/0.3.2...v0.3.3
+[0.3.2]: https://github.com/ynunokawa/L.esri.WebMap/compare/0.3.1...v0.3.2
 [0.3.1]: https://github.com/ynunokawa/L.esri.WebMap/compare/0.3.0...v0.3.1
