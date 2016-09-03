@@ -28,7 +28,7 @@ This change log adheres to standards from [Keep a CHANGELOG](http://keepachangel
 
 ### Added
 
-- [NPMCDN](https://npmcdn.com/esri-leaflet-webmap@0.3.3) (an alternative plan until added into jsdelivr)
+- [NPMCDN](https://unpkg.com/esri-leaflet-webmap@0.3.3) (an alternative plan until added into jsdelivr)
 
 ## [0.3.2] - 2016-07-06
 
