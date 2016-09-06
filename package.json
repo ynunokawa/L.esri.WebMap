@@ -23,7 +23,7 @@
     "arcgis",
     "webmap"
   ],
-  "author": "Yusuke Nunokawa <nuno0825@gmail.com> (https://ynunokawa.github.io/)",
+  "author": "Yusuke Nunokawa <ynunokawa.dev@gmail.com> (https://ynunokawa.github.io/)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/ynunokawa/L.esri.WebMap/issues"
