@@ -20,7 +20,7 @@ export function setRenderer (layerDefinition, layer) {
 
   switch (rendererInfo.type) {
     case 'classBreaks':
-      layer._checkForProportionalSymbols(layerDefinition.geometryType, rendererInfo);
+      checkForProportionalSymbols(layerDefinition.geometryType, rendererInfo, layer);
       if (layer._hasProportionalSymbols) {
         layer._createPointLayer();
         var pRend = classBreaksRenderer(rendererInfo, options);
@@ -39,8 +39,25 @@ export function setRenderer (layerDefinition, layer) {
   rend.attachStylesToLayer(layer);
 }
 
+export function checkForProportionalSymbols (geometryType, renderer, layer) {
+  layer._hasProportionalSymbols = false;
+  if (geometryType === 'esriGeometryPolygon') {
+    if (renderer.backgroundFillSymbol) {
+      layer._hasProportionalSymbols = true;
+    }
+    // check to see if the first symbol in the classbreaks is a marker symbol
+    if (renderer.classBreakInfos && renderer.classBreakInfos.length) {
+      var sym = renderer.classBreakInfos[0].symbol;
+      if (sym && (sym.type === 'esriSMS' || sym.type === 'esriPMS')) {
+        layer._hasProportionalSymbols = true;
+      }
+    }
+  }
+}
+
 export var Renderer = {
-  setRenderer: setRenderer
+  setRenderer: setRenderer,
+  checkForProportionalSymbols: checkForProportionalSymbols
 };
 
 export default Renderer;

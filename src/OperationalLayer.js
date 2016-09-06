@@ -1,5 +1,6 @@
 import L from 'leaflet';
 import { featureCollection } from './FeatureCollection/FeatureCollection';
+import { csvLayer } from './FeatureCollection/CSVLayer';
 import { labelMarker } from './Label/LabelMarker';
 import { pointLabelPos } from './Label/PointLabel';
 import { polylineLabelPos } from './Label/PolylineLabel';
@@ -197,6 +198,53 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
     });
 
     layers.push({ type: 'FL', title: layer.title || '', layer: lyr });
+
+    return lyr;
+  } else if (layer.layerType === 'CSV') {
+    labelsLayer = L.featureGroup(labels);
+    lyr = csvLayer([], {
+      url: layer.url,
+      layerDefinition: layer.layerDefinition,
+      locationInfo: layer.locationInfo,
+      opacity: layer.opacity,
+      pane: paneName,
+      renderer: layer.layerDefinition.drawingInfo.renderer,
+      onEachFeature: function (geojson, l) {
+        if (layer.popupInfo !== undefined) {
+          var popupContent = createPopupContent(layer.popupInfo, geojson.properties);
+          l.bindPopup(popupContent);
+        }
+        if (layer.layerDefinition.drawingInfo.labelingInfo !== undefined) {
+          var labelingInfo = layer.layerDefinition.drawingInfo.labelingInfo;
+          var coordinates = l.feature.geometry.coordinates;
+          var labelPos;
+
+          if (l.feature.geometry.type === 'Point') {
+            labelPos = pointLabelPos(coordinates);
+          } else if (l.feature.geometry.type === 'LineString') {
+            labelPos = polylineLabelPos(coordinates);
+          } else if (l.feature.geometry.type === 'MultiLineString') {
+            labelPos = polylineLabelPos(coordinates[Math.round(coordinates.length / 2)]);
+          } else {
+            labelPos = polygonLabelPos(l);
+          }
+
+          var label = labelMarker(labelPos.position, {
+            zIndexOffset: 1,
+            properties: geojson.properties,
+            labelingInfo: labelingInfo,
+            offset: labelPos.offset,
+            pane: labelPaneName
+          });
+
+          labelsLayer.addLayer(label);
+        }
+      }
+    });
+
+    lyr = L.layerGroup([lyr, labelsLayer]);
+
+    layers.push({ type: 'CSV', title: layer.title || '', layer: lyr });
 
     return lyr;
   } else if (layer.layerType === 'ArcGISImageServiceLayer') {

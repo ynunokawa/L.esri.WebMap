@@ -125,22 +125,6 @@ export var FeatureCollection = L.GeoJSON.extend({
     geojsonFeatureCollection.features = featuresArray;
 
     return geojsonFeatureCollection;
-  },
-
-  _checkForProportionalSymbols: function (geometryType, renderer) {
-    this._hasProportionalSymbols = false;
-    if (geometryType === 'esriGeometryPolygon') {
-      if (renderer.backgroundFillSymbol) {
-        this._hasProportionalSymbols = true;
-      }
-      // check to see if the first symbol in the classbreaks is a marker symbol
-      if (renderer.classBreakInfos && renderer.classBreakInfos.length) {
-        var sym = renderer.classBreakInfos[0].symbol;
-        if (sym && (sym.type === 'esriSMS' || sym.type === 'esriPMS')) {
-          this._hasProportionalSymbols = true;
-        }
-      }
-    }
   }
 });
 
