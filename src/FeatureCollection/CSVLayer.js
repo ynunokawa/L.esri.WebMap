@@ -33,7 +33,7 @@ export var CSVLayer = L.GeoJSON.extend({
   },
 
   _parseCSV: function (url, layerDefinition, locationInfo) {
-    var csv = omnivore.csv(url, {
+    omnivore.csv(url, {
       latfield: locationInfo.latitudeFieldName,
       lonfield: locationInfo.longitudeFieldName
     }, this);
