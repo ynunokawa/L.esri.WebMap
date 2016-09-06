@@ -23,6 +23,7 @@ module.exports = function(config) {
       'node_modules/leaflet.heat/dist/leaflet-heat.js',
       'node_modules/esri-leaflet-heatmap-feature-layer/dist/esri-leaflet-heatmap-feature-layer.js',
       'node_modules/leaflet-vectoricon/L.VectorIcon.js',
+      'node_modules/leaflet-omnivore/leaflet-omnivore.js',
       'dist/esri-leaflet-webmap-debug.js',
       'spec/**/*.js'
     ],
