@@ -1,9 +1,7 @@
 import L from 'leaflet';
 
 import { arcgisToGeoJSON } from 'arcgis-to-geojson-utils';
-import { classBreaksRenderer } from 'esri-leaflet-renderers/src/Renderers/ClassBreaksRenderer';
-import { uniqueValueRenderer } from 'esri-leaflet-renderers/src/Renderers/UniqueValueRenderer';
-import { simpleRenderer } from 'esri-leaflet-renderers/src/Renderers/SimpleRenderer';
+import { setRenderer } from './Renderer';
 
 export var FeatureCollection = L.GeoJSON.extend({
   options: {
@@ -57,7 +55,7 @@ export var FeatureCollection = L.GeoJSON.extend({
 
     var geojson = this._featureCollectionToGeoJSON(features, objectIdField);
 
-    this._setRenderers(data.layers[0].layerDefinition);
+    setRenderer(data.layers[0].layerDefinition, this);
     console.log(geojson);
     this.addData(geojson);
   },
@@ -127,59 +125,6 @@ export var FeatureCollection = L.GeoJSON.extend({
     geojsonFeatureCollection.features = featuresArray;
 
     return geojsonFeatureCollection;
-  },
-
-  _checkForProportionalSymbols: function (geometryType, renderer) {
-    this._hasProportionalSymbols = false;
-    if (geometryType === 'esriGeometryPolygon') {
-      if (renderer.backgroundFillSymbol) {
-        this._hasProportionalSymbols = true;
-      }
-      // check to see if the first symbol in the classbreaks is a marker symbol
-      if (renderer.classBreakInfos && renderer.classBreakInfos.length) {
-        var sym = renderer.classBreakInfos[0].symbol;
-        if (sym && (sym.type === 'esriSMS' || sym.type === 'esriPMS')) {
-          this._hasProportionalSymbols = true;
-        }
-      }
-    }
-  },
-
-  _setRenderers: function (layerDefinition) {
-    var rend;
-    var rendererInfo = this.renderer;
-
-    var options = {};
-
-    if (this.options.pane) {
-      options.pane = this.options.pane;
-    }
-    if (layerDefinition.drawingInfo.transparency) {
-      options.layerTransparency = layerDefinition.drawingInfo.transparency;
-    }
-    if (this.options.style) {
-      options.userDefinedStyle = this.options.style;
-    }
-
-    switch (rendererInfo.type) {
-      case 'classBreaks':
-        this._checkForProportionalSymbols(layerDefinition.geometryType, rendererInfo);
-        if (this._hasProportionalSymbols) {
-          this._createPointLayer();
-          var pRend = classBreaksRenderer(rendererInfo, options);
-          pRend.attachStylesToLayer(this._pointLayer);
-          options.proportionalPolygon = true;
-        }
-        rend = classBreaksRenderer(rendererInfo, options);
-        break;
-      case 'uniqueValue':
-        console.log(rendererInfo, options);
-        rend = uniqueValueRenderer(rendererInfo, options);
-        break;
-      default:
-        rend = simpleRenderer(rendererInfo, options);
-    }
-    rend.attachStylesToLayer(this);
   }
 });
 
