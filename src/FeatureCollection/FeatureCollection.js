@@ -45,17 +45,24 @@ export var FeatureCollection = L.GeoJSON.extend({
   },
 
   _parseFeatureCollection: function (data) {
-    var features = data.layers[0].featureSet.features;
-    var geometryType = data.layers[0].layerDefinition.geometryType; // 'esriGeometryPoint' | 'esriGeometryMultipoint' | 'esriGeometryPolyline' | 'esriGeometryPolygon' | 'esriGeometryEnvelope'
-    var objectIdField = data.layers[0].layerDefinition.objectIdField;
+    var i, len;
+    var index = 0;
+    for (i = 0, len = data.layers.length; i < len; i++) {
+      if (data.layers[i].featureSet.features.length > 0) {
+        index = i;
+      }
+    }
+    var features = data.layers[index].featureSet.features;
+    var geometryType = data.layers[index].layerDefinition.geometryType; // 'esriGeometryPoint' | 'esriGeometryMultipoint' | 'esriGeometryPolyline' | 'esriGeometryPolygon' | 'esriGeometryEnvelope'
+    var objectIdField = data.layers[index].layerDefinition.objectIdField;
 
-    if (data.layers[0].layerDefinition.extent.spatialReference.wkid === 102100) {
+    if (data.layers[index].layerDefinition.extent.spatialReference.wkid === 102100) {
       features = this._projTo4326(features, geometryType);
     }
 
     var geojson = this._featureCollectionToGeoJSON(features, objectIdField);
 
-    setRenderer(data.layers[0].layerDefinition, this);
+    setRenderer(data.layers[index].layerDefinition, this);
     console.log(geojson);
     this.addData(geojson);
   },
