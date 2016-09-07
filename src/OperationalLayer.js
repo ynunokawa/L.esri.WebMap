@@ -33,7 +33,7 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
           var popupContent = createPopupContent(layer.featureCollection.layers[0].popupInfo, geojson.properties);
           l.bindPopup(popupContent);
         }
-        if (layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo !== undefined) {
+        if (layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo !== undefined || layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo !== null) {
           var labelingInfo = layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo;
           var coordinates = l.feature.geometry.coordinates;
           var labelPos;
@@ -126,7 +126,7 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
               var popupContent = createPopupContent(layer.popupInfo, geojson.properties);
               l.bindPopup(popupContent);
             }
-            if (layer.layerDefinition.drawingInfo.labelingInfo !== undefined) {
+            if (layer.layerDefinition.drawingInfo.labelingInfo !== undefined || layer.layerDefinition.drawingInfo.labelingInfo !== null) {
               var labelingInfo = layer.layerDefinition.drawingInfo.labelingInfo;
               var coordinates = l.feature.geometry.coordinates;
               var labelPos;
@@ -212,7 +212,7 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
           var popupContent = createPopupContent(layer.popupInfo, geojson.properties);
           l.bindPopup(popupContent);
         }
-        if (layer.layerDefinition.drawingInfo.labelingInfo !== undefined) {
+        if (layer.layerDefinition.drawingInfo.labelingInfo !== undefined || layer.layerDefinition.drawingInfo.labelingInfo !== null) {
           var labelingInfo = layer.layerDefinition.drawingInfo.labelingInfo;
           var coordinates = l.feature.geometry.coordinates;
           var labelPos;
