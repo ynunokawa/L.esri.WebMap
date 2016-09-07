@@ -6,8 +6,7 @@ import { setRenderer } from './Renderer';
 export var FeatureCollection = L.GeoJSON.extend({
   options: {
     data: {}, // Esri Feature Collection JSON or Item ID
-    opacity: 1,
-    renderer: {}
+    opacity: 1
   },
 
   initialize: function (layers, options) {
@@ -15,7 +14,6 @@ export var FeatureCollection = L.GeoJSON.extend({
 
     this.data = this.options.data;
     this.opacity = this.options.opacity;
-    this.renderer = this.options.renderer;
     this._layers = {};
 
     var i, len;

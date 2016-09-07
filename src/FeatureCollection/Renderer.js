@@ -4,7 +4,7 @@ import { simpleRenderer } from 'esri-leaflet-renderers/src/Renderers/SimpleRende
 
 export function setRenderer (layerDefinition, layer) {
   var rend;
-  var rendererInfo = layer.renderer;
+  var rendererInfo = layerDefinition.drawingInfo.renderer;
 
   var options = {};
 

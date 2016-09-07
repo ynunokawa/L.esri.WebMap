@@ -27,7 +27,6 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
     lyr = featureCollection([], {
       data: layer.itemId || layer.featureCollection,
       opacity: layer.opacity,
-      renderer: layer.featureCollection.layers[0].layerDefinition.drawingInfo.renderer,
       pane: paneName,
       onEachFeature: function (geojson, l) {
         if (layer.featureCollection.layers[0].popupInfo !== undefined) {
@@ -208,7 +207,6 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
       locationInfo: layer.locationInfo,
       opacity: layer.opacity,
       pane: paneName,
-      renderer: layer.layerDefinition.drawingInfo.renderer,
       onEachFeature: function (geojson, l) {
         if (layer.popupInfo !== undefined) {
           var popupContent = createPopupContent(layer.popupInfo, geojson.properties);
