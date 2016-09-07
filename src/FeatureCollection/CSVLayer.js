@@ -7,8 +7,7 @@ export var CSVLayer = L.GeoJSON.extend({
   options: {
     url: '',
     data: {}, // Esri Feature Collection JSON or Item ID
-    opacity: 1,
-    renderer: {}
+    opacity: 1
   },
 
   initialize: function (layers, options) {
@@ -18,7 +17,6 @@ export var CSVLayer = L.GeoJSON.extend({
     this.layerDefinition = this.options.layerDefinition;
     this.locationInfo = this.options.locationInfo;
     this.opacity = this.options.opacity;
-    this.renderer = this.options.renderer;
     this._layers = {};
 
     var i, len;

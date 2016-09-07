@@ -27,7 +27,6 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
     lyr = featureCollection([], {
       data: layer.itemId || layer.featureCollection,
       opacity: layer.opacity,
-      renderer: layer.featureCollection.layers[0].layerDefinition.drawingInfo.renderer,
       pane: paneName,
       onEachFeature: function (geojson, l) {
         if (layer.featureCollection.layers[0].popupInfo !== undefined) {
@@ -69,7 +68,7 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
     return lyr;
   } else if (layer.type === 'Feature Collection') {
     console.log('create FeatureCollection without featureCollection property');
-    lyr = featureCollection([], {
+    lyr = featureCollection(null, {
       data: layer.itemId,
       pane: paneName,
       opacity: layer.opacity
@@ -202,13 +201,12 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
     return lyr;
   } else if (layer.layerType === 'CSV') {
     labelsLayer = L.featureGroup(labels);
-    lyr = csvLayer([], {
+    lyr = csvLayer(null, {
       url: layer.url,
       layerDefinition: layer.layerDefinition,
       locationInfo: layer.locationInfo,
       opacity: layer.opacity,
       pane: paneName,
-      renderer: layer.layerDefinition.drawingInfo.renderer,
       onEachFeature: function (geojson, l) {
         if (layer.popupInfo !== undefined) {
           var popupContent = createPopupContent(layer.popupInfo, geojson.properties);
