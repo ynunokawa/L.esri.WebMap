@@ -69,7 +69,7 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
     return lyr;
   } else if (layer.type === 'Feature Collection') {
     console.log('create FeatureCollection without featureCollection property');
-    lyr = featureCollection([], {
+    lyr = featureCollection(null, {
       data: layer.itemId,
       pane: paneName,
       opacity: layer.opacity
@@ -202,7 +202,7 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
     return lyr;
   } else if (layer.layerType === 'CSV') {
     labelsLayer = L.featureGroup(labels);
-    lyr = csvLayer([], {
+    lyr = csvLayer(null, {
       url: layer.url,
       layerDefinition: layer.layerDefinition,
       locationInfo: layer.locationInfo,
