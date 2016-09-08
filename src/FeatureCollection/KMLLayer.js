@@ -1,6 +1,5 @@
 import L from 'leaflet';
 
-//import omnivore from 'leaflet-omnivore';
 import { arcgisToGeoJSON } from 'arcgis-to-geojson-utils';
 import { setRenderer } from './Renderer';
 
@@ -28,7 +27,6 @@ export var KMLLayer = L.GeoJSON.extend({
     }
 
     this._getKML(this.url);
-    //omnivore.kml(this.url, null, this);
   },
 
   _getKML: function (url) {
@@ -53,7 +51,7 @@ export var KMLLayer = L.GeoJSON.extend({
         var objectIdField = featureCollection.layers[i].layerDefinition.objectIdField;
 
         var geojson = this._featureCollectionToGeoJSON(features, objectIdField);
- 
+
         if (featureCollection.layers[i].popupInfo !== undefined) {
           this.popupInfo = featureCollection.layers[i].popupInfo;
         }

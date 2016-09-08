@@ -28,12 +28,12 @@ export function createPopupContent (popupInfo, properties) {
       var m = r.exec(s);
       return properties[m[1]];
     });
-    content += descriptionText + '</div>'
+    content += descriptionText + '</div>';
   }
 
-  //if (popupInfo.mediaInfos.length > 0) {
+  // if (popupInfo.mediaInfos.length > 0) {
     // It does not support mediaInfos for popup contents.
-  //}
+  // }
 
   return content;
 }
