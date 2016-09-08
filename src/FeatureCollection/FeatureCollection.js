@@ -14,6 +14,8 @@ export var FeatureCollection = L.GeoJSON.extend({
 
     this.data = this.options.data;
     this.opacity = this.options.opacity;
+    this.popupInfo = null;
+    this.labelingInfo = null;
     this._layers = {};
 
     var i, len;
@@ -57,6 +59,13 @@ export var FeatureCollection = L.GeoJSON.extend({
     if (data.layers[index].layerDefinition.extent.spatialReference.wkid === 102100) {
       features = this._projTo4326(features, geometryType);
     }
+    if (data.layers[index].popupInfo !== undefined) {
+      this.popupInfo = data.layers[index].popupInfo;
+    }
+    if (data.layers[index].layerDefinition.drawingInfo.labelingInfo !== undefined) {
+      this.labelingInfo = data.layers[index].layerDefinition.drawingInfo.labelingInfo;
+    }
+    console.log(this);
 
     var geojson = this._featureCollectionToGeoJSON(features, objectIdField);
 
