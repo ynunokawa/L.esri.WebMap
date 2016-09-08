@@ -26,7 +26,7 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
 
     var i, len;
     var popupInfo, labelingInfo;
-    if (layer.featureCollection !== undefined) {
+    if (layer.itemId === undefined) {
       for (i = 0, len = layer.featureCollection.layers.length; i < len; i++) {
         if (layer.featureCollection.layers[i].featureSet.features.length > 0) {
           if (layer.featureCollection.layers[i].popupInfo !== undefined && layer.featureCollection.layers[i].popupInfo !== null) {
