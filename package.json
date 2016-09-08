@@ -34,7 +34,7 @@
     "arcgis-to-geojson-utils": "^1.0.1",
     "esri-leaflet": "^2.0.0",
     "esri-leaflet-heatmap-feature-layer": "^2.0.0-beta.1",
-    "esri-leaflet-renderers": "^2.0.3",
+    "esri-leaflet-renderers": "^2.0.4",
     "leaflet": "^1.0.0-rc.1",
     "leaflet-omnivore": "^0.3.2",
     "leaflet-vectoricon": "^0.1.0",
