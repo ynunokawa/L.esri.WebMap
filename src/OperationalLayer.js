@@ -19,23 +19,41 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
   var labelsLayer;
   var labelPaneName = paneName + '-label';
 
-  if (layer.featureCollection !== undefined) {
+  if (layer.type === 'Feature Collection' || layer.featureCollection !== undefined) {
     console.log('create FeatureCollection');
 
     map.createPane(labelPaneName);
 
+    var i, len;
+    var popupInfo, labelingInfo;
+    if (layer.featureCollection !== undefined) {
+      for (i = 0, len = layer.featureCollection.layers.length; i < len; i++) {
+        if (layer.featureCollection.layers[i].featureSet.features.length > 0) {
+          if (layer.featureCollection.layers[i].popupInfo !== undefined && layer.featureCollection.layers[i].popupInfo !== null) {
+            popupInfo = layer.featureCollection.layers[i].popupInfo;
+          }
+          if (layer.featureCollection.layers[i].layerDefinition.drawingInfo.labelingInfo !== undefined && layer.featureCollection.layers[i].layerDefinition.drawingInfo.labelingInfo !== null) {
+            labelingInfo = layer.featureCollection.layers[i].layerDefinition.drawingInfo.labelingInfo;
+          }
+        }
+      }
+    }
+
     labelsLayer = L.featureGroup(labels);
-    lyr = featureCollection([], {
+    var fc = featureCollection(null, {
       data: layer.itemId || layer.featureCollection,
       opacity: layer.opacity,
       pane: paneName,
       onEachFeature: function (geojson, l) {
-        if (layer.featureCollection.layers[0].popupInfo !== undefined) {
-          var popupContent = createPopupContent(layer.featureCollection.layers[0].popupInfo, geojson.properties);
+        if (fc !== undefined) {
+          popupInfo = fc.popupInfo;
+          labelingInfo = fc.labelingInfo;
+        }
+        if (popupInfo !== undefined && popupInfo !== null) {
+          var popupContent = createPopupContent(popupInfo, geojson.properties);
           l.bindPopup(popupContent);
         }
-        if (layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo !== undefined && layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo !== null) {
-          var labelingInfo = layer.featureCollection.layers[0].layerDefinition.drawingInfo.labelingInfo;
+        if (labelingInfo !== undefined && labelingInfo !== null) {
           var coordinates = l.feature.geometry.coordinates;
           var labelPos;
 
@@ -62,18 +80,9 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
       }
     });
 
-    lyr = L.layerGroup([lyr, labelsLayer]);
+    lyr = L.layerGroup([fc, labelsLayer]);
 
     layers.push({ type: 'FC', title: layer.title || '', layer: lyr });
-
-    return lyr;
-  } else if (layer.type === 'Feature Collection') {
-    console.log('create FeatureCollection without featureCollection property');
-    lyr = featureCollection(null, {
-      data: layer.itemId,
-      pane: paneName,
-      opacity: layer.opacity
-    });
 
     return lyr;
   } else if (layer.layerType === 'ArcGISFeatureLayer' && layer.layerDefinition !== undefined) {
@@ -253,7 +262,6 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
       opacity: layer.opacity,
       pane: paneName,
       onEachFeature: function (geojson, l) {
-        console.log(l, kml);
         if (kml.popupInfo !== undefined && kml.popupInfo !== null) {
           console.log(kml.popupInfo);
           var popupContent = createPopupContent(kml.popupInfo, geojson.properties);
