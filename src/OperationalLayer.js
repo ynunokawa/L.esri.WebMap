@@ -363,6 +363,26 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
     layers.push({ type: 'TL', title: layer.title || layer.id || '', layer: lyr });
 
     return lyr;
+  } else if (layer.layerType === 'WMS') {
+    var i, len;
+    var layerNames = '';
+    for (i = 0, len = layer.visibleLayers.length; i < len; i++) {
+      layerNames += layer.visibleLayers[i];
+      if (i < len - 1) {
+        layerNames += ',';
+      }
+    }
+
+    lyr = L.tileLayer.wms(layer.url, {
+      layers: String(layerNames),
+      format: 'image/png',
+      transparent: true,
+      attribution: layer.copyright
+    });
+
+    layers.push({ type: 'WMS', title: layer.title || layer.id || '', layer: lyr });
+
+    return lyr;
   } else {
     lyr = L.featureGroup([]);
     console.log('Unsupported Layer: ', layer);
