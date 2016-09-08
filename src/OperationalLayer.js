@@ -18,13 +18,13 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
   var labels = [];
   var labelsLayer;
   var labelPaneName = paneName + '-label';
+  var i, len;
 
   if (layer.type === 'Feature Collection' || layer.featureCollection !== undefined) {
     console.log('create FeatureCollection');
 
     map.createPane(labelPaneName);
 
-    var i, len;
     var popupInfo, labelingInfo;
     if (layer.itemId === undefined) {
       for (i = 0, len = layer.featureCollection.layers.length; i < len; i++) {
@@ -364,7 +364,6 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
 
     return lyr;
   } else if (layer.layerType === 'WMS') {
-    var i, len;
     var layerNames = '';
     for (i = 0, len = layer.visibleLayers.length; i < len; i++) {
       layerNames += layer.visibleLayers[i];
