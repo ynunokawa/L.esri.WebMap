@@ -18,13 +18,13 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
   var labels = [];
   var labelsLayer;
   var labelPaneName = paneName + '-label';
+  var i, len;
 
   if (layer.type === 'Feature Collection' || layer.featureCollection !== undefined) {
     console.log('create FeatureCollection');
 
     map.createPane(labelPaneName);
 
-    var i, len;
     var popupInfo, labelingInfo;
     if (layer.itemId === undefined) {
       for (i = 0, len = layer.featureCollection.layers.length; i < len; i++) {
@@ -361,6 +361,25 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
     document.getElementsByClassName('leaflet-tile-pane')[0].style.opacity = layer.opacity || 1;
 
     layers.push({ type: 'TL', title: layer.title || layer.id || '', layer: lyr });
+
+    return lyr;
+  } else if (layer.layerType === 'WMS') {
+    var layerNames = '';
+    for (i = 0, len = layer.visibleLayers.length; i < len; i++) {
+      layerNames += layer.visibleLayers[i];
+      if (i < len - 1) {
+        layerNames += ',';
+      }
+    }
+
+    lyr = L.tileLayer.wms(layer.url, {
+      layers: String(layerNames),
+      format: 'image/png',
+      transparent: true,
+      attribution: layer.copyright
+    });
+
+    layers.push({ type: 'WMS', title: layer.title || layer.id || '', layer: lyr });
 
     return lyr;
   } else {
