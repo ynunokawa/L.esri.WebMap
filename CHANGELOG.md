@@ -5,6 +5,21 @@ This change log adheres to standards from [Keep a CHANGELOG](http://keepachangel
 
 ## [Unreleased]
 
+## [0.4.0] - 2016-09-08
+
+### Added
+
+- Support for some layer types (`CSV`, `KML`, `WMS`)
+
+### Fixed
+
+- `renderer` property of `FeatureCollection` override exisitng one (#50)
+
+### Changed
+
+- Use [`leaflet-omnivore`](https://github.com/mapbox/leaflet-omnivore) to parse CSV
+- Improve `FeatureCollection`
+
 ## [0.3.4] - 2016-08-16
 
 ### Added
@@ -51,7 +66,8 @@ This change log adheres to standards from [Keep a CHANGELOG](http://keepachangel
 - Separate module for a feature collection as [`FeatureCollection`](https://github.com/ynunokawa/L.esri.WebMap/blob/master/src/FeatureCollection/FeatureCollection.js)
 - Separate module for labeling as [`LabelMarker`](https://github.com/ynunokawa/L.esri.WebMap/blob/master/src/Label/LabelMarker.js)
 
-[Unreleased]: https://github.com/ynunokawa/L.esri.WebMap/compare/v0.3.4...HEAD
+[Unreleased]: https://github.com/ynunokawa/L.esri.WebMap/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/ynunokawa/L.esri.WebMap/compare/v0.3.4...v0.4.0
 [0.3.4]: https://github.com/ynunokawa/L.esri.WebMap/compare/v0.3.3...v0.3.4
 [0.3.3]: https://github.com/ynunokawa/L.esri.WebMap/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/ynunokawa/L.esri.WebMap/compare/v0.3.1...v0.3.2
