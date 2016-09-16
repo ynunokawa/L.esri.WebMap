@@ -34,6 +34,8 @@ export var WebMap = L.Evented.extend({
     this._webmapId = webmapId;
     this._loaded = false;
     this._metadataLoaded = false;
+    this._loadedLayersNum = 0;
+    this._layersNum = 0;
 
     this.layers = []; // Check the layer types here -> https://github.com/ynunokawa/L.esri.WebMap/wiki/Layer-types
     this.title = ''; // Web Map Title
@@ -44,6 +46,21 @@ export var WebMap = L.Evented.extend({
 
     this._loadWebMapMetaData(webmapId);
     this._loadWebMap(webmapId);
+  },
+
+  _checkLoaded: function () {
+    this._loadedLayersNum++;
+    if (this._loadedLayersNum === this._layersNum) {
+      this._loaded = true;
+      this.fire('load');
+    }
+  },
+
+  _operationalLayer: function (layer, layers, map, params, paneName) {
+    var lyr = operationalLayer(layer, layers, map, params).addTo(map);
+    if (lyr !== undefined && layer.visibility === true) {
+      lyr.addTo(map);
+    }
   },
 
   _loadWebMapMetaData: function (id) {
@@ -84,6 +101,7 @@ export var WebMap = L.Evented.extend({
         console.log(error);
       } else {
         console.log('WebMap: ', response);
+        this._layersNum = response.baseMap.baseMapLayers.length + response.operationalLayers.length;
 
         // Add Basemap
         response.baseMap.baseMapLayers.map(function (baseMapLayer) {
@@ -95,25 +113,18 @@ export var WebMap = L.Evented.extend({
               } else {
                 console.log(res.access);
                 if (res.access !== 'public') {
-                  var lyr = operationalLayer(baseMapLayer, layers, map, params).addTo(map);
-                  if (lyr !== undefined && baseMapLayer.visibility === true) {
-                    lyr.addTo(map);
-                  }
+                  this._operationalLayer(baseMapLayer, layers, map, params);
                 } else {
-                  var lyr = operationalLayer(baseMapLayer, layers, map, {}).addTo(map);
-                  if (lyr !== undefined && baseMapLayer.visibility === true) {
-                    lyr.addTo(map);
-                  }
+                  this._operationalLayer(baseMapLayer, layers, map, {});
                 }
               }
-            });
+              this._checkLoaded();
+            }, this);
           } else {
-            var lyr = operationalLayer(baseMapLayer, layers, map, {}).addTo(map);
-            if (lyr !== undefined && baseMapLayer.visibility === true) {
-              lyr.addTo(map);
-            }
+            this._operationalLayer(baseMapLayer, layers, map, {});
+            this._checkLoaded();
           }
-        });
+        }.bind(this));
 
         // Add Operational Layers
         response.operationalLayers.map(function (layer, i) {
@@ -127,25 +138,18 @@ export var WebMap = L.Evented.extend({
               } else {
                 console.log(res.access);
                 if (res.access !== 'public') {
-                  var lyr = operationalLayer(layer, layers, map, params, paneName).addTo(map);
-                  if (lyr !== undefined && layer.visibility === true) {
-                    lyr.addTo(map);
-                  }
+                  this._operationalLayer(layer, layers, map, params, paneName);
                 } else {
-                  var lyr = operationalLayer(layer, layers, map, {}, paneName).addTo(map);
-                  if (lyr !== undefined && layer.visibility === true) {
-                    lyr.addTo(map);
-                  }
+                  this._operationalLayer(layer, layers, map, {}, paneName);
                 }
               }
-            });
+              this._checkLoaded();
+            }, this);
           } else {
-            var lyr = operationalLayer(layer, layers, map, {}, paneName).addTo(map);
-            if (lyr !== undefined && layer.visibility === true) {
-              lyr.addTo(map);
-            }
+            this._operationalLayer(layer, layers, map, {}, paneName);
+            this._checkLoaded();
           }
-        });
+        }.bind(this));
 
         // Add Bookmarks
         if (response.bookmarks !== undefined && response.bookmarks.length > 0) {
@@ -158,8 +162,8 @@ export var WebMap = L.Evented.extend({
           }.bind(this));
         }
 
-        this._loaded = true;
-        this.fire('load');
+        //this._loaded = true;
+        //this.fire('load');
       }
     }.bind(this));
   }
