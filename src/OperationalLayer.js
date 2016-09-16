@@ -8,11 +8,11 @@ import { polylineLabelPos } from './Label/PolylineLabel';
 import { polygonLabelPos } from './Label/PolygonLabel';
 import { createPopupContent } from './Popup/Popup';
 
-export function operationalLayer (layer, layers, map, paneName) {
-  return _generateEsriLayer(layer, layers, map, paneName);
+export function operationalLayer (layer, layers, map, params, paneName) {
+  return _generateEsriLayer(layer, layers, map, params, paneName);
 }
 
-export function _generateEsriLayer (layer, layers, map, paneName) {
+export function _generateEsriLayer (layer, layers, map, params, paneName) {
   console.log('generateEsriLayer: ', layer.title, layer);
   var lyr;
   var labels = [];
@@ -101,6 +101,7 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
         lyr = L.esri.Heat.heatmapFeatureLayer({ // Esri Leaflet 2.0
         // lyr = L.esri.heatmapFeatureLayer({ // Esri Leaflet 1.0
           url: layer.url,
+          token: params.token || null,
           minOpacity: 0.5,
           max: layer.layerDefinition.drawingInfo.renderer.maxPixelIntensity,
           blur: layer.layerDefinition.drawingInfo.renderer.blurRadius,
@@ -129,6 +130,7 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
         lyr = L.esri.featureLayer({
           url: layer.url,
           where: where,
+          token: params.token || null,
           drawingInfo: drawingInfo,
           pane: paneName,
           onEachFeature: function (geojson, l) {
@@ -179,6 +181,7 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
 
       lyr = L.esri.featureLayer({
         url: layer.url,
+        token: params.token || null,
         where: where,
         pane: paneName,
         onEachFeature: function (geojson, l) {
@@ -197,6 +200,7 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
     console.log('create ArcGISFeatureLayer');
     lyr = L.esri.featureLayer({
       url: layer.url,
+      token: params.token || null,
       pane: paneName,
       onEachFeature: function (geojson, l) {
         if (layer.popupInfo !== undefined) {
@@ -304,6 +308,7 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
     console.log('create ArcGISImageServiceLayer');
     lyr = L.esri.imageMapLayer({
       url: layer.url,
+      token: params.token || null,
       pane: paneName,
       opacity: layer.opacity || 1
     });
@@ -314,6 +319,7 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
   } else if (layer.layerType === 'ArcGISMapServiceLayer') {
     lyr = L.esri.dynamicMapLayer({
       url: layer.url,
+      token: params.token || null,
       pane: paneName,
       opacity: layer.opacity || 1
     });
@@ -326,7 +332,8 @@ export function _generateEsriLayer (layer, layers, map, paneName) {
       lyr = L.esri.basemapLayer(layer.title);
     } catch (e) {
       lyr = L.esri.tiledMapLayer({
-        url: layer.url
+        url: layer.url,
+        token: params.token || null
       });
 
       L.esri.request(layer.url, {}, function (err, res) {

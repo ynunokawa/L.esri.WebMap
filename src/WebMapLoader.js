@@ -72,8 +72,9 @@ export var WebMap = L.Evented.extend({
   _loadWebMap: function (id) {
     var map = this._map;
     var layers = this.layers;
+    var server = this._server;
     var params = {};
-    var webmapRequestUrl = 'https://' + this._server + '/sharing/rest/content/items/' + id + '/data';
+    var webmapRequestUrl = 'https://' + server + '/sharing/rest/content/items/' + id + '/data';
     if (this._token && this._token.length > 0) {
       params.token = this._token;
     }
@@ -86,9 +87,31 @@ export var WebMap = L.Evented.extend({
 
         // Add Basemap
         response.baseMap.baseMapLayers.map(function (baseMapLayer) {
-          var lyr = operationalLayer(baseMapLayer, layers, map).addTo(map);
-          if (lyr !== undefined && baseMapLayer.visibility === true) {
-            lyr.addTo(map);
+          if (baseMapLayer.itemId !== undefined) {
+            var itemRequestUrl = 'https://' + server + '/sharing/rest/content/items/' + baseMapLayer.itemId;
+            L.esri.request(itemRequestUrl, params, function (err, res) {
+              if (err) {
+                console.error(error);
+              } else {
+                console.log(res.access);
+                if (res.access !== 'public') {
+                  var lyr = operationalLayer(baseMapLayer, layers, map, params).addTo(map);
+                  if (lyr !== undefined && baseMapLayer.visibility === true) {
+                    lyr.addTo(map);
+                  }
+                } else {
+                  var lyr = operationalLayer(baseMapLayer, layers, map, {}).addTo(map);
+                  if (lyr !== undefined && baseMapLayer.visibility === true) {
+                    lyr.addTo(map);
+                  }
+                }
+              }
+            });
+          } else {
+            var lyr = operationalLayer(baseMapLayer, layers, map, {}).addTo(map);
+            if (lyr !== undefined && baseMapLayer.visibility === true) {
+              lyr.addTo(map);
+            }
           }
         });
 
@@ -96,9 +119,31 @@ export var WebMap = L.Evented.extend({
         response.operationalLayers.map(function (layer, i) {
           var paneName = 'esri-webmap-layer' + i;
           map.createPane(paneName);
-          var lyr = operationalLayer(layer, layers, map, paneName);
-          if (lyr !== undefined && layer.visibility === true) {
-            lyr.addTo(map);
+          if (layer.itemId !== undefined) {
+            var itemRequestUrl = 'https://' + server + '/sharing/rest/content/items/' + layer.itemId;
+            L.esri.request(itemRequestUrl, params, function (err, res) {
+              if (err) {
+                console.error(error);
+              } else {
+                console.log(res.access);
+                if (res.access !== 'public') {
+                  var lyr = operationalLayer(layer, layers, map, params, paneName).addTo(map);
+                  if (lyr !== undefined && layer.visibility === true) {
+                    lyr.addTo(map);
+                  }
+                } else {
+                  var lyr = operationalLayer(layer, layers, map, {}, paneName).addTo(map);
+                  if (lyr !== undefined && layer.visibility === true) {
+                    lyr.addTo(map);
+                  }
+                }
+              }
+            });
+          } else {
+            var lyr = operationalLayer(layer, layers, map, {}, paneName).addTo(map);
+            if (lyr !== undefined && layer.visibility === true) {
+              lyr.addTo(map);
+            }
           }
         });
 
