@@ -377,7 +377,13 @@ export function _generateEsriLayer (layer, layers, map, params, paneName) {
       //'Dark Gray Canvas Base': '',
       //'Light Gray Canvas Base': ''
     };
-    lyr = L.esri.Vector.basemap(keys[layer.title]);
+
+    if (keys[layer.title]) {
+      lyr = L.esri.Vector.basemap(keys[layer.title]);
+    } else {
+      console.error('Unsupported Vector Tile Layer: ', layer);
+      lyr = L.featureGroup([]);
+    }
 
     layers.push({ type: 'VTL', title: layer.title || layer.id || '', layer: lyr });
 
