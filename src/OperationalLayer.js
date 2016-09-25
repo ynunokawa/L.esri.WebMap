@@ -352,6 +352,42 @@ export function _generateEsriLayer (layer, layers, map, params, paneName) {
     layers.push({ type: 'TML', title: layer.title || '', layer: lyr });
 
     return lyr;
+  } else if (layer.layerType === 'VectorTileLayer') {
+    var keys = {
+      'World Street Map (with Relief)': 'StreetsRelief',
+      'World Street Map (with Relief) (Mature Support)': 'StreetsRelief',
+      'Hybrid Reference Layer': 'Hybrid',
+      'Hybrid Reference Layer (Mature Support)': 'Hybrid',
+      'World Street Map': 'Streets',
+      'World Street Map (Mature Support)': 'Streets',
+      'World Street Map (Night)': 'StreetsNight',
+      'World Street Map (Night) (Mature Support)': 'StreetsNight',
+      'Dark Gray Canvas': 'DarkGray',
+      'Dark Gray Canvas (Mature Support)': 'DarkGray',
+      'World Topographic Map': 'Topographic',
+      'World Topographic Map (Mature Support)': 'Topographic',
+      'World Navigation Map': 'Navigation',
+      'World Navigation Map (Mature Support)': 'Navigation',
+      'Light Gray Canvas': 'Gray',
+      'Light Gray Canvas (Mature Support)': 'Gray'
+      //'Terrain with Labels': '',
+      //'World Terrain with Labels': '',
+      //'Light Gray Canvas Reference': '',
+      //'Dark Gray Canvas Reference': '',
+      //'Dark Gray Canvas Base': '',
+      //'Light Gray Canvas Base': ''
+    };
+
+    if (keys[layer.title]) {
+      lyr = L.esri.Vector.basemap(keys[layer.title]);
+    } else {
+      console.error('Unsupported Vector Tile Layer: ', layer);
+      lyr = L.featureGroup([]);
+    }
+
+    layers.push({ type: 'VTL', title: layer.title || layer.id || '', layer: lyr });
+
+    return lyr;
   } else if (layer.layerType === 'OpenStreetMap') {
     lyr = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
