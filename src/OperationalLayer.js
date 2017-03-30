@@ -98,7 +98,7 @@ export function _generateEsriLayer (layer, layers, map, params, paneName) {
           gradient[(Math.round(stop.ratio * 100) / 100 + 6) / 7] = 'rgb(' + stop.color[0] + ',' + stop.color[1] + ',' + stop.color[2] + ')';
         });
 
-        lyr = L.esri.Heat.heatmapFeatureLayer({ // Esri Leaflet 2.0
+        lyr = L.esri.Heat.featureLayer({ // Esri Leaflet 2.0
         // lyr = L.esri.heatmapFeatureLayer({ // Esri Leaflet 1.0
           url: layer.url,
           token: params.token || null,
@@ -381,8 +381,9 @@ export function _generateEsriLayer (layer, layers, map, params, paneName) {
     if (keys[layer.title]) {
       lyr = L.esri.Vector.basemap(keys[layer.title]);
     } else {
-      console.error('Unsupported Vector Tile Layer: ', layer);
-      lyr = L.featureGroup([]);
+      // console.error('Unsupported Vector Tile Layer: ', layer);
+      // lyr = L.featureGroup([]);
+      lyr = L.esri.Vector.layer(layer.itemId);
     }
 
     layers.push({ type: 'VTL', title: layer.title || layer.id || '', layer: lyr });
