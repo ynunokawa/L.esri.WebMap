@@ -336,15 +336,17 @@ export function _generateEsriLayer (layer, layers, map, params, paneName) {
         token: params.token || null
       });
 
-      L.esri.request(layer.url, {}, function (err, res) {
-        if (err) {
-          console.log(err);
-        } else {
-          var maxWidth = (map.getSize().x - 55);
-          var tiledAttribution = '<span class="esri-attributions" style="line-height:14px; vertical-align: -3px; text-overflow:ellipsis; white-space:nowrap; overflow:hidden; display:inline-block; max-width:' + maxWidth + 'px;">' + res.copyrightText + '</span>';
-          map.attributionControl.addAttribution(tiledAttribution);
-        }
-      });
+      if (map.options.attributionControl && map.attributionControl) {
+        L.esri.request(layer.url, {}, function (err, res) {
+          if (err) {
+            console.log(err);
+          } else {
+            var maxWidth = (map.getSize().x - 55);
+            var tiledAttribution = '<span class="esri-attributions" style="line-height:14px; vertical-align: -3px; text-overflow:ellipsis; white-space:nowrap; overflow:hidden; display:inline-block; max-width:' + maxWidth + 'px;">' + res.copyrightText + '</span>';
+            map.attributionControl.addAttribution(tiledAttribution);
+          }
+        });
+      }
     }
 
     document.getElementsByClassName('leaflet-tile-pane')[0].style.opacity = layer.opacity || 1;
