@@ -18,7 +18,11 @@ export function createPopupContent (popupInfo, properties) {
   if (popupInfo.fieldInfos !== undefined) {
     for (var i = 0; i < popupInfo.fieldInfos.length; i++) {
       if (popupInfo.fieldInfos[i].visible === true) {
-        content += '<div style="font-weight:bold;color:#999;margin-top:5px;word-break:break-all;">' + popupInfo.fieldInfos[i].label + '</div><p style="margin-top:0;margin-bottom:5px;word-break:break-all;">' + properties[popupInfo.fieldInfos[i].fieldName] + '</p>';
+        if (properties[popupInfo.fieldInfos[i].fieldName].toString().indexOf("http://") == 0 || properties[popupInfo.fieldInfos[i].fieldName].toString().indexOf("https://") == 0) {
+          content += '<div style="font-weight:bold;color:#999;margin-top:5px;word-break:break-all;">' + popupInfo.fieldInfos[i].label + '</div><p style="margin-top:0;margin-bottom:5px;word-break:break-all;"><a target="_blank" href="' + properties[popupInfo.fieldInfos[i].fieldName] + '">More Info</a></p>'; 
+        } else {
+          content += '<div style="font-weight:bold;color:#999;margin-top:5px;word-break:break-all;">' + popupInfo.fieldInfos[i].label + '</div><p style="margin-top:0;margin-bottom:5px;word-break:break-all;">' + properties[popupInfo.fieldInfos[i].fieldName] + '</p>';   
+        }
       }
     }
     content += '</div>';
